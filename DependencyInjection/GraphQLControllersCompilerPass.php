@@ -4,11 +4,13 @@
 namespace TheCodingMachine\GraphQL\Controllers\Bundle\DependencyInjection;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\ApcuCache;
 use function function_exists;
 use GraphQL\Type\Definition\ObjectType;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -82,7 +84,7 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         }
 
         $containerFetcherTypeMapper = new Definition(ContainerFetcherTypeMapper::class);
-        $containerFetcherTypeMapper->addArgument($container->getDefinition('container'));
+        $containerFetcherTypeMapper->addArgument($container->getDefinition('service_container'));
         $containerFetcherTypeMapper->addArgument($types);
         $containerFetcherTypeMapper->addArgument([]);
         $containerFetcherTypeMapper->addTag('graphql.type_mapper');
@@ -136,6 +138,7 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
     private function getAnnotationReader(): Reader
     {
         if ($this->annotationReader === null) {
+            AnnotationRegistry::registerLoader('class_exists');
             $this->annotationReader = new AnnotationReader();
 
             if (function_exists('apcu_fetch')) {
