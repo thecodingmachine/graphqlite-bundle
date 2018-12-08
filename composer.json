@@ -1,0 +1,40 @@
+{
+  "name" : "thecodingmachine/graphql-controllers-bundle",
+  "description" : "A Symfony bundle for thecodingmachine/graphql-controllers.",
+  "keywords" : [
+    "graphql",
+    "bundle",
+    "symfony"
+  ],
+  "homepage" : "https://github.com/thecodingmachine/graphql-controllers",
+  "type" : "symfony-bundle",
+  "license" : "MIT",
+  "authors" : [{
+    "name" : "David Négrier",
+    "email" : "d.negrier@thecodingmachine.com",
+    "homepage" : "http://mouf-php.com"
+  }
+  ],
+  "require" : {
+    "php" : ">=7.1",
+    "thecodingmachine/graphql-controllers" : "^3",
+    "symfony/framework-bundle": "^4",
+    "doctrine/annotations": "^1.6",
+    "doctrine/cache": "^1.8"
+  },
+  "require-dev": {
+    "symfony/security-bundle": "^4"
+  },
+  "autoload" : {
+    "psr-4" : {
+      "TheCodingMachine\\GraphQL\\Controllers\\Bundle\\" : ""
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "3.0.x-dev"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

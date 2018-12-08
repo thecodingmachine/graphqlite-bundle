@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+                               http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+
+    <services>
+        <defaults autowire="true" autoconfigure="true" public="false" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Schema" class="TheCodingMachine\GraphQL\Controllers\Schema">
+        </service>
+
+        <service id="GraphQL\Type\Schema" alias="TheCodingMachine\GraphQL\Controllers\Schema" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\AggregateQueryProvider" class="TheCodingMachine\GraphQL\Controllers\AggregateQueryProvider">
+            <argument type="tagged" tag="graphql.queryprovider" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQL\Controllers\QueryProviderInterface" alias="TheCodingMachine\GraphQL\Controllers\AggregateQueryProvider" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\ControllerQueryProviderFactory" class="TheCodingMachine\GraphQL\Controllers\ControllerQueryProviderFactory" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\AnnotationReader" class="TheCodingMachine\GraphQL\Controllers\AnnotationReader" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Bundle\Hydrator\VoidHydrator" class="TheCodingMachine\GraphQL\Controllers\Bundle\Hydrator\VoidHydrator" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\HydratorInterface" alias="TheCodingMachine\GraphQL\Controllers\ControllerQueryProviderFactory" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthenticationService" class="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthenticationService">
+            <argument type="service" id="security.token_storage" on-invalid="null" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Security\AuthenticationServiceInterface" alias="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthenticationService" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthorizationService" class="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthorizationService">
+            <argument type="service" id="security.authorization_checker" on-invalid="null" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Security\AuthorizationServiceInterface" alias="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthorizationService" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper" class="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface" alias="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\CompositeTypeMapper" class="TheCodingMachine\GraphQL\Controllers\Mappers\CompositeTypeMapper">
+            <argument type="tagged" tag="graphql.type_mapper" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\TypeMapperInterface" alias="TheCodingMachine\GraphQL\Controllers\Mappers\CompositeTypeMapper" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\TypeGenerator" class="TheCodingMachine\GraphQL\Controllers\TypeGenerator" />
+
+    </services>
+
+</container>
