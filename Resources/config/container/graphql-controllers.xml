@@ -52,6 +52,21 @@
 
         <service id="TheCodingMachine\GraphQL\Controllers\TypeGenerator" class="TheCodingMachine\GraphQL\Controllers\TypeGenerator" />
 
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Bundle\EventListeners\RequestHandler" class="TheCodingMachine\GraphQL\Controllers\Bundle\EventListeners\RequestHandler">
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="GraphQL\Server\StandardServer" class="GraphQL\Server\StandardServer">
+            <argument type="service" id="GraphQL\Server\ServerConfig" />
+        </service>
+
+        <service id="GraphQL\Server\ServerConfig" class="GraphQL\Server\ServerConfig">
+            <call method="setSchema">
+                <argument type="service" id="TheCodingMachine\GraphQL\Controllers\Schema"/>
+            </call>
+        </service>
+
     </services>
 
 </container>

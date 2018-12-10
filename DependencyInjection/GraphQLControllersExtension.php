@@ -4,6 +4,8 @@
 namespace TheCodingMachine\GraphQL\Controllers\Bundle\DependencyInjection;
 
 
+use GraphQL\Error\Debug;
+use GraphQL\Server\ServerConfig;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -26,6 +28,14 @@ class GraphQLControllersExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/container'));
         $loader->load('graphql-controllers.xml');
 
+        $definition = $container->getDefinition(ServerConfig::class);
+        if (isset($config['debug'])) {
+            $debugCode = $this->toDebugCode($config['debug']);
+        } else {
+            $debugCode = Debug::RETHROW_UNSAFE_EXCEPTIONS;
+        }
+        $definition->addMethodCall('setDebug', [$debugCode]);
+
         /*$definition = $container->getDefinition(Configuration::class);
         $definition->replaceArgument(0, $config['bean_namespace']);
         $definition->replaceArgument(1, $config['dao_namespace']);
@@ -42,5 +52,15 @@ class GraphQLControllersExtension extends Extension
             $definitionNamingStrategy->addMethodCall('setBaseDaoSuffix', [$config['naming']['base_dao_suffix']]);
             $definitionNamingStrategy->addMethodCall('setExceptions', [$config['naming']['exceptions']]);
         }*/
+    }
+
+    private function toDebugCode(array $debug): int
+    {
+        $code = 0;
+        $code |= ($debug['INCLUDE_DEBUG_MESSAGE'] ?? 0)*Debug::INCLUDE_DEBUG_MESSAGE;
+        $code |= ($debug['INCLUDE_TRACE'] ?? 0)*Debug::INCLUDE_TRACE;
+        $code |= ($debug['RETHROW_INTERNAL_EXCEPTIONS'] ?? 0)*Debug::RETHROW_INTERNAL_EXCEPTIONS;
+        $code |= ($debug['RETHROW_UNSAFE_EXCEPTIONS'] ?? 0)*Debug::RETHROW_UNSAFE_EXCEPTIONS;
+        return $code;
     }
 }
