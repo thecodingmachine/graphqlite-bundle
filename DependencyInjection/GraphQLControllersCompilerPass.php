@@ -3,10 +3,9 @@
 
 namespace TheCodingMachine\GraphQL\Controllers\Bundle\DependencyInjection;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\ApcuCache;
 use function function_exists;
 use GraphQL\Type\Definition\ObjectType;
@@ -16,6 +15,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use TheCodingMachine\GraphQL\Controllers\AnnotationReader;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Mutation;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Query;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Type;
@@ -33,7 +33,7 @@ use TheCodingMachine\GraphQL\Controllers\TypeGenerator;
 class GraphQLControllersCompilerPass implements CompilerPassInterface
 {
     /**
-     * @var Reader
+     * @var AnnotationReader
      */
     private $annotationReader;
 
@@ -62,7 +62,8 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                 continue;
             }
 
-            if ($this->isController($class)) {
+            $reflectionClass = new ReflectionClass($class);
+            if ($this->isController($class, $reflectionClass)) {
                 // Let's create a QueryProvider from this controller
                 $controllerIdentifier = $class.'__QueryProvider';
                 $queryProvider = new Definition(ControllerQueryProvider::class);
@@ -75,7 +76,7 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                 $container->setDefinition($controllerIdentifier, $queryProvider);
             }
 
-            $typeAnnotation = $this->getType($class);
+            $typeAnnotation = $this->annotationReader->getTypeAnnotation($reflectionClass);
             if ($typeAnnotation !== null) {
                 $objectTypeIdentifier = $class.'__Type';
 
@@ -120,22 +121,15 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         return $typeGenerator->mapAnnotatedObject($typeClass, $recursiveTypeMapper);
     }
 
-    private function getType(string $className): ?Type
-    {
-        $reflectionClass = new ReflectionClass($className);
-        return $this->getAnnotationReader()->getClassAnnotation($reflectionClass, Type::class);
-    }
-
-    private function isController(string $className): bool
+    private function isController(string $className, ReflectionClass $reflectionClass): bool
     {
         $reader = $this->getAnnotationReader();
-        $reflectionClass = new ReflectionClass($className);
         foreach ($reflectionClass->getMethods() as $method) {
-            $query = $reader->getMethodAnnotation($method, Query::class);
+            $query = $reader->getRequestAnnotation($method, Query::class);
             if ($query !== null) {
                 return true;
             }
-            $mutation = $reader->getMethodAnnotation($method, Mutation::class);
+            $mutation = $reader->getRequestAnnotation($method, Mutation::class);
             if ($mutation !== null) {
                 return true;
             }
@@ -147,15 +141,17 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
      * Returns a cached Doctrine annotation reader.
      * Note: we cannot get the annotation reader service in the container as we are in a compiler pass.
      */
-    private function getAnnotationReader(): Reader
+    private function getAnnotationReader(): AnnotationReader
     {
         if ($this->annotationReader === null) {
             AnnotationRegistry::registerLoader('class_exists');
-            $this->annotationReader = new AnnotationReader();
+            $doctrineAnnotationReader = new DoctrineAnnotationReader();
 
             if (function_exists('apcu_fetch')) {
-                $this->annotationReader = new CachedReader($this->annotationReader, new ApcuCache(), true);
+                $doctrineAnnotationReader = new CachedReader($doctrineAnnotationReader, new ApcuCache(), true);
             }
+
+            $this->annotationReader = new AnnotationReader($doctrineAnnotationReader);
         }
         return $this->annotationReader;
     }

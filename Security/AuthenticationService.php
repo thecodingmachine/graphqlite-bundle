@@ -4,7 +4,7 @@
 namespace TheCodingMachine\GraphQL\Controllers\Bundle\Security;
 
 
-use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use TheCodingMachine\GraphQL\Controllers\Security\AuthenticationServiceInterface;
 
 class AuthenticationService implements AuthenticationServiceInterface
@@ -30,11 +30,12 @@ class AuthenticationService implements AuthenticationServiceInterface
             throw new \LogicException('The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".');
         }
 
-        if (null === $token = $this->tokenStorage->getToken()) {
+        $token = $this->tokenStorage->getToken();
+        if (null === $token) {
             return false;
         }
 
-        if (!\is_object($user = $token->getUser())) {
+        if (!\is_object($token->getUser())) {
             // e.g. anonymous authentication
             return false;
         }

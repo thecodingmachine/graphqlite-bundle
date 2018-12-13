@@ -4,6 +4,7 @@
 namespace TheCodingMachine\GraphQL\Controllers\Bundle\Mappers;
 
 use GraphQL\Type\Definition\InputType;
+use GraphQL\Type\Definition\OutputType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Psr\Container\ContainerInterface;

@@ -25,7 +25,17 @@
     "zendframework/zend-diactoros": "^1 || ^2"
   },
   "require-dev": {
-    "symfony/security-bundle": "^4"
+    "symfony/security-bundle": "^4",
+    "symfony/framework-bundle": "^4",
+    "symfony/yaml": "^4",
+    "phpunit/phpunit": "^7",
+    "phpstan/phpstan": "^0.10.5"
+  },
+  "scripts": {
+    "phpstan": "phpstan analyse GraphQLControllersBundle.php DependencyInjection/ EventListeners/ Hydrator/ Mappers/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
+  },
+  "suggest": {
+    "symfony/security-bundle": "To use @Logged or @Right annotations"
   },
   "autoload" : {
     "psr-4" : {

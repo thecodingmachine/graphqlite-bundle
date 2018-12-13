@@ -54,7 +54,7 @@ class RequestHandler implements EventSubscriberInterface
         $this->standardServer = $standardServer;
         $this->httpMessageFactory = $httpMessageFactory ?: new DiactorosFactory();
         $this->graphqlUri = $graphqlUri;
-        $this->debug = $debug;
+        $this->debug = $debug === null ? false : $debug;
     }
 
     /**
@@ -144,6 +144,9 @@ class RequestHandler implements EventSubscriberInterface
         }
 
         $requestHeaderList = $request->headers->get('content-type', null, false);
+        if ($requestHeaderList === null) {
+            return false;
+        }
         foreach ($this->graphqlHeaderList as $allowedHeader) {
             if (in_array($allowedHeader, $requestHeaderList, true)) {
                 return true;
