@@ -20,7 +20,9 @@
     "thecodingmachine/graphql-controllers" : "^3",
     "symfony/framework-bundle": "^4",
     "doctrine/annotations": "^1.6",
-    "doctrine/cache": "^1.8"
+    "doctrine/cache": "^1.8",
+    "symfony/psr-http-message-bridge": "^1",
+    "zendframework/zend-diactoros": "^1 || ^2"
   },
   "require-dev": {
     "symfony/security-bundle": "^4"

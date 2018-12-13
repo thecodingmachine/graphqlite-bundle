@@ -4,11 +4,16 @@
 namespace TheCodingMachine\GraphQL\Controllers\Bundle\EventListeners;
 
 
+use GraphQL\Error\Debug;
+use GraphQL\Executor\ExecutionResult;
+use GraphQL\Executor\Promise\Promise;
 use GraphQL\Server\StandardServer;
+use function json_decode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface;
@@ -17,6 +22,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Zend\Diactoros\Response\TextResponse;
 
@@ -43,9 +49,12 @@ class RequestHandler implements EventSubscriberInterface
     /** @var bool|int */
     private $debug;
 
-    public function __construct(StandardServer $standardServer, HttpMessageFactoryInterface $httpMessageFactory = null, string $graphqlUri = '/graphql')
+    public function __construct(StandardServer $standardServer, HttpMessageFactoryInterface $httpMessageFactory = null, string $graphqlUri = '/graphql', ?int $debug = Debug::RETHROW_UNSAFE_EXCEPTIONS)
     {
+        $this->standardServer = $standardServer;
         $this->httpMessageFactory = $httpMessageFactory ?: new DiactorosFactory();
+        $this->graphqlUri = $graphqlUri;
+        $this->debug = $debug;
     }
 
     /**
@@ -59,6 +68,11 @@ class RequestHandler implements EventSubscriberInterface
 
     public function handleRequest(GetResponseEvent $event)
     {
+        // Let's only handle the main request (the event might be triggered for sub-requests for error displaying for instance)
+        if ($event->getRequestType() !== HttpKernelInterface::MASTER_REQUEST) {
+            return;
+        }
+
         $request = $event->getRequest();
 
         if (!$this->isGraphqlRequest($request)) {
@@ -66,6 +80,26 @@ class RequestHandler implements EventSubscriberInterface
         }
 
         $psr7Request = $this->httpMessageFactory->createRequest($request);
+
+        if (strtoupper($request->getMethod()) == "POST" && empty($psr7Request->getParsedBody())) {
+            $content = $psr7Request->getBody()->getContents();
+            $parsedBody = json_decode($content, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \RuntimeException('Invalid JSON received in POST body: '.json_last_error_msg());
+            }
+            $psr7Request = $psr7Request->withParsedBody($parsedBody);
+        }
+
+        // Hack for Graph
+        /*if (strtoupper($request->getMethod()) == "GET") {
+            $params = $request->getQueryParams();
+            $params["variables"] = $params["variables"] === 'undefined' ? null : $params["variables"];
+            $request = $request->withQueryParams($params);
+        } else {
+            $params = $request->getParsedBody();
+            $params["variables"] = $params["variables"] === 'undefined' ? null : $params["variables"];
+            $request = $request->withParsedBody($params);
+        }*/
 
         $result = $this->handlePsr7Request($psr7Request);
 
@@ -109,7 +143,7 @@ class RequestHandler implements EventSubscriberInterface
             return false;
         }
 
-        $requestHeaderList = $request->headers->get('content-type');
+        $requestHeaderList = $request->headers->get('content-type', null, false);
         foreach ($this->graphqlHeaderList as $allowedHeader) {
             if (in_array($allowedHeader, $requestHeaderList, true)) {
                 return true;

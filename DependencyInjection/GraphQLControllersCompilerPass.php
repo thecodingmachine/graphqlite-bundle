@@ -15,13 +15,16 @@ use ReflectionClass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Mutation;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Query;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Type;
 use TheCodingMachine\GraphQL\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\ControllerQueryProvider;
 use TheCodingMachine\GraphQL\Controllers\ControllerQueryProviderFactory;
+use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
+use TheCodingMachine\GraphQL\Controllers\NamingStrategy;
 use TheCodingMachine\GraphQL\Controllers\TypeGenerator;
 
 /**
@@ -42,11 +45,18 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         //$controllersNamespace = ltrim($container->getParameter('graphqlcontrollers.controllers_namespace'), '\\');
 
         /**
-         * @var array<string, Definition> An array matching the container identifier to a factory creating a type.
+         * @var array<string, string> An array matching class name to the the container identifier of a factory creating a type.
          */
         $types = [];
 
-        foreach ($container->getDefinitions() as $definition) {
+        /**
+         * @var array<string, string> An array matching a GraphQL type name to the the container identifier of a factory creating a type.
+         */
+        $typesByName = [];
+
+        $namingStrategy = new NamingStrategy();
+
+        foreach ($container->getDefinitions() as $id => $definition) {
             $class = $definition->getClass();
             if ($class === null) {
                 continue;
@@ -58,37 +68,40 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                 $queryProvider = new Definition(ControllerQueryProvider::class);
                 $queryProvider->setPrivate(true);
                 $queryProvider->setFactory([self::class, 'createQueryProvider']);
-                $queryProvider->addArgument($definition);
-                $queryProvider->addArgument($container->getDefinition(ControllerQueryProviderFactory::class));
-                $queryProvider->addArgument($container->getDefinition(RecursiveTypeMapperInterface::class));
+                $queryProvider->addArgument(new Reference($id));
+                $queryProvider->addArgument(new Reference(ControllerQueryProviderFactory::class));
+                $queryProvider->addArgument(new Reference(RecursiveTypeMapperInterface::class));
                 $queryProvider->addTag('graphql.queryprovider');
                 $container->setDefinition($controllerIdentifier, $queryProvider);
             }
 
-            if ($this->isType($class)) {
+            $typeAnnotation = $this->getType($class);
+            if ($typeAnnotation !== null) {
                 $objectTypeIdentifier = $class.'__Type';
 
                 $objectType = new Definition(ObjectType::class);
-                $objectType->setPrivate(true);
+                $objectType->setPrivate(false);
                 $objectType->setFactory([self::class, 'createObjectType']);
-                $objectType->addArgument($definition);
-                $objectType->addArgument($container->getDefinition(TypeGenerator::class));
-                $objectType->addArgument($container->getDefinition(RecursiveTypeMapperInterface::class));
+                $objectType->addArgument(new Reference($id));
+                $objectType->addArgument(new Reference(TypeGenerator::class));
+                $objectType->addArgument(new Reference(RecursiveTypeMapperInterface::class));
                 $container->setDefinition($objectTypeIdentifier, $objectType);
 
-                $types[$class] = $objectTypeIdentifier;
+                $types[$typeAnnotation->getClass()] = $objectTypeIdentifier;
+                $typesByName[$namingStrategy->getOutputTypeName($class, $typeAnnotation)] = $objectTypeIdentifier;
                 //$definition->addTag('graphql.annotated_type');
-                // TODO: créer une classe qui liste tout ces types et les créé à la volée.
-                // en constructeur, elle prend une array className => typeClassName (à feeder par la compiler pass)
             }
         }
 
-        $containerFetcherTypeMapper = new Definition(ContainerFetcherTypeMapper::class);
+        $containerFetcherTypeMapper = $container->getDefinition(ContainerFetcherTypeMapper::class);
+        $containerFetcherTypeMapper->replaceArgument(1, $types);
+        $containerFetcherTypeMapper->replaceArgument(3, $typesByName);
+        /*$containerFetcherTypeMapper = new Definition(ContainerFetcherTypeMapper::class);
         $containerFetcherTypeMapper->addArgument($container->getDefinition('service_container'));
         $containerFetcherTypeMapper->addArgument($types);
         $containerFetcherTypeMapper->addArgument([]);
         $containerFetcherTypeMapper->addTag('graphql.type_mapper');
-        $container->setDefinition(ContainerFetcherTypeMapper::class, $containerFetcherTypeMapper);
+        $container->setDefinition(ContainerFetcherTypeMapper::class, $containerFetcherTypeMapper);*/
     }
 
     /**
@@ -107,11 +120,10 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         return $typeGenerator->mapAnnotatedObject($typeClass, $recursiveTypeMapper);
     }
 
-    private function isType(string $className): bool
+    private function getType(string $className): ?Type
     {
         $reflectionClass = new ReflectionClass($className);
-        $typeAnnotation = $this->getAnnotationReader()->getClassAnnotation($reflectionClass, Type::class);
-        return $typeAnnotation !== null;
+        return $this->getAnnotationReader()->getClassAnnotation($reflectionClass, Type::class);
     }
 
     private function isController(string $className): bool

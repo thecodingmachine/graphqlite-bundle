@@ -5,6 +5,7 @@ namespace TheCodingMachine\GraphQL\Controllers\Bundle\Mappers;
 
 use GraphQL\Type\Definition\InputType;
 use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\Type;
 use Psr\Container\ContainerInterface;
 use TheCodingMachine\GraphQL\Controllers\Mappers\CannotMapTypeException;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
@@ -17,11 +18,23 @@ use TheCodingMachine\GraphQL\Controllers\Mappers\TypeMapperInterface;
 final class ContainerFetcherTypeMapper implements TypeMapperInterface
 {
     /**
-     * An array mapping a fully qualified class name to a container entry resolving to a matching TypeInterface
+     * An array mapping a fully qualified class name to a container entry resolving to a matching Type
+     *
+     * @var array<string,string> Key: class name, Value: container entry resolving to the output type.
+     */
+    private $types;
+    /**
+     * An array mapping a fully qualified class name to a container entry resolving to a matching Type
+     *
+     * @var array<string,string> Key: class name, Value: container entry resolving to the input type.
+     */
+    private $inputTypes;
+    /**
+     * An array mapping a GraphQL type to a container entry resolving to a matching Type
      *
      * @var array<string,string> Key: class name, Value: container entry resolving to the type.
      */
-    private $types;
+    private $typesByName;
     /**
      * @var ContainerInterface
      */
@@ -30,18 +43,15 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
     /**
      * @param array<string,string> $types Key: class name, Value: container entry resolving to the type.
      * @param array<string,string> $inputTypes Key: class name, Value: container entry resolving to the type.
+     * @param array<string,string> $typesByName Key: type name, Value: container entry resolving to the type.
      */
-    public function __construct(ContainerInterface $container, array $types, array $inputTypes)
+    public function __construct(ContainerInterface $container, array $types, array $inputTypes, array $typesByName)
     {
         $this->container = $container;
         $this->types = $types;
         $this->inputTypes = $inputTypes;
+        $this->typesByName = $typesByName;
     }
-
-    /**
-     * @var array<string,string> Key: class name, Value: container entry resolving to the type.
-     */
-    private $inputTypes;
 
     /**
      * Returns true if this type mapper can map the $className FQCN to a GraphQL type.
@@ -104,5 +114,31 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
             return $this->container->get($this->inputTypes[$className]);
         }
         throw CannotMapTypeException::createForInputType($className);
+    }
+
+    /**
+     * Returns true if this type mapper can map the $typeName GraphQL name to a GraphQL type.
+     *
+     * @param string $typeName The name of the GraphQL type
+     * @return bool
+     */
+    public function canMapNameToType(string $typeName): bool
+    {
+        return isset($this->typesByName[$typeName]);
+    }
+
+    /**
+     * Returns a GraphQL type by name (can be either an input or output type)
+     *
+     * @param string $typeName The name of the GraphQL type
+     * @param RecursiveTypeMapperInterface $recursiveTypeMapper
+     * @return Type&(InputType|OutputType)
+     */
+    public function mapNameToType(string $typeName, RecursiveTypeMapperInterface $recursiveTypeMapper): Type
+    {
+        if (isset($this->typesByName[$typeName])) {
+            return $this->container->get($this->typesByName[$typeName]);
+        }
+        throw CannotMapTypeException::createForName($typeName);
     }
 }
