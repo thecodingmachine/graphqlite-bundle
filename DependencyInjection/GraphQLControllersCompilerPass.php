@@ -10,6 +10,7 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Cache\ApcuCache;
 use function function_exists;
+use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
@@ -25,10 +26,13 @@ use TheCodingMachine\GraphQL\Controllers\Annotations\Type;
 use TheCodingMachine\GraphQL\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\ControllerQueryProvider;
 use TheCodingMachine\GraphQL\Controllers\ControllerQueryProviderFactory;
+use TheCodingMachine\GraphQL\Controllers\InputTypeGenerator;
+use TheCodingMachine\GraphQL\Controllers\InputTypeUtils;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
 use TheCodingMachine\GraphQL\Controllers\NamingStrategy;
 use TheCodingMachine\GraphQL\Controllers\TypeGenerator;
+use TheCodingMachine\GraphQL\Controllers\Types\ResolvableInputObjectType;
 
 /**
  * Detects controllers and types automatically and tag them.
@@ -53,34 +57,87 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         $types = [];
 
         /**
+         * @var array<string, string> An array matching class name to the the container identifier of a factory creating an input type.
+         */
+        $inputTypes = [];
+
+        /**
          * @var array<string, string> An array matching a GraphQL type name to the the container identifier of a factory creating a type.
          */
         $typesByName = [];
 
         $namingStrategy = new NamingStrategy();
+        $reader = $this->getAnnotationReader();
+        $inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
 
         foreach ($container->getDefinitions() as $id => $definition) {
-            $class = $definition->getClass();
-            if ($class === null) {
-                continue;
-            }
-
-            $reflectionClass = new ReflectionClass($class);
-            if ($this->isController($class, $reflectionClass)) {
-                // Let's create a QueryProvider from this controller
-                $controllerIdentifier = $class.'__QueryProvider';
-                $queryProvider = new Definition(ControllerQueryProvider::class);
-                $queryProvider->setPrivate(true);
-                $queryProvider->setFactory([self::class, 'createQueryProvider']);
-                $queryProvider->addArgument(new Reference($id));
-                $queryProvider->addArgument(new Reference(ControllerQueryProviderFactory::class));
-                $queryProvider->addArgument(new Reference(RecursiveTypeMapperInterface::class));
-                $queryProvider->addTag('graphql.queryprovider');
-                $container->setDefinition($controllerIdentifier, $queryProvider);
-            }
-
             try {
+                $class = $definition->getClass();
+                if ($class === null) {
+                    continue;
+                }
+
+                $reflectionClass = new ReflectionClass($class);
+                $isController = false;
+                foreach ($reflectionClass->getMethods() as $method) {
+                    $query = $reader->getRequestAnnotation($method, Query::class);
+                    if ($query !== null) {
+                        $isController = true;
+                    }
+                    $mutation = $reader->getRequestAnnotation($method, Mutation::class);
+                    if ($mutation !== null) {
+                        $isController = true;
+                    }
+                    $factory = $reader->getFactoryAnnotation($method);
+                    if ($factory !== null) {
+                        $objectTypeIdentifier = $class.'__'.$method->getName().'__InputType';
+
+                        $objectType = new Definition(ResolvableInputObjectType::class);
+                        $objectType->setPrivate(false);
+                        $objectType->setFactory([self::class, 'createInputObjectType']);
+                        $objectType->addArgument(new Reference($id));
+                        $objectType->addArgument($method->getName());
+                        $objectType->addArgument(new Reference(InputTypeGenerator::class));
+                        $objectType->addArgument(new Reference(RecursiveTypeMapperInterface::class));
+                        $container->setDefinition($objectTypeIdentifier, $objectType);
+
+                        [$inputName, $inputClassName] = $inputTypeUtils->getInputTypeNameAndClassName($method);
+
+                        $inputTypes[$inputClassName] = $objectTypeIdentifier;
+                        $typesByName[$inputName] = $objectTypeIdentifier;
+
+                    }
+                }
+
+                if ($isController) {
+                    // Let's create a QueryProvider from this controller
+                    $controllerIdentifier = $class.'__QueryProvider';
+                    $queryProvider = new Definition(ControllerQueryProvider::class);
+                    $queryProvider->setPrivate(true);
+                    $queryProvider->setFactory([self::class, 'createQueryProvider']);
+                    $queryProvider->addArgument(new Reference($id));
+                    $queryProvider->addArgument(new Reference(ControllerQueryProviderFactory::class));
+                    $queryProvider->addArgument(new Reference(RecursiveTypeMapperInterface::class));
+                    $queryProvider->addTag('graphql.queryprovider');
+                    $container->setDefinition($controllerIdentifier, $queryProvider);
+                }
+
                 $typeAnnotation = $this->annotationReader->getTypeAnnotation($reflectionClass);
+                if ($typeAnnotation !== null) {
+                    $objectTypeIdentifier = $class.'__Type';
+
+                    $objectType = new Definition(ObjectType::class);
+                    $objectType->setPrivate(false);
+                    $objectType->setFactory([self::class, 'createObjectType']);
+                    $objectType->addArgument(new Reference($id));
+                    $objectType->addArgument(new Reference(TypeGenerator::class));
+                    $objectType->addArgument(new Reference(RecursiveTypeMapperInterface::class));
+                    $container->setDefinition($objectTypeIdentifier, $objectType);
+
+                    $types[$typeAnnotation->getClass()] = $objectTypeIdentifier;
+                    $typesByName[$namingStrategy->getOutputTypeName($class, $typeAnnotation)] = $objectTypeIdentifier;
+                    //$definition->addTag('graphql.annotated_type');
+                }
             } catch (AnnotationException $e) {
                 // If there is an annotation exception in a class that is part of vendor/ directory,
                 // let's ignore it.
@@ -91,25 +148,11 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                     throw $e;
                 }
             }
-            if ($typeAnnotation !== null) {
-                $objectTypeIdentifier = $class.'__Type';
-
-                $objectType = new Definition(ObjectType::class);
-                $objectType->setPrivate(false);
-                $objectType->setFactory([self::class, 'createObjectType']);
-                $objectType->addArgument(new Reference($id));
-                $objectType->addArgument(new Reference(TypeGenerator::class));
-                $objectType->addArgument(new Reference(RecursiveTypeMapperInterface::class));
-                $container->setDefinition($objectTypeIdentifier, $objectType);
-
-                $types[$typeAnnotation->getClass()] = $objectTypeIdentifier;
-                $typesByName[$namingStrategy->getOutputTypeName($class, $typeAnnotation)] = $objectTypeIdentifier;
-                //$definition->addTag('graphql.annotated_type');
-            }
         }
 
         $containerFetcherTypeMapper = $container->getDefinition(ContainerFetcherTypeMapper::class);
         $containerFetcherTypeMapper->replaceArgument(1, $types);
+        $containerFetcherTypeMapper->replaceArgument(2, $inputTypes);
         $containerFetcherTypeMapper->replaceArgument(3, $typesByName);
         /*$containerFetcherTypeMapper = new Definition(ContainerFetcherTypeMapper::class);
         $containerFetcherTypeMapper->addArgument($container->getDefinition('service_container'));
@@ -135,20 +178,12 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         return $typeGenerator->mapAnnotatedObject($typeClass, $recursiveTypeMapper);
     }
 
-    private function isController(string $className, ReflectionClass $reflectionClass): bool
+    /**
+     * @param object $factory
+     */
+    public static function createInputObjectType($factory, string $methodName, InputTypeGenerator $inputTypeGenerator, RecursiveTypeMapperInterface $recursiveTypeMapper): InputObjectType
     {
-        $reader = $this->getAnnotationReader();
-        foreach ($reflectionClass->getMethods() as $method) {
-            $query = $reader->getRequestAnnotation($method, Query::class);
-            if ($query !== null) {
-                return true;
-            }
-            $mutation = $reader->getRequestAnnotation($method, Mutation::class);
-            if ($mutation !== null) {
-                return true;
-            }
-        }
-        return false;
+        return $inputTypeGenerator->mapFactoryMethod($factory, $methodName, $recursiveTypeMapper);
     }
 
     /**

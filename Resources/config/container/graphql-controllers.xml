@@ -54,6 +54,9 @@
 
         <service id="TheCodingMachine\GraphQL\Controllers\TypeGenerator" class="TheCodingMachine\GraphQL\Controllers\TypeGenerator" public="true" />
 
+        <service id="TheCodingMachine\GraphQL\Controllers\InputTypeGenerator" class="TheCodingMachine\GraphQL\Controllers\InputTypeGenerator" public="true" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\InputTypeUtils" class="TheCodingMachine\GraphQL\Controllers\InputTypeUtils" />
 
         <service id="TheCodingMachine\GraphQL\Controllers\Bundle\EventListeners\RequestHandler" class="TheCodingMachine\GraphQL\Controllers\Bundle\EventListeners\RequestHandler">
             <tag name="kernel.event_subscriber" />
