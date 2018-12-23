@@ -3,6 +3,8 @@
 
 namespace TheCodingMachine\GraphQL\Controllers\Bundle\DependencyInjection;
 
+use function dirname;
+use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
@@ -11,6 +13,7 @@ use function function_exists;
 use GraphQL\Type\Definition\ObjectType;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
+use function strpos;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -76,7 +79,18 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                 $container->setDefinition($controllerIdentifier, $queryProvider);
             }
 
-            $typeAnnotation = $this->annotationReader->getTypeAnnotation($reflectionClass);
+            try {
+                $typeAnnotation = $this->annotationReader->getTypeAnnotation($reflectionClass);
+            } catch (AnnotationException $e) {
+                // If there is an annotation exception in a class that is part of vendor/ directory,
+                // let's ignore it.
+                $vendorPath = dirname(__DIR__, 3);
+                if (strpos($reflectionClass->getFileName(), $vendorPath) === 0) {
+                    continue;
+                } else {
+                    throw $e;
+                }
+            }
             if ($typeAnnotation !== null) {
                 $objectTypeIdentifier = $class.'__Type';
 

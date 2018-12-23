@@ -3,6 +3,7 @@
 
 namespace TheCodingMachine\GraphQL\Controllers\Bundle\Mappers;
 
+use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\InputType;
 use GraphQL\Type\Definition\OutputType;
 use GraphQL\Type\Definition\ObjectType;
@@ -106,10 +107,10 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
      * Maps a PHP fully qualified class name to a GraphQL input type.
      *
      * @param string $className
-     * @return InputType
+     * @return InputObjectType
      * @throws CannotMapTypeException
      */
-    public function mapClassToInputType(string $className): InputType
+    public function mapClassToInputType(string $className, RecursiveTypeMapperInterface $recursiveTypeMapper): InputObjectType
     {
         if (isset($this->inputTypes[$className])) {
             return $this->container->get($this->inputTypes[$className]);

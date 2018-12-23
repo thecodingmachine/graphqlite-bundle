@@ -26,9 +26,9 @@
 
         <service id="TheCodingMachine\GraphQL\Controllers\AnnotationReader" class="TheCodingMachine\GraphQL\Controllers\AnnotationReader" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Bundle\Hydrator\VoidHydrator" class="TheCodingMachine\GraphQL\Controllers\Bundle\Hydrator\VoidHydrator" />
+        <service id="TheCodingMachine\GraphQL\Controllers\Hydrators\FactoryHydrator" class="TheCodingMachine\GraphQL\Controllers\Hydrators\FactoryHydrator" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\HydratorInterface" alias="TheCodingMachine\GraphQL\Controllers\Bundle\Hydrator\VoidHydrator" />
+        <service id="TheCodingMachine\GraphQL\Controllers\Hydrators\HydratorInterface" alias="TheCodingMachine\GraphQL\Controllers\Hydrators\FactoryHydrator" />
 
         <service id="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthenticationService" class="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthenticationService">
             <argument type="service" id="security.token_storage" on-invalid="null" />
