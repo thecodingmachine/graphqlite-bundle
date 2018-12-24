@@ -3,6 +3,7 @@
 
 namespace TheCodingMachine\GraphQL\Controllers\Bundle\DependencyInjection;
 
+use function class_exists;
 use function dirname;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
@@ -24,8 +25,8 @@ use TheCodingMachine\GraphQL\Controllers\Annotations\Mutation;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Query;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Type;
 use TheCodingMachine\GraphQL\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper;
-use TheCodingMachine\GraphQL\Controllers\ControllerQueryProvider;
-use TheCodingMachine\GraphQL\Controllers\ControllerQueryProviderFactory;
+use TheCodingMachine\GraphQL\Controllers\Bundle\QueryProviders\ControllerQueryProvider;
+use TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory;
 use TheCodingMachine\GraphQL\Controllers\InputTypeGenerator;
 use TheCodingMachine\GraphQL\Controllers\InputTypeUtils;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper;
@@ -76,6 +77,13 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                 if ($class === null) {
                     continue;
                 }
+                try {
+                    if (!class_exists($class)) {
+                        continue;
+                    }
+                } catch (\Exception $e) {
+                    continue;
+                }
 
                 $reflectionClass = new ReflectionClass($class);
                 $isController = false;
@@ -116,7 +124,7 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                     $queryProvider->setPrivate(true);
                     $queryProvider->setFactory([self::class, 'createQueryProvider']);
                     $queryProvider->addArgument(new Reference($id));
-                    $queryProvider->addArgument(new Reference(ControllerQueryProviderFactory::class));
+                    $queryProvider->addArgument(new Reference(FieldsBuilderFactory::class));
                     $queryProvider->addArgument(new Reference(RecursiveTypeMapperInterface::class));
                     $queryProvider->addTag('graphql.queryprovider');
                     $container->setDefinition($controllerIdentifier, $queryProvider);
@@ -165,9 +173,9 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
     /**
      * @param object $controller
      */
-    public static function createQueryProvider($controller, ControllerQueryProviderFactory $controllerQueryProviderFactory, RecursiveTypeMapperInterface $recursiveTypeMapper): ControllerQueryProvider
+    public static function createQueryProvider($controller, FieldsBuilderFactory $fieldsBuilderFactory, RecursiveTypeMapperInterface $recursiveTypeMapper): ControllerQueryProvider
     {
-        return $controllerQueryProviderFactory->buildQueryProvider($controller, $recursiveTypeMapper);
+        return new ControllerQueryProvider($controller, $fieldsBuilderFactory->buildFieldsBuilder($recursiveTypeMapper));
     }
 
     /**

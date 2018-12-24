@@ -26,7 +26,6 @@
   },
   "require-dev": {
     "symfony/security-bundle": "^4",
-    "symfony/framework-bundle": "^4",
     "symfony/yaml": "^4",
     "phpunit/phpunit": "^7",
     "phpstan/phpstan": "^0.10.5"
