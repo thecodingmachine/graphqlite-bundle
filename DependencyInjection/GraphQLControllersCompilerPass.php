@@ -3,6 +3,7 @@
 
 namespace TheCodingMachine\GraphQL\Controllers\Bundle\DependencyInjection;
 
+use function class_exists;
 use function dirname;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
@@ -24,8 +25,8 @@ use TheCodingMachine\GraphQL\Controllers\Annotations\Mutation;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Query;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Type;
 use TheCodingMachine\GraphQL\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper;
-use TheCodingMachine\GraphQL\Controllers\ControllerQueryProvider;
-use TheCodingMachine\GraphQL\Controllers\ControllerQueryProviderFactory;
+use TheCodingMachine\GraphQL\Controllers\Bundle\QueryProviders\ControllerQueryProvider;
+use TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory;
 use TheCodingMachine\GraphQL\Controllers\InputTypeGenerator;
 use TheCodingMachine\GraphQL\Controllers\InputTypeUtils;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper;
@@ -71,13 +72,20 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         $inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
 
         foreach ($container->getDefinitions() as $id => $definition) {
+            $class = $definition->getClass();
+            if ($class === null) {
+                continue;
+            }
             try {
-                $class = $definition->getClass();
-                if ($class === null) {
+                if (!class_exists($class)) {
                     continue;
                 }
+            } catch (\Exception $e) {
+                continue;
+            }
 
-                $reflectionClass = new ReflectionClass($class);
+            $reflectionClass = new ReflectionClass($class);
+            try {
                 $isController = false;
                 foreach ($reflectionClass->getMethods() as $method) {
                     $query = $reader->getRequestAnnotation($method, Query::class);
@@ -116,7 +124,7 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                     $queryProvider->setPrivate(true);
                     $queryProvider->setFactory([self::class, 'createQueryProvider']);
                     $queryProvider->addArgument(new Reference($id));
-                    $queryProvider->addArgument(new Reference(ControllerQueryProviderFactory::class));
+                    $queryProvider->addArgument(new Reference(FieldsBuilderFactory::class));
                     $queryProvider->addArgument(new Reference(RecursiveTypeMapperInterface::class));
                     $queryProvider->addTag('graphql.queryprovider');
                     $container->setDefinition($controllerIdentifier, $queryProvider);
@@ -142,7 +150,8 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                 // If there is an annotation exception in a class that is part of vendor/ directory,
                 // let's ignore it.
                 $vendorPath = dirname(__DIR__, 3);
-                if (strpos($reflectionClass->getFileName(), $vendorPath) === 0) {
+                $fileName = $reflectionClass->getFileName();
+                if ($fileName === false || strpos($fileName, $vendorPath) === 0) {
                     continue;
                 } else {
                     throw $e;
@@ -165,9 +174,9 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
     /**
      * @param object $controller
      */
-    public static function createQueryProvider($controller, ControllerQueryProviderFactory $controllerQueryProviderFactory, RecursiveTypeMapperInterface $recursiveTypeMapper): ControllerQueryProvider
+    public static function createQueryProvider($controller, FieldsBuilderFactory $fieldsBuilderFactory, RecursiveTypeMapperInterface $recursiveTypeMapper): ControllerQueryProvider
     {
-        return $controllerQueryProviderFactory->buildQueryProvider($controller, $recursiveTypeMapper);
+        return new ControllerQueryProvider($controller, $fieldsBuilderFactory->buildFieldsBuilder($recursiveTypeMapper));
     }
 
     /**

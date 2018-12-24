@@ -9,7 +9,7 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Schema" class="TheCodingMachine\GraphQL\Controllers\Schema">
+        <service id="TheCodingMachine\GraphQL\Controllers\Schema" class="TheCodingMachine\GraphQL\Controllers\Schema" public="true">
         </service>
 
         <service id="GraphQL\Type\Schema" alias="TheCodingMachine\GraphQL\Controllers\Schema" />
@@ -20,7 +20,7 @@
 
         <service id="TheCodingMachine\GraphQL\Controllers\QueryProviderInterface" alias="TheCodingMachine\GraphQL\Controllers\AggregateQueryProvider" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\ControllerQueryProviderFactory" class="TheCodingMachine\GraphQL\Controllers\ControllerQueryProviderFactory" public="true">
+        <service id="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" class="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" public="true">
             <argument type="service" key="$registry" id="service_container" />
         </service>
 
