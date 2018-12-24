@@ -27,8 +27,8 @@
   "require-dev": {
     "symfony/security-bundle": "^4",
     "symfony/yaml": "^4",
-    "phpunit/phpunit": "^7",
-    "phpstan/phpstan": "^0.10.5"
+    "phpunit/phpunit": "^7.5.1",
+    "phpstan/phpstan": "^0.10.6"
   },
   "scripts": {
     "phpstan": "phpstan analyse GraphQLControllersBundle.php DependencyInjection/ EventListeners/ Mappers/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
