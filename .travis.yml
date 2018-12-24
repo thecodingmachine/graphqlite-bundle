@@ -13,12 +13,6 @@ env:
 matrix:
   fast_finish: true
   include:
-    # Minimum supported dependencies with the latest and oldest PHP version
-    - php: 7.3
-      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
-    - php: 7.1
-      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
-
       # Test the latest stable release
     - php: 7.1
     - php: 7.2
@@ -34,6 +28,11 @@ matrix:
       env: STABILITY="dev"
 
   allow_failures:
+    # Minimum supported dependencies with the latest and oldest PHP version
+    - php: 7.3
+      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
+    - php: 7.1
+      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
     # Dev-master is allowed to fail.
     - env: STABILITY="dev"
 
