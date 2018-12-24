@@ -22,7 +22,7 @@
     "doctrine/annotations": "^1.6",
     "doctrine/cache": "^1.8",
     "symfony/psr-http-message-bridge": "^1",
-    "zendframework/zend-diactoros": "^1 || ^2"
+    "zendframework/zend-diactoros": "^1"
   },
   "require-dev": {
     "symfony/security-bundle": "^4",
