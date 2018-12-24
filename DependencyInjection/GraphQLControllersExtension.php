@@ -36,6 +36,7 @@ class GraphQLControllersExtension extends Extension
         }
         $definition->addMethodCall('setDebug', [$debugCode]);
 
+
         /*$definition = $container->getDefinition(Configuration::class);
         $definition->replaceArgument(0, $config['bean_namespace']);
         $definition->replaceArgument(1, $config['dao_namespace']);
