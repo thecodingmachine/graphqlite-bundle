@@ -88,6 +88,7 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
             $reflectionClass = new ReflectionClass($class);
             try {
                 $isController = false;
+                $method = null;
                 foreach ($reflectionClass->getMethods() as $method) {
                     $query = $reader->getRequestAnnotation($method, Query::class);
                     if ($query !== null) {
@@ -131,6 +132,7 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                     $container->setDefinition($controllerIdentifier, $queryProvider);
                 }
 
+                $method = null;
                 $typeAnnotation = $this->annotationReader->getTypeAnnotation($reflectionClass);
                 if ($typeAnnotation !== null) {
                     $objectTypeIdentifier = $class.'__Type';
@@ -151,7 +153,11 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                 // If there is an annotation exception in a class that is part of vendor/ directory,
                 // let's ignore it.
                 $vendorPath = dirname(__DIR__, 3);
-                $fileName = $reflectionClass->getFileName();
+                if ($method === null) {
+                    $fileName = $reflectionClass->getFileName();
+                } else {
+                    $fileName = $method->getDeclaringClass()->getFileName();
+                }
                 if ($fileName === false || strpos($fileName, $vendorPath) === 0) {
                     continue;
                 } else {
