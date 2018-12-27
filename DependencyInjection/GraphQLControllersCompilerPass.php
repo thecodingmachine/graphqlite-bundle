@@ -196,7 +196,7 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         }
         if (!empty($customNotMappedTypes)) {
             $definition = $container->getDefinition(StaticTypeMapper::class);
-            $definition->addMethodCall('setNotMappedTypes', [$customTypes]);
+            $definition->addMethodCall('setNotMappedTypes', [$customNotMappedTypes]);
         }
     }
 
