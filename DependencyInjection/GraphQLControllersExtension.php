@@ -40,6 +40,7 @@ class GraphQLControllersExtension extends Extension
         $container->registerForAutoconfiguration(ObjectType::class)
             ->addTag('graphql.output_type');
 
+
         /*$definition = $container->getDefinition(Configuration::class);
         $definition->replaceArgument(0, $config['bean_namespace']);
         $definition->replaceArgument(1, $config['dao_namespace']);

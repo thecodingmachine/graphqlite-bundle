@@ -22,7 +22,8 @@
     "doctrine/annotations": "^1.6",
     "doctrine/cache": "^1.8",
     "symfony/psr-http-message-bridge": "^1",
-    "zendframework/zend-diactoros": "^1.8.6"
+    "zendframework/zend-diactoros": "^1.8.6",
+    "overblog/graphiql-bundle": "^0.1.2"
   },
   "require-dev": {
     "symfony/security-bundle": "^4.1.9",
