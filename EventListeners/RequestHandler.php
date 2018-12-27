@@ -8,6 +8,7 @@ use GraphQL\Error\Debug;
 use GraphQL\Executor\ExecutionResult;
 use GraphQL\Executor\Promise\Promise;
 use GraphQL\Server\StandardServer;
+use GraphQL\Upload\UploadMiddleware;
 use function json_decode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -89,6 +90,11 @@ class RequestHandler implements EventSubscriberInterface
             }
             $psr7Request = $psr7Request->withParsedBody($parsedBody);
         }
+
+        // Let's parse the request and adapt it for file uploads.
+        $uploadMiddleware = new UploadMiddleware();
+        $psr7Request = $uploadMiddleware->processRequest($psr7Request);
+
 
         // Hack for Graph
         /*if (strtoupper($request->getMethod()) == "GET") {

@@ -31,6 +31,7 @@ use TheCodingMachine\GraphQL\Controllers\InputTypeGenerator;
 use TheCodingMachine\GraphQL\Controllers\InputTypeUtils;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
+use TheCodingMachine\GraphQL\Controllers\Mappers\StaticTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\NamingStrategy;
 use TheCodingMachine\GraphQL\Controllers\TypeGenerator;
 use TheCodingMachine\GraphQL\Controllers\Types\ResolvableInputObjectType;
@@ -169,6 +170,34 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         $containerFetcherTypeMapper->addArgument([]);
         $containerFetcherTypeMapper->addTag('graphql.type_mapper');
         $container->setDefinition(ContainerFetcherTypeMapper::class, $containerFetcherTypeMapper);*/
+
+        // Register custom output types
+        $taggedServices = $container->findTaggedServiceIds('graphql.output_type');
+
+        $customTypes = [];
+        $customNotMappedTypes = [];
+        foreach ($taggedServices as $id => $tags) {
+            foreach ($tags as $attributes) {
+                if (isset($attributes["class"])) {
+                    $phpClass = $attributes["class"];
+                    if (!class_exists($phpClass)) {
+                        throw new \RuntimeException(sprintf('The class attribute of the graphql.output_type annotation of the %s service must point to an existing PHP class. Value passed: %s', $id, $phpClass));
+                    }
+                    $customTypes[$phpClass] = new Reference($id);
+                } else {
+                    $customNotMappedTypes = new Reference($id);
+                }
+            }
+        }
+
+        if (!empty($customTypes)) {
+            $definition = $container->getDefinition(StaticTypeMapper::class);
+            $definition->addMethodCall('setTypes', [$customTypes]);
+        }
+        if (!empty($customNotMappedTypes)) {
+            $definition = $container->getDefinition(StaticTypeMapper::class);
+            $definition->addMethodCall('setNotMappedTypes', [$customTypes]);
+        }
     }
 
     /**

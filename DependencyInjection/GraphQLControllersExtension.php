@@ -6,6 +6,7 @@ namespace TheCodingMachine\GraphQL\Controllers\Bundle\DependencyInjection;
 
 use GraphQL\Error\Debug;
 use GraphQL\Server\ServerConfig;
+use GraphQL\Type\Definition\ObjectType;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -35,6 +36,9 @@ class GraphQLControllersExtension extends Extension
             $debugCode = Debug::RETHROW_UNSAFE_EXCEPTIONS;
         }
         $definition->addMethodCall('setDebug', [$debugCode]);
+
+        $container->registerForAutoconfiguration(ObjectType::class)
+            ->addTag('graphql.output_type');
 
         /*$definition = $container->getDefinition(Configuration::class);
         $definition->replaceArgument(0, $config['bean_namespace']);

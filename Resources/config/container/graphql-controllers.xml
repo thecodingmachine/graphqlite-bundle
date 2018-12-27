@@ -20,9 +20,7 @@
 
         <service id="TheCodingMachine\GraphQL\Controllers\QueryProviderInterface" alias="TheCodingMachine\GraphQL\Controllers\AggregateQueryProvider" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" class="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" public="true">
-            <argument type="service" key="$registry" id="service_container" />
-        </service>
+        <service id="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" class="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" public="true" />
 
         <service id="TheCodingMachine\GraphQL\Controllers\AnnotationReader" class="TheCodingMachine\GraphQL\Controllers\AnnotationReader" />
 
@@ -81,11 +79,17 @@
             <tag name="graphql.type_mapper"/>
         </service>
 
+        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\StaticTypeMapper" class="TheCodingMachine\GraphQL\Controllers\Mappers\StaticTypeMapper">
+            <tag name="graphql.type_mapper"/>
+        </service>
+
         <service id="TheCodingMachine\GraphQL\Controllers\Reflection\CachedDocBlockFactory" class="TheCodingMachine\GraphQL\Controllers\Reflection\CachedDocBlockFactory" />
 
         <service id="TheCodingMachine\GraphQL\Controllers\NamingStrategy" class="TheCodingMachine\GraphQL\Controllers\NamingStrategy" />
 
         <service id="TheCodingMachine\GraphQL\Controllers\NamingStrategyInterface" alias="TheCodingMachine\GraphQL\Controllers\NamingStrategy" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\Types\TypeResolver" class="TheCodingMachine\GraphQL\Controllers\Types\TypeResolver" />
 
     </services>
 
