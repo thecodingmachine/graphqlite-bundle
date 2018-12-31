@@ -16,12 +16,9 @@ class GraphqlControllersTestingKernel extends Kernel
 
     public function registerBundles()
     {
-        $graphQlControllersBundle = new GraphqlControllersBundle();
-        $graphQlControllersBundle->getContainerExtension()->setProjectDir(__DIR__.'/..');
-
         return [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            $graphQlControllersBundle,
+            new GraphqlControllersBundle(),
         ];
     }
 
@@ -42,8 +39,7 @@ class GraphqlControllersTestingKernel extends Kernel
 
         $loader->load($confDir.'/{packages}/*'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');
-        //$loader->load($confDir.'/{services}'.self::CONFIG_EXTS, 'glob');
-        //$loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
-
+        $loader->load($confDir.'/{services}'.self::CONFIG_EXTS, 'glob');
+        $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
     }
 }

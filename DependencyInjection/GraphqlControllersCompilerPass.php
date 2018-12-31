@@ -68,6 +68,22 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
         $reader = $this->getAnnotationReader();
         $inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
 
+        // Let's scan the whole container and tag the services that belong to the namespace we want to inspect.
+        $controllersNamespace = $container->getParameter('graphql_controllers.namespace.controllers');
+        $typesNamespace = $container->getParameter('graphql_controllers.namespace.types');
+
+        foreach ($container->getDefinitions() as $id => $definition) {
+            if ($definition->isAbstract() || $definition->getClass() === null) {
+                continue;
+            }
+            if (strpos($definition->getClass(), $controllersNamespace) === 0) {
+                $definition->addTag('graphql.annotated.controller');
+            }
+            if (strpos($definition->getClass(), $typesNamespace) === 0) {
+                $definition->addTag('graphql.annotated.type');
+            }
+        }
+
         foreach ($container->findTaggedServiceIds('graphql.annotated.controller') as $id => $tag) {
             $definition = $container->findDefinition($id);
             $class = $definition->getClass();
