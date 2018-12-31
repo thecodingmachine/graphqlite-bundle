@@ -3,7 +3,6 @@
 
 namespace TheCodingMachine\Graphql\Controllers\Bundle;
 
-
 use TheCodingMachine\Graphql\Controllers\Bundle\DependencyInjection\OverblogGraphiQLEndpointWiringPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

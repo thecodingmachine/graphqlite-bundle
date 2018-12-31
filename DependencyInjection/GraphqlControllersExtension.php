@@ -19,6 +19,13 @@ use function var_dump;
 class GraphqlControllersExtension extends Extension
 {
 
+    private $projectDir;
+
+    public function setProjectDir(string $projectDir): void
+    {
+        $this->projectDir = $projectDir;
+    }
+
     /**
      * Loads a specific configuration.
      *
@@ -40,8 +47,12 @@ class GraphqlControllersExtension extends Extension
         $definitionTemplateTypeClass = new Definition();
         $definitionTemplateTypeClass->addTag('graphql.annotated.type');
 
-        $loader->registerClasses($definitionTemplateControllerClass, $namespaceController, __DIR__.'/..'.$this->getNamespaceDir($namespaceController).'/*.php');
-        $loader->registerClasses($definitionTemplateTypeClass, $namespaceType, __DIR__.'/..'.$this->getNamespaceDir($namespaceType).'/*');
+        if ($this->projectDir === null) {
+            $this->projectDir = __DIR__.'/../../../..';
+        }
+
+        $loader->registerClasses($definitionTemplateControllerClass, $namespaceController, $this->projectDir.$this->getNamespaceDir($namespaceController).'/*.php');
+        $loader->registerClasses($definitionTemplateTypeClass, $namespaceType, $this->projectDir.$this->getNamespaceDir($namespaceType).'/*');
         $loader->load('graphql-controllers.xml');
 
         $definition = $container->getDefinition(ServerConfig::class);

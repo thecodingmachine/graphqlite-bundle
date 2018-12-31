@@ -16,9 +16,12 @@ class GraphqlControllersTestingKernel extends Kernel
 
     public function registerBundles()
     {
+        $graphQlControllersBundle = new GraphqlControllersBundle();
+        $graphQlControllersBundle->getContainerExtension()->setProjectDir(__DIR__.'/..');
+
         return [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new GraphqlControllersBundle(),
+            $graphQlControllersBundle,
         ];
     }
 
