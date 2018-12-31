@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\Security;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\Security;
 
 
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;

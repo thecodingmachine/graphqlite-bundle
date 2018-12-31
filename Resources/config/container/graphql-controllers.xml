@@ -33,17 +33,17 @@
 
         <service id="TheCodingMachine\GraphQL\Controllers\Hydrators\HydratorInterface" alias="TheCodingMachine\GraphQL\Controllers\Hydrators\FactoryHydrator" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthenticationService" class="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthenticationService">
+        <service id="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthenticationService" class="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthenticationService">
             <argument type="service" id="security.token_storage" on-invalid="null" />
         </service>
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Security\AuthenticationServiceInterface" alias="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthenticationService" />
+        <service id="TheCodingMachine\GraphQL\Controllers\Security\AuthenticationServiceInterface" alias="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthenticationService" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthorizationService" class="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthorizationService">
+        <service id="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthorizationService" class="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthorizationService">
             <argument type="service" id="security.authorization_checker" on-invalid="null" />
         </service>
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Security\AuthorizationServiceInterface" alias="TheCodingMachine\GraphQL\Controllers\Bundle\Security\AuthorizationService" />
+        <service id="TheCodingMachine\GraphQL\Controllers\Security\AuthorizationServiceInterface" alias="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthorizationService" />
 
         <service id="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper" class="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper" public="true" />
 
@@ -61,7 +61,7 @@
 
         <service id="TheCodingMachine\GraphQL\Controllers\InputTypeUtils" class="TheCodingMachine\GraphQL\Controllers\InputTypeUtils" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Bundle\EventListeners\RequestHandler" class="TheCodingMachine\GraphQL\Controllers\Bundle\EventListeners\RequestHandler">
+        <service id="TheCodingMachine\Graphql\Controllers\Bundle\EventListeners\RequestHandler" class="TheCodingMachine\Graphql\Controllers\Bundle\EventListeners\RequestHandler">
             <tag name="kernel.event_subscriber" />
         </service>
 
@@ -75,7 +75,7 @@
             </call>
         </service>
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper" class="TheCodingMachine\GraphQL\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper">
+        <service id="TheCodingMachine\Graphql\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper" class="TheCodingMachine\Graphql\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper">
             <argument type="service" id="service_container" />
             <argument type="collection" />
             <argument type="collection" />

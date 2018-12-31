@@ -1,13 +1,13 @@
 <?php
 
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\Mappers;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\Mappers;
 
 use GraphQL\Type\Definition\InputObjectType;
-use GraphQL\Type\Definition\InputType;
-use GraphQL\Type\Definition\OutputType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\InputType;
+use GraphQL\Type\Definition\OutputType;
 use Psr\Container\ContainerInterface;
 use TheCodingMachine\GraphQL\Controllers\Mappers\CannotMapTypeException;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
@@ -32,7 +32,7 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
      */
     private $inputTypes;
     /**
-     * An array mapping a GraphQL type to a container entry resolving to a matching Type
+     * An array mapping a Graphql type to a container entry resolving to a matching Type
      *
      * @var array<string,string> Key: class name, Value: container entry resolving to the type.
      */
@@ -56,7 +56,7 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
     }
 
     /**
-     * Returns true if this type mapper can map the $className FQCN to a GraphQL type.
+     * Returns true if this type mapper can map the $className FQCN to a Graphql type.
      *
      * @param string $className
      * @return bool
@@ -67,7 +67,7 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
     }
 
     /**
-     * Maps a PHP fully qualified class name to a GraphQL type.
+     * Maps a PHP fully qualified class name to a Graphql type.
      *
      * @param string $className
      * @param RecursiveTypeMapperInterface $recursiveTypeMapper
@@ -83,7 +83,7 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
     }
 
     /**
-     * Returns the list of classes that have matching input GraphQL types.
+     * Returns the list of classes that have matching input Graphql types.
      *
      * @return string[]
      */
@@ -93,7 +93,7 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
     }
 
     /**
-     * Returns true if this type mapper can map the $className FQCN to a GraphQL input type.
+     * Returns true if this type mapper can map the $className FQCN to a Graphql input type.
      *
      * @param string $className
      * @return bool
@@ -104,7 +104,7 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
     }
 
     /**
-     * Maps a PHP fully qualified class name to a GraphQL input type.
+     * Maps a PHP fully qualified class name to a Graphql input type.
      *
      * @param string $className
      * @return InputObjectType
@@ -119,9 +119,9 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
     }
 
     /**
-     * Returns true if this type mapper can map the $typeName GraphQL name to a GraphQL type.
+     * Returns true if this type mapper can map the $typeName Graphql name to a Graphql type.
      *
-     * @param string $typeName The name of the GraphQL type
+     * @param string $typeName The name of the Graphql type
      * @return bool
      */
     public function canMapNameToType(string $typeName): bool
@@ -130,9 +130,9 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
     }
 
     /**
-     * Returns a GraphQL type by name (can be either an input or output type)
+     * Returns a Graphql type by name (can be either an input or output type)
      *
-     * @param string $typeName The name of the GraphQL type
+     * @param string $typeName The name of the Graphql type
      * @param RecursiveTypeMapperInterface $recursiveTypeMapper
      * @return Type&(InputType|OutputType)
      */

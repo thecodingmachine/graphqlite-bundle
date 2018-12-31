@@ -1,6 +1,6 @@
 <?php
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\Tests;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,7 +10,7 @@ class FunctionalTest extends TestCase
 {
     public function testServiceWiring()
     {
-        $kernel = new GraphQLControllersTestingKernel('test', true);
+        $kernel = new GraphqlControllersTestingKernel('test', true);
         $kernel->boot();
         $container = $kernel->getContainer();
 

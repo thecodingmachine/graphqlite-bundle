@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/thecodingmachine/graphql-controllers-bundle/badge.svg?branch=master&service=github)](https://coveralls.io/github/thecodingmachine/graphql-controllers-bundle?branch=master)
 
 
-# GraphQLControllers bundle
+# GraphqlControllers bundle
 
 Symfony 4 bundle for the thecodingmachine/graphql-controllers package.
 

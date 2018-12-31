@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\QueryProviders;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\QueryProviders;
 
 
 use TheCodingMachine\GraphQL\Controllers\FieldsBuilder;
