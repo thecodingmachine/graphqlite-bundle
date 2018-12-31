@@ -7,10 +7,14 @@ namespace TheCodingMachine\Graphql\Controllers\Bundle\DependencyInjection;
 use GraphQL\Error\Debug;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Type\Definition\ObjectType;
+use function implode;
+use Mouf\Composer\ClassNameMapper;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use function var_dump;
 
 class GraphqlControllersExtension extends Extension
 {
@@ -27,6 +31,17 @@ class GraphqlControllersExtension extends Extension
 
         //$config = $this->processConfiguration($this->getConfiguration($config, $container), $config);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/container'));
+
+        $namespaceController = rtrim($configs[0]['namespace']['controllers'], '\\') . '\\';
+        $namespaceType = rtrim($configs[0]['namespace']['types'], '\\') . '\\';
+
+        $definitionTemplateControllerClass = new Definition();
+        $definitionTemplateControllerClass->addTag('graphql.annotated.controller');
+        $definitionTemplateTypeClass = new Definition();
+        $definitionTemplateTypeClass->addTag('graphql.annotated.type');
+
+        $loader->registerClasses($definitionTemplateControllerClass, $namespaceController, __DIR__.'/..'.$this->getNamespaceDir($namespaceController).'/*.php');
+        $loader->registerClasses($definitionTemplateTypeClass, $namespaceType, __DIR__.'/..'.$this->getNamespaceDir($namespaceType).'/*');
         $loader->load('graphql-controllers.xml');
 
         $definition = $container->getDefinition(ServerConfig::class);
@@ -57,6 +72,20 @@ class GraphqlControllersExtension extends Extension
             $definitionNamingStrategy->addMethodCall('setBaseDaoSuffix', [$config['naming']['base_dao_suffix']]);
             $definitionNamingStrategy->addMethodCall('setExceptions', [$config['naming']['exceptions']]);
         }*/
+    }
+
+    private function getNamespaceDir(string $namespace): string
+    {
+        $classNameMapper = ClassNameMapper::createFromComposerFile(null, null, true);
+
+        $possibleFileNames = $classNameMapper->getPossibleFileNames($namespace.'Xxx');
+        if (count($possibleFileNames) > 1) {
+            throw new \RuntimeException(sprintf('According to your composer.json, classes belonging to the "%s" namespace can be located in several directories: %s. This is an issue for the GraphQL-Controllers lib. Please make sure that a namespace can only be resolved to one PHP file.', $namespace, implode(", ", $possibleFileNames)));
+        } elseif (empty($possibleFileNames)) {
+            throw new \RuntimeException(sprintf('Files in namespace "%s" cannot be autoloaded by Composer. Please set up a PSR-4 autoloader in Composer or change the namespace configured in "graphql_controllers.namespace.controllers" and "graphql_controllers.namespace.types"', $namespace));
+        }
+
+        return substr($possibleFileNames[0], 0, -8);
     }
 
     private function toDebugCode(array $debug): int

@@ -17,14 +17,6 @@ services:
         resource: '../*'
         exclude: '../{Entities}'
 
-    TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Controller\:
-        resource: '../Controller/*'
-        tags: ['graphql.annotated.controller']
-
-    TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Types\:
-        resource: '../Types/*'
-        tags: ['graphql.annotated.type']
-
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
     #App\Controller\:

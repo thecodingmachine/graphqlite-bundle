@@ -31,7 +31,7 @@ class GraphqlControllersTestingKernel extends Kernel
             $container->loadFromExtension('graphql_controllers', array(
                 'namespace' => [
                     'controllers' => 'TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Controller\\',
-                    'types' => 'TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Type\\'
+                    'types' => 'TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Types\\'
                 ]
             ));
         });
@@ -39,8 +39,8 @@ class GraphqlControllersTestingKernel extends Kernel
 
         $loader->load($confDir.'/{packages}/*'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');
-        $loader->load($confDir.'/{services}'.self::CONFIG_EXTS, 'glob');
-        $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
+        //$loader->load($confDir.'/{services}'.self::CONFIG_EXTS, 'glob');
+        //$loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
 
     }
 }
