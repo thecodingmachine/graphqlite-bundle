@@ -8,12 +8,14 @@ use GraphQL\Error\Debug;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Type\Definition\ObjectType;
 use function implode;
+use function is_dir;
 use Mouf\Composer\ClassNameMapper;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use TheCodingMachine\GraphQL\Controllers\GraphQLException;
 use function var_dump;
 
 class GraphqlControllersExtension extends Extension
@@ -48,11 +50,21 @@ class GraphqlControllersExtension extends Extension
         $definitionTemplateTypeClass->addTag('graphql.annotated.type');
 
         if ($this->projectDir === null) {
-            $this->projectDir = __DIR__.'/../../../..';
+            $this->projectDir = dirname(__DIR__, 4).'/';
         }
 
-        $loader->registerClasses($definitionTemplateControllerClass, $namespaceController, $this->projectDir.$this->getNamespaceDir($namespaceController).'/*.php');
-        $loader->registerClasses($definitionTemplateTypeClass, $namespaceType, $this->projectDir.$this->getNamespaceDir($namespaceType).'/*');
+        $controllersDir = $this->projectDir.$this->getNamespaceDir($namespaceController);
+        $typesDir = $this->projectDir.$this->getNamespaceDir($namespaceType);
+
+        if (!is_dir($controllersDir)) {
+            throw new GraphQLException(sprintf('GraphQL-Controllers bundle expects controllers to be located in the "%s" directory. This directory does not exists.', $controllersDir));
+        }
+        if (!is_dir($typesDir)) {
+            throw new GraphQLException(sprintf('GraphQL-Controllers bundle expects types to be located in the "%s" directory. This directory does not exists.', $typesDir));
+        }
+
+        $loader->registerClasses($definitionTemplateControllerClass, $namespaceController, $controllersDir.'/*.php');
+        $loader->registerClasses($definitionTemplateTypeClass, $namespaceType, $typesDir.'/*.php');
         $loader->load('graphql-controllers.xml');
 
         $definition = $container->getDefinition(ServerConfig::class);
