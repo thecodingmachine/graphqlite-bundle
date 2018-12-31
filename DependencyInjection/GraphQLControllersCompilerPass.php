@@ -72,9 +72,10 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         $reader = $this->getAnnotationReader();
         $inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
 
-        foreach ($container->getDefinitions() as $id => $definition) {
+        foreach ($container->findTaggedServiceIds('graphql.annotated.controller') as $id => $tag) {
+            $definition = $container->findDefinition($id);
             $class = $definition->getClass();
-            if ($class === null) {
+            /*if ($class === null) {
                 continue;
             }
             try {
@@ -83,7 +84,7 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                 }
             } catch (\Exception $e) {
                 continue;
-            }
+            }*/
 
             $reflectionClass = new ReflectionClass($class);
             $isController = false;
@@ -92,11 +93,45 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                 $query = $reader->getRequestAnnotation($method, Query::class);
                 if ($query !== null) {
                     $isController = true;
+                    break;
                 }
                 $mutation = $reader->getRequestAnnotation($method, Mutation::class);
                 if ($mutation !== null) {
                     $isController = true;
+                    break;
                 }
+            }
+
+            if ($isController) {
+                // Let's create a QueryProvider from this controller
+                $controllerIdentifier = $class.'__QueryProvider';
+                $queryProvider = new Definition(ControllerQueryProvider::class);
+                $queryProvider->setPrivate(true);
+                $queryProvider->setFactory([self::class, 'createQueryProvider']);
+                $queryProvider->addArgument(new Reference($id));
+                $queryProvider->addArgument(new Reference(FieldsBuilderFactory::class));
+                $queryProvider->addArgument(new Reference(RecursiveTypeMapperInterface::class));
+                $queryProvider->addTag('graphql.queryprovider');
+                $container->setDefinition($controllerIdentifier, $queryProvider);
+            }
+        }
+
+        foreach ($container->findTaggedServiceIds('graphql.annotated.type') as $id => $tag) {
+            $definition = $container->findDefinition($id);
+            $class = $definition->getClass();
+            /*if ($class === null) {
+                continue;
+            }
+            try {
+                if (!class_exists($class)) {
+                    continue;
+                }
+            } catch (\Exception $e) {
+                continue;
+            }*/
+
+            $reflectionClass = new ReflectionClass($class);
+            foreach ($reflectionClass->getMethods() as $method) {
                 $factory = $reader->getFactoryAnnotation($method);
                 if ($factory !== null) {
                     $objectTypeIdentifier = $class.'__'.$method->getName().'__InputType';
@@ -118,20 +153,6 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
                 }
             }
 
-            if ($isController) {
-                // Let's create a QueryProvider from this controller
-                $controllerIdentifier = $class.'__QueryProvider';
-                $queryProvider = new Definition(ControllerQueryProvider::class);
-                $queryProvider->setPrivate(true);
-                $queryProvider->setFactory([self::class, 'createQueryProvider']);
-                $queryProvider->addArgument(new Reference($id));
-                $queryProvider->addArgument(new Reference(FieldsBuilderFactory::class));
-                $queryProvider->addArgument(new Reference(RecursiveTypeMapperInterface::class));
-                $queryProvider->addTag('graphql.queryprovider');
-                $container->setDefinition($controllerIdentifier, $queryProvider);
-            }
-
-            $method = null;
             $typeAnnotation = $this->annotationReader->getTypeAnnotation($reflectionClass);
             if ($typeAnnotation !== null) {
                 $objectTypeIdentifier = $class.'__Type';
