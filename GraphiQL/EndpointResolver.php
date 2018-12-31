@@ -1,6 +1,6 @@
 <?php
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\GraphiQL;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\GraphiQL;
 
 use Overblog\GraphiQLBundle\Config\GraphiQLControllerEndpoint;
 use Symfony\Component\HttpFoundation\RequestStack;

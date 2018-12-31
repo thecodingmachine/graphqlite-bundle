@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\DependencyInjection;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\DependencyInjection;
 
 
 use GraphQL\Error\Debug;
@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
-class GraphQLControllersExtension extends Extension
+class GraphqlControllersExtension extends Extension
 {
 
     /**

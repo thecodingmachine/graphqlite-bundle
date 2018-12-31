@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\Tests\Fixtures\Entities;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Entities;
 
 
 class Product

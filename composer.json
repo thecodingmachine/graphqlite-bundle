@@ -32,14 +32,14 @@
     "phpstan/phpstan": "^0.10.6"
   },
   "scripts": {
-    "phpstan": "phpstan analyse GraphQLControllersBundle.php DependencyInjection/ EventListeners/ Mappers/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
+    "phpstan": "phpstan analyse GraphqlControllersBundle.php DependencyInjection/ EventListeners/ Mappers/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
   },
   "suggest": {
     "symfony/security-bundle": "To use @Logged or @Right annotations"
   },
   "autoload" : {
     "psr-4" : {
-      "TheCodingMachine\\GraphQL\\Controllers\\Bundle\\" : ""
+      "TheCodingMachine\\Graphql\\Controllers\\Bundle\\" : ""
     }
   },
   "extra": {

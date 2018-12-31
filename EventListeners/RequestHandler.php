@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\EventListeners;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\EventListeners;
 
 
 use GraphQL\Error\Debug;
@@ -10,14 +10,9 @@ use GraphQL\Executor\Promise\Promise;
 use GraphQL\Server\StandardServer;
 use GraphQL\Upload\UploadMiddleware;
 use function json_decode;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
-use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
-use Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,10 +20,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Zend\Diactoros\Response\TextResponse;
 
 /**
- * Listens to every single request and forward GraphQL requests to GraphQL Webonix standardServer.
+ * Listens to every single request and forward Graphql requests to Graphql Webonix standardServer.
  */
 class RequestHandler implements EventSubscriberInterface
 {
@@ -133,7 +127,7 @@ class RequestHandler implements EventSubscriberInterface
 
     private function isGraphqlRequest(Request $request) : bool
     {
-        return $this->isMethodAllowed($request) && ($this->hasUri($request) || $this->hasGraphQLHeader($request));
+        return $this->isMethodAllowed($request) && ($this->hasUri($request) || $this->hasGraphqlHeader($request));
     }
     private function isMethodAllowed(Request $request) : bool
     {
@@ -143,7 +137,7 @@ class RequestHandler implements EventSubscriberInterface
     {
         return $this->graphqlUri === $request->getPathInfo();
     }
-    private function hasGraphQLHeader(Request $request) : bool
+    private function hasGraphqlHeader(Request $request) : bool
     {
         if (! $request->headers->has('content-type')) {
             return false;

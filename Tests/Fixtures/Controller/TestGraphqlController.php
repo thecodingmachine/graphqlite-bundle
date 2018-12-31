@@ -1,14 +1,14 @@
 <?php
 
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\Tests\Fixtures\Controller;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Controller;
 
 
-use TheCodingMachine\GraphQL\Controllers\Bundle\Tests\Fixtures\Entities\Product;
+use TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Entities\Product;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Mutation;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Query;
 
-class TestGraphQLController
+class TestGraphqlController
 {
 
     /**

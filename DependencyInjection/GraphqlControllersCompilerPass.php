@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\DependencyInjection;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\DependencyInjection;
 
 use function class_exists;
 use function dirname;
@@ -23,13 +23,11 @@ use Symfony\Component\DependencyInjection\Reference;
 use TheCodingMachine\GraphQL\Controllers\AnnotationReader;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Mutation;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Query;
-use TheCodingMachine\GraphQL\Controllers\Annotations\Type;
-use TheCodingMachine\GraphQL\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper;
-use TheCodingMachine\GraphQL\Controllers\Bundle\QueryProviders\ControllerQueryProvider;
+use TheCodingMachine\Graphql\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper;
+use TheCodingMachine\Graphql\Controllers\Bundle\QueryProviders\ControllerQueryProvider;
 use TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory;
 use TheCodingMachine\GraphQL\Controllers\InputTypeGenerator;
 use TheCodingMachine\GraphQL\Controllers\InputTypeUtils;
-use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
 use TheCodingMachine\GraphQL\Controllers\Mappers\StaticTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\NamingStrategy;
@@ -39,7 +37,7 @@ use TheCodingMachine\GraphQL\Controllers\Types\ResolvableInputObjectType;
 /**
  * Detects controllers and types automatically and tag them.
  */
-class GraphQLControllersCompilerPass implements CompilerPassInterface
+class GraphqlControllersCompilerPass implements CompilerPassInterface
 {
     /**
      * @var AnnotationReader
@@ -64,7 +62,7 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         $inputTypes = [];
 
         /**
-         * @var array<string, string> An array matching a GraphQL type name to the the container identifier of a factory creating a type.
+         * @var array<string, string> An array matching a Graphql type name to the the container identifier of a factory creating a type.
          */
         $typesByName = [];
 

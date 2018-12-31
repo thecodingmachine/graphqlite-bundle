@@ -1,14 +1,14 @@
 <?php
 
-namespace TheCodingMachine\GraphQL\Controllers\Bundle\DependencyInjection;
+namespace TheCodingMachine\Graphql\Controllers\Bundle\DependencyInjection;
 
 use Overblog\GraphiQLBundle\Config\GraphiQLControllerEndpoint;
-use Overblog\GraphiQLBundle\Config\GraphQLEndpoint\RootResolver;
+use Overblog\GraphiQLBundle\Config\GraphqlEndpoint\RootResolver;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use TheCodingMachine\GraphQL\Controllers\Bundle\GraphiQL\EndpointResolver;
+use TheCodingMachine\Graphql\Controllers\Bundle\GraphiQL\EndpointResolver;
 
 final class OverblogGraphiQLEndpointWiringPass implements CompilerPassInterface
 {
