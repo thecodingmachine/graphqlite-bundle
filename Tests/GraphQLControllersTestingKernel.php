@@ -26,7 +26,13 @@ class GraphQLControllersTestingKernel extends Kernel
     {
         $loader->load(function(ContainerBuilder $container) {
             $container->loadFromExtension('framework', array(
-                'secret' => 'S0ME_SECRET'
+                'secret' => 'S0ME_SECRET',
+            ));
+            $container->loadFromExtension('graph_ql_controllers', array(
+                'namespace' => [
+                    'controllers' => 'TheCodingMachine\\GraphQL\\Controllers\\Bundle\\Tests\\Fixtures\\Controller\\',
+                    'types' => 'TheCodingMachine\\GraphQL\\Controllers\\Bundle\\Tests\\Fixtures\\Type\\'
+                ]
             ));
         });
         $confDir = $this->getProjectDir().'/Tests/Fixtures/config';
