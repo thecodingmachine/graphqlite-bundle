@@ -75,16 +75,9 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         foreach ($container->findTaggedServiceIds('graphql.annotated.controller') as $id => $tag) {
             $definition = $container->findDefinition($id);
             $class = $definition->getClass();
-            /*if ($class === null) {
-                continue;
+            if ($class === null) {
+                throw new \RuntimeException(sprintf('Service %s has no class defined.', $id));
             }
-            try {
-                if (!class_exists($class)) {
-                    continue;
-                }
-            } catch (\Exception $e) {
-                continue;
-            }*/
 
             $reflectionClass = new ReflectionClass($class);
             $isController = false;
@@ -119,16 +112,9 @@ class GraphQLControllersCompilerPass implements CompilerPassInterface
         foreach ($container->findTaggedServiceIds('graphql.annotated.type') as $id => $tag) {
             $definition = $container->findDefinition($id);
             $class = $definition->getClass();
-            /*if ($class === null) {
-                continue;
+            if ($class === null) {
+                throw new \RuntimeException(sprintf('Service %s has no class defined.', $id));
             }
-            try {
-                if (!class_exists($class)) {
-                    continue;
-                }
-            } catch (\Exception $e) {
-                continue;
-            }*/
 
             $reflectionClass = new ReflectionClass($class);
             foreach ($reflectionClass->getMethods() as $method) {
