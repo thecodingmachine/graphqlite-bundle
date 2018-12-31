@@ -49,8 +49,6 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        //$controllersNamespace = ltrim($container->getParameter('graphqlcontrollers.controllers_namespace'), '\\');
-
         /**
          * @var array<string, string> An array matching class name to the the container identifier of a factory creating a type.
          */

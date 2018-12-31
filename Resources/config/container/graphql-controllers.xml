@@ -6,7 +6,7 @@
                                http://symfony.com/schema/dic/services/services-1.0.xsd"
 >
     <parameters>
-        <parameter key="graphqlcontrollers.annotations.error_mode">LAX_MODE</parameter>
+        <parameter key="graphql_controllers.annotations.error_mode">LAX_MODE</parameter>
     </parameters>
 
     <services>
@@ -26,7 +26,7 @@
         <service id="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" class="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" public="true" />
 
         <service id="TheCodingMachine\GraphQL\Controllers\AnnotationReader" class="TheCodingMachine\GraphQL\Controllers\AnnotationReader">
-            <argument key="$mode">%graphqlcontrollers.annotations.error_mode%</argument>
+            <argument key="$mode">%graphql_controllers.annotations.error_mode%</argument>
         </service>
 
         <service id="TheCodingMachine\GraphQL\Controllers\Hydrators\FactoryHydrator" class="TheCodingMachine\GraphQL\Controllers\Hydrators\FactoryHydrator" />
