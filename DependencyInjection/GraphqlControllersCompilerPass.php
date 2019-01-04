@@ -247,7 +247,7 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
                 $doctrineAnnotationReader = new CachedReader($doctrineAnnotationReader, new ApcuCache(), true);
             }
 
-            $this->annotationReader = new AnnotationReader($doctrineAnnotationReader);
+            $this->annotationReader = new AnnotationReader($doctrineAnnotationReader, AnnotationReader::LAX_MODE);
         }
         return $this->annotationReader;
     }
