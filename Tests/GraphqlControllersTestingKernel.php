@@ -30,8 +30,8 @@ class GraphqlControllersTestingKernel extends Kernel
             ));
             $container->loadFromExtension('graphql_controllers', array(
                 'namespace' => [
-                    'controllers' => 'TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Controller\\',
-                    'types' => 'TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Types\\'
+                    'controllers' => ['TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Controller\\'],
+                    'types' => ['TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Entities\\']
                 ]
             ));
         });

@@ -4,7 +4,6 @@
 namespace TheCodingMachine\Graphql\Controllers\Bundle\DependencyInjection;
 
 use function class_exists;
-use function dirname;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -15,6 +14,7 @@ use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
+use function str_replace;
 use function strpos;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -28,6 +28,7 @@ use TheCodingMachine\Graphql\Controllers\Bundle\QueryProviders\ControllerQueryPr
 use TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory;
 use TheCodingMachine\GraphQL\Controllers\InputTypeGenerator;
 use TheCodingMachine\GraphQL\Controllers\InputTypeUtils;
+use TheCodingMachine\GraphQL\Controllers\Mappers\GlobTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
 use TheCodingMachine\GraphQL\Controllers\Mappers\StaticTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\NamingStrategy;
@@ -66,21 +67,39 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
 
         $namingStrategy = new NamingStrategy();
         $reader = $this->getAnnotationReader();
-        $inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
+        //$inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
 
         // Let's scan the whole container and tag the services that belong to the namespace we want to inspect.
-        $controllersNamespace = $container->getParameter('graphql_controllers.namespace.controllers');
-        $typesNamespace = $container->getParameter('graphql_controllers.namespace.types');
+        $controllersNamespaces = $container->getParameter('graphql_controllers.namespace.controllers');
+        $typesNamespaces = $container->getParameter('graphql_controllers.namespace.types');
 
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->getClass() === null) {
                 continue;
             }
-            if (strpos($definition->getClass(), $controllersNamespace) === 0) {
-                $definition->addTag('graphql.annotated.controller');
+            $class = $definition->getClass();
+            foreach ($controllersNamespaces as $controllersNamespace) {
+                if (strpos($class, $controllersNamespace) === 0) {
+                    $definition->addTag('graphql.annotated.controller');
+                }
             }
-            if (strpos($definition->getClass(), $typesNamespace) === 0) {
-                $definition->addTag('graphql.annotated.type');
+
+            foreach ($typesNamespaces as $typesNamespace) {
+                if (strpos($class, $typesNamespace) === 0) {
+                    //$definition->addTag('graphql.annotated.type');
+                    // Set the types public
+                    $reflectionClass = new ReflectionClass($class);
+                    if ($this->getAnnotationReader()->getTypeAnnotation($reflectionClass) !== null || $this->getAnnotationReader()->getExtendTypeAnnotation($reflectionClass) !== null) {
+                        $definition->setPublic(true);
+                    } else {
+                        foreach ($reflectionClass->getMethods() as $method) {
+                            $factory = $reader->getFactoryAnnotation($method);
+                            if ($factory !== null) {
+                                $definition->setPublic(true);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -120,8 +139,9 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
                 $container->setDefinition($controllerIdentifier, $queryProvider);
             }
         }
-
+/*
         foreach ($container->findTaggedServiceIds('graphql.annotated.type') as $id => $tag) {
+            $used = false;
             $definition = $container->findDefinition($id);
             $class = $definition->getClass();
             if ($class === null) {
@@ -148,6 +168,7 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
                     $inputTypes[$inputClassName] = $objectTypeIdentifier;
                     $typesByName[$inputName] = $objectTypeIdentifier;
 
+                    $used = true;
                 }
             }
 
@@ -158,7 +179,7 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
                 $objectType = new Definition(ObjectType::class);
                 $objectType->setPrivate(false);
                 $objectType->setFactory([self::class, 'createObjectType']);
-                $objectType->addArgument(new Reference($id));
+                $objectType->addArgument($id);
                 $objectType->addArgument(new Reference(TypeGenerator::class));
                 $objectType->addArgument(new Reference(RecursiveTypeMapperInterface::class));
                 $container->setDefinition($objectTypeIdentifier, $objectType);
@@ -166,6 +187,13 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
                 $types[$typeAnnotation->getClass()] = $objectTypeIdentifier;
                 $typesByName[$namingStrategy->getOutputTypeName($class, $typeAnnotation)] = $objectTypeIdentifier;
                 //$definition->addTag('graphql.annotated_type');
+
+                $used = true;
+            }
+
+            // If the service is used for GraphQL, since it is referenced by service name in the factories, let's make it public
+            if ($used) {
+                $container->findDefinition($id)->setPublic(true);
             }
         }
 
@@ -173,12 +201,16 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
         $containerFetcherTypeMapper->replaceArgument(1, $types);
         $containerFetcherTypeMapper->replaceArgument(2, $inputTypes);
         $containerFetcherTypeMapper->replaceArgument(3, $typesByName);
-        /*$containerFetcherTypeMapper = new Definition(ContainerFetcherTypeMapper::class);
-        $containerFetcherTypeMapper->addArgument($container->getDefinition('service_container'));
-        $containerFetcherTypeMapper->addArgument($types);
-        $containerFetcherTypeMapper->addArgument([]);
-        $containerFetcherTypeMapper->addTag('graphql.type_mapper');
-        $container->setDefinition(ContainerFetcherTypeMapper::class, $containerFetcherTypeMapper);*/
+*/
+
+        foreach ($typesNamespaces as $typesNamespace) {
+            $definition = new Definition(GlobTypeMapper::class);
+            $definition->addArgument($typesNamespace);
+            $definition->setAutowired(true);
+            $definition->addTag('graphql.type_mapper');
+            $container->setDefinition('globTypeMapper_'.str_replace('\\', '__', $typesNamespace), $definition);
+        }
+
 
         // Register custom output types
         $taggedServices = $container->findTaggedServiceIds('graphql.output_type');

@@ -12,90 +12,95 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Schema" class="TheCodingMachine\GraphQL\Controllers\Schema" public="true">
+        <service id="TheCodingMachine\GraphQL\Controllers\Schema" public="true">
         </service>
 
         <service id="GraphQL\Type\Schema" alias="TheCodingMachine\GraphQL\Controllers\Schema" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\AggregateQueryProvider" class="TheCodingMachine\GraphQL\Controllers\AggregateQueryProvider">
+        <service id="TheCodingMachine\GraphQL\Controllers\AggregateQueryProvider">
             <argument type="tagged" tag="graphql.queryprovider" />
         </service>
 
         <service id="TheCodingMachine\GraphQL\Controllers\QueryProviderInterface" alias="TheCodingMachine\GraphQL\Controllers\AggregateQueryProvider" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" class="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" public="true" />
+        <service id="TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory" public="true" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\AnnotationReader" class="TheCodingMachine\GraphQL\Controllers\AnnotationReader">
+        <service id="TheCodingMachine\GraphQL\Controllers\AnnotationReader" >
             <argument key="$mode">%graphql_controllers.annotations.error_mode%</argument>
         </service>
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Hydrators\FactoryHydrator" class="TheCodingMachine\GraphQL\Controllers\Hydrators\FactoryHydrator" />
+        <service id="TheCodingMachine\GraphQL\Controllers\Hydrators\FactoryHydrator" />
 
         <service id="TheCodingMachine\GraphQL\Controllers\Hydrators\HydratorInterface" alias="TheCodingMachine\GraphQL\Controllers\Hydrators\FactoryHydrator" />
 
-        <service id="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthenticationService" class="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthenticationService">
+        <service id="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthenticationService">
             <argument type="service" id="security.token_storage" on-invalid="null" />
         </service>
 
         <service id="TheCodingMachine\GraphQL\Controllers\Security\AuthenticationServiceInterface" alias="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthenticationService" />
 
-        <service id="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthorizationService" class="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthorizationService">
+        <service id="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthorizationService">
             <argument type="service" id="security.authorization_checker" on-invalid="null" />
         </service>
 
         <service id="TheCodingMachine\GraphQL\Controllers\Security\AuthorizationServiceInterface" alias="TheCodingMachine\Graphql\Controllers\Bundle\Security\AuthorizationService" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper" class="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper" public="true" />
+        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper" public="true" />
 
         <service id="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface" alias="TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapper" public="true" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\CompositeTypeMapper" class="TheCodingMachine\GraphQL\Controllers\Mappers\CompositeTypeMapper">
+        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\CompositeTypeMapper">
             <argument type="tagged" tag="graphql.type_mapper" />
         </service>
 
         <service id="TheCodingMachine\GraphQL\Controllers\Mappers\TypeMapperInterface" alias="TheCodingMachine\GraphQL\Controllers\Mappers\CompositeTypeMapper" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\TypeGenerator" class="TheCodingMachine\GraphQL\Controllers\TypeGenerator" public="true" />
+        <service id="TheCodingMachine\GraphQL\Controllers\TypeGenerator" public="true" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\InputTypeGenerator" class="TheCodingMachine\GraphQL\Controllers\InputTypeGenerator" public="true" />
+        <service id="TheCodingMachine\GraphQL\Controllers\InputTypeGenerator" public="true" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\InputTypeUtils" class="TheCodingMachine\GraphQL\Controllers\InputTypeUtils" />
+        <service id="TheCodingMachine\GraphQL\Controllers\InputTypeUtils" />
 
-        <service id="TheCodingMachine\Graphql\Controllers\Bundle\EventListeners\RequestHandler" class="TheCodingMachine\Graphql\Controllers\Bundle\EventListeners\RequestHandler">
+        <service id="TheCodingMachine\Graphql\Controllers\Bundle\EventListeners\RequestHandler">
             <tag name="kernel.event_subscriber" />
         </service>
 
-        <service id="GraphQL\Server\StandardServer" class="GraphQL\Server\StandardServer">
+        <service id="GraphQL\Server\StandardServer">
             <argument type="service" id="GraphQL\Server\ServerConfig" />
         </service>
 
-        <service id="GraphQL\Server\ServerConfig" class="GraphQL\Server\ServerConfig">
+        <service id="GraphQL\Server\ServerConfig">
             <call method="setSchema">
                 <argument type="service" id="TheCodingMachine\GraphQL\Controllers\Schema"/>
             </call>
         </service>
 
-        <service id="TheCodingMachine\Graphql\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper" class="TheCodingMachine\Graphql\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper">
+        <!-- <service id="TheCodingMachine\Graphql\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper">
             <argument type="service" id="service_container" />
             <argument type="collection" />
             <argument type="collection" />
             <argument type="collection" />
 
             <tag name="graphql.type_mapper"/>
-        </service>
+        </service> -->
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\StaticTypeMapper" class="TheCodingMachine\GraphQL\Controllers\Mappers\StaticTypeMapper">
+        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\StaticTypeMapper">
             <tag name="graphql.type_mapper"/>
         </service>
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Reflection\CachedDocBlockFactory" class="TheCodingMachine\GraphQL\Controllers\Reflection\CachedDocBlockFactory" />
+        <service id="TheCodingMachine\GraphQL\Controllers\Mappers\PorpaginasTypeMapper">
+            <tag name="graphql.type_mapper"/>
+        </service>
 
-        <service id="TheCodingMachine\GraphQL\Controllers\NamingStrategy" class="TheCodingMachine\GraphQL\Controllers\NamingStrategy" />
+        <service id="TheCodingMachine\GraphQL\Controllers\Reflection\CachedDocBlockFactory" />
+
+        <service id="TheCodingMachine\GraphQL\Controllers\NamingStrategy" />
 
         <service id="TheCodingMachine\GraphQL\Controllers\NamingStrategyInterface" alias="TheCodingMachine\GraphQL\Controllers\NamingStrategy" />
 
-        <service id="TheCodingMachine\GraphQL\Controllers\Types\TypeResolver" class="TheCodingMachine\GraphQL\Controllers\Types\TypeResolver" />
+        <service id="TheCodingMachine\GraphQL\Controllers\Types\TypeResolver" />
 
+        <service id="TheCodingMachine\GraphQL\Controllers\TypeRegistry" />
     </services>
 
 </container>

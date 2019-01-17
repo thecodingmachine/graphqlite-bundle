@@ -34,8 +34,8 @@ class GraphqlControllersExtension extends Extension
         //$config = $this->processConfiguration($this->getConfiguration($config, $container), $config);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/container'));
 
-        $namespaceController = rtrim($configs[0]['namespace']['controllers'], '\\') . '\\';
-        $namespaceType = rtrim($configs[0]['namespace']['types'], '\\') . '\\';
+        $namespaceController = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $configs[0]['namespace']['controllers']);
+        $namespaceType = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $configs[0]['namespace']['types']);
 
         $container->setParameter('graphql_controllers.namespace.controllers', $namespaceController);
         $container->setParameter('graphql_controllers.namespace.types', $namespaceType);

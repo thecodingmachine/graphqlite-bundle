@@ -18,7 +18,23 @@ class FunctionalTest extends TestCase
         $this->assertInstanceOf(Schema::class, $schema);
         $schema->assertValid();
 
-        $request = Request::create('/graphql', 'GET', ['query' => '{ products { name, price } }']);
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          products 
+          { 
+            name,
+            price 
+          }
+          
+          contact {
+            name,
+            uppercaseName
+          } 
+          
+          contacts {
+            count
+          }
+        }']);
 
         $response = $kernel->handle($request);
 
@@ -31,6 +47,13 @@ class FunctionalTest extends TestCase
                         'name' => 'Mouf',
                         'price' => 9999
                     ]
+                ],
+                'contact' => [
+                    'name' => 'Mouf',
+                    'uppercaseName' => 'MOUF'
+                ],
+                'contacts' => [
+                    'count' => 1
                 ]
             ]
         ], $result);
