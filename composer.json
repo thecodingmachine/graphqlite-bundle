@@ -29,7 +29,8 @@
     "symfony/security-bundle": "^4.1.9",
     "symfony/yaml": "^4.1.9",
     "phpunit/phpunit": "^7.5.1",
-    "phpstan/phpstan": "^0.10.6"
+    "phpstan/phpstan": "^0.10.6",
+    "beberlei/porpaginas": "^1.2"
   },
   "scripts": {
     "phpstan": "phpstan analyse GraphqlControllersBundle.php DependencyInjection/ EventListeners/ Mappers/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"

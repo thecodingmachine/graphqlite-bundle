@@ -4,6 +4,8 @@
 namespace TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Controller;
 
 
+use Porpaginas\Arrays\ArrayResult;
+use TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Entities\Contact;
 use TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Entities\Product;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Mutation;
 use TheCodingMachine\GraphQL\Controllers\Annotations\Query;
@@ -31,6 +33,14 @@ class TestGraphqlController
     }
 
     /**
+     * @Query()
+     */
+    public function contact(): Contact
+    {
+        return new Contact('Mouf');
+    }
+
+    /**
      * @Mutation()
      */
     public function saveProduct(Product $product): Product
@@ -38,4 +48,12 @@ class TestGraphqlController
         return $product;
     }
 
+    /**
+     * @Query()
+     * @return Contact[]
+     */
+    public function contacts(): ArrayResult
+    {
+        return new ArrayResult([new Contact('Mouf')]);
+    }
 }

@@ -4,14 +4,17 @@
 namespace TheCodingMachine\Graphql\Controllers\Bundle\Mappers;
 
 use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\NamedType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\InputType;
 use GraphQL\Type\Definition\OutputType;
 use Psr\Container\ContainerInterface;
 use TheCodingMachine\GraphQL\Controllers\Mappers\CannotMapTypeException;
+use TheCodingMachine\GraphQL\Controllers\Mappers\CannotMapTypeExceptionInterface;
 use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
 use TheCodingMachine\GraphQL\Controllers\Mappers\TypeMapperInterface;
+use TheCodingMachine\GraphQL\Controllers\Types\MutableObjectType;
 
 /**
  * A type mapper that fetches types from the container that is directly injected in the type mapper.
@@ -67,17 +70,22 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
     }
 
     /**
-     * Maps a PHP fully qualified class name to a Graphql type.
+     * Maps a PHP fully qualified class name to a GraphQL type.
      *
-     * @param string $className
+     * @param string $className The exact class name to look for (this function does not look into parent classes).
+     * @param OutputType|null $subType An optional sub-type if the main class is an iterator that needs to be typed.
      * @param RecursiveTypeMapperInterface $recursiveTypeMapper
-     * @return ObjectType
-     * @throws CannotMapTypeException
+     * @return MutableObjectType
+     * @throws CannotMapTypeExceptionInterface
      */
-    public function mapClassToType(string $className, RecursiveTypeMapperInterface $recursiveTypeMapper): ObjectType
+    public function mapClassToType(string $className, ?OutputType $subType, RecursiveTypeMapperInterface $recursiveTypeMapper): MutableObjectType
     {
-        if (isset($this->types[$className])) {
-            return $this->container->get($this->types[$className]);
+        $key = $className;
+        if ($subType instanceof NamedType && $subType !== null) {
+            $key .= '____'.$subType->name;
+        }
+        if (isset($this->types[$key])) {
+            return $this->container->get($this->types[$key]);
         }
         throw CannotMapTypeException::createForType($className);
     }
@@ -141,6 +149,58 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
         if (isset($this->typesByName[$typeName])) {
             return $this->container->get($this->typesByName[$typeName]);
         }
+        throw CannotMapTypeException::createForName($typeName);
+    }
+
+    /**
+     * Returns true if this type mapper can extend an existing type for the $className FQCN
+     *
+     * @param string $className
+     * @param MutableObjectType $type
+     * @param RecursiveTypeMapperInterface $recursiveTypeMapper
+     * @return bool
+     */
+    public function canExtendTypeForClass(string $className, MutableObjectType $type, RecursiveTypeMapperInterface $recursiveTypeMapper): bool
+    {
+        return false;
+    }
+
+    /**
+     * Extends the existing GraphQL type that is mapped to $className.
+     *
+     * @param string $className
+     * @param MutableObjectType $type
+     * @param RecursiveTypeMapperInterface $recursiveTypeMapper
+     * @throws CannotMapTypeExceptionInterface
+     */
+    public function extendTypeForClass(string $className, MutableObjectType $type, RecursiveTypeMapperInterface $recursiveTypeMapper): void
+    {
+        throw CannotMapTypeException::createForType($className);
+    }
+
+    /**
+     * Returns true if this type mapper can extend an existing type for the $typeName GraphQL type
+     *
+     * @param string $typeName
+     * @param MutableObjectType $type
+     * @param RecursiveTypeMapperInterface $recursiveTypeMapper
+     * @return bool
+     */
+    public function canExtendTypeForName(string $typeName, MutableObjectType $type, RecursiveTypeMapperInterface $recursiveTypeMapper): bool
+    {
+        return false;
+    }
+
+    /**
+     * Extends the existing GraphQL type that is mapped to the $typeName GraphQL type.
+     *
+     * @param string $typeName
+     * @param MutableObjectType $type
+     * @param RecursiveTypeMapperInterface $recursiveTypeMapper
+     * @throws CannotMapTypeExceptionInterface
+     */
+    public function extendTypeForName(string $typeName, MutableObjectType $type, RecursiveTypeMapperInterface $recursiveTypeMapper): void
+    {
         throw CannotMapTypeException::createForName($typeName);
     }
 }
