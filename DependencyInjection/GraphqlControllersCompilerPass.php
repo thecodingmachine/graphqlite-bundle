@@ -33,6 +33,7 @@ use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
 use TheCodingMachine\GraphQL\Controllers\Mappers\StaticTypeMapper;
 use TheCodingMachine\GraphQL\Controllers\NamingStrategy;
 use TheCodingMachine\GraphQL\Controllers\TypeGenerator;
+use TheCodingMachine\GraphQL\Controllers\Types\MutableObjectType;
 use TheCodingMachine\GraphQL\Controllers\Types\ResolvableInputObjectType;
 
 /**
@@ -250,20 +251,20 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * @param object $typeClass
+     * @param string $typeClass
      */
-    public static function createObjectType($typeClass, TypeGenerator $typeGenerator, RecursiveTypeMapperInterface $recursiveTypeMapper): ObjectType
+    /*public static function createObjectType(string $typeClass, TypeGenerator $typeGenerator, RecursiveTypeMapperInterface $recursiveTypeMapper): MutableObjectType
     {
         return $typeGenerator->mapAnnotatedObject($typeClass, $recursiveTypeMapper);
-    }
+    }*/
 
     /**
      * @param object $factory
      */
-    public static function createInputObjectType($factory, string $methodName, InputTypeGenerator $inputTypeGenerator, RecursiveTypeMapperInterface $recursiveTypeMapper): InputObjectType
+    /*public static function createInputObjectType($factory, string $methodName, InputTypeGenerator $inputTypeGenerator, RecursiveTypeMapperInterface $recursiveTypeMapper): InputObjectType
     {
         return $inputTypeGenerator->mapFactoryMethod($factory, $methodName, $recursiveTypeMapper);
-    }
+    }*/
 
     /**
      * Returns a cached Doctrine annotation reader.

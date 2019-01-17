@@ -4,6 +4,7 @@
 namespace TheCodingMachine\Graphql\Controllers\Bundle\Mappers;
 
 use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\NamedType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\InputType;
@@ -80,7 +81,7 @@ final class ContainerFetcherTypeMapper implements TypeMapperInterface
     public function mapClassToType(string $className, ?OutputType $subType, RecursiveTypeMapperInterface $recursiveTypeMapper): MutableObjectType
     {
         $key = $className;
-        if ($subType !== null) {
+        if ($subType instanceof NamedType && $subType !== null) {
             $key .= '____'.$subType->name;
         }
         if (isset($this->types[$key])) {
