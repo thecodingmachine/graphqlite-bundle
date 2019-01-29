@@ -1,14 +1,14 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Controller;
+namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Controller;
 
 
 use Porpaginas\Arrays\ArrayResult;
-use TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Entities\Contact;
-use TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Entities\Product;
-use TheCodingMachine\GraphQL\Controllers\Annotations\Mutation;
-use TheCodingMachine\GraphQL\Controllers\Annotations\Query;
+use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Contact;
+use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Product;
+use TheCodingMachine\GraphQLite\Annotations\Mutation;
+use TheCodingMachine\GraphQLite\Annotations\Query;
 
 class TestGraphqlController
 {

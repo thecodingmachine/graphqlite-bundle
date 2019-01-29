@@ -1,15 +1,15 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\Tests;
+namespace TheCodingMachine\Graphqlite\Bundle\Tests;
 
 
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
-use TheCodingMachine\Graphql\Controllers\Bundle\GraphqlControllersBundle;
+use TheCodingMachine\Graphqlite\Bundle\GraphqliteBundle;
 
-class GraphqlControllersTestingKernel extends Kernel
+class GraphqliteTestingKernel extends Kernel
 {
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
@@ -18,7 +18,7 @@ class GraphqlControllersTestingKernel extends Kernel
     {
         return [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new GraphqlControllersBundle(),
+            new GraphqliteBundle(),
         ];
     }
 
@@ -28,10 +28,10 @@ class GraphqlControllersTestingKernel extends Kernel
             $container->loadFromExtension('framework', array(
                 'secret' => 'S0ME_SECRET',
             ));
-            $container->loadFromExtension('graphql_controllers', array(
+            $container->loadFromExtension('graphqlite', array(
                 'namespace' => [
-                    'controllers' => ['TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Controller\\'],
-                    'types' => ['TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\Graphql\\Controllers\\Bundle\\Tests\\Fixtures\\Entities\\']
+                    'controllers' => ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Controller\\'],
+                    'types' => ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Entities\\']
                 ]
             ));
         });

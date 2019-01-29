@@ -1,6 +1,6 @@
 <?php
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\DependencyInjection;
+namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
 
 use Overblog\GraphiQLBundle\Config\GraphiQLControllerEndpoint;
 use Overblog\GraphiQLBundle\Config\GraphqlEndpoint\RootResolver;
@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use TheCodingMachine\Graphql\Controllers\Bundle\GraphiQL\EndpointResolver;
+use TheCodingMachine\Graphqlite\Bundle\GraphiQL\EndpointResolver;
 
 final class OverblogGraphiQLEndpointWiringPass implements CompilerPassInterface
 {

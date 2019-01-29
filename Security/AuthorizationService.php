@@ -1,11 +1,11 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\Security;
+namespace TheCodingMachine\Graphqlite\Bundle\Security;
 
 
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use TheCodingMachine\GraphQL\Controllers\Security\AuthorizationServiceInterface;
+use TheCodingMachine\GraphQLite\Security\AuthorizationServiceInterface;
 
 class AuthorizationService implements AuthorizationServiceInterface
 {

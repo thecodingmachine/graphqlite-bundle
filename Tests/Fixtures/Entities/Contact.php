@@ -1,13 +1,13 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Entities;
+namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities;
 
 
 use DateTimeInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use TheCodingMachine\GraphQL\Controllers\Annotations\Field;
-use TheCodingMachine\GraphQL\Controllers\Annotations\Type;
+use TheCodingMachine\GraphQLite\Annotations\Field;
+use TheCodingMachine\GraphQLite\Annotations\Type;
 
 /**
  * @Type()

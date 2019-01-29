@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+                               http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <parameters>
+        <parameter key="graphqlite.annotations.error_mode">LAX_MODE</parameter>
+    </parameters>
+
+    <services>
+        <defaults autowire="true" autoconfigure="true" public="false" />
+
+        <service id="TheCodingMachine\GraphQLite\Schema" public="true">
+        </service>
+
+        <service id="GraphQL\Type\Schema" alias="TheCodingMachine\GraphQLite\Schema" />
+
+        <service id="TheCodingMachine\GraphQLite\AggregateQueryProvider">
+            <argument type="tagged" tag="graphql.queryprovider" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\QueryProviderInterface" alias="TheCodingMachine\GraphQLite\AggregateQueryProvider" />
+
+        <service id="TheCodingMachine\GraphQLite\FieldsBuilderFactory" public="true" />
+
+        <service id="TheCodingMachine\GraphQLite\AnnotationReader" >
+            <argument key="$mode">%graphqlite.annotations.error_mode%</argument>
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\Hydrators\FactoryHydrator" />
+
+        <service id="TheCodingMachine\GraphQLite\Hydrators\HydratorInterface" alias="TheCodingMachine\GraphQLite\Hydrators\FactoryHydrator" />
+
+        <service id="TheCodingMachine\Graphqlite\Bundle\Security\AuthenticationService">
+            <argument type="service" id="security.token_storage" on-invalid="null" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface" alias="TheCodingMachine\Graphqlite\Bundle\Security\AuthenticationService" />
+
+        <service id="TheCodingMachine\Graphqlite\Bundle\Security\AuthorizationService">
+            <argument type="service" id="security.authorization_checker" on-invalid="null" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\Security\AuthorizationServiceInterface" alias="TheCodingMachine\Graphqlite\Bundle\Security\AuthorizationService" />
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapper" public="true" />
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapperInterface" alias="TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapper" public="true" />
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\CompositeTypeMapper">
+            <argument type="tagged" tag="graphql.type_mapper" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\TypeMapperInterface" alias="TheCodingMachine\GraphQLite\Mappers\CompositeTypeMapper" />
+
+        <service id="TheCodingMachine\GraphQLite\TypeGenerator" public="true" />
+
+        <service id="TheCodingMachine\GraphQLite\InputTypeGenerator" public="true" />
+
+        <service id="TheCodingMachine\GraphQLite\InputTypeUtils" />
+
+        <service id="TheCodingMachine\Graphqlite\Bundle\EventListeners\RequestHandler">
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="GraphQL\Server\StandardServer">
+            <argument type="service" id="GraphQL\Server\ServerConfig" />
+        </service>
+
+        <service id="GraphQL\Server\ServerConfig">
+            <call method="setSchema">
+                <argument type="service" id="TheCodingMachine\GraphQLite\Schema"/>
+            </call>
+        </service>
+
+        <!-- <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\ContainerFetcherTypeMapper">
+            <argument type="service" id="service_container" />
+            <argument type="collection" />
+            <argument type="collection" />
+            <argument type="collection" />
+
+            <tag name="graphql.type_mapper"/>
+        </service> -->
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper">
+            <tag name="graphql.type_mapper"/>
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\PorpaginasTypeMapper">
+            <tag name="graphql.type_mapper"/>
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\Reflection\CachedDocBlockFactory" />
+
+        <service id="TheCodingMachine\GraphQLite\NamingStrategy" />
+
+        <service id="TheCodingMachine\GraphQLite\NamingStrategyInterface" alias="TheCodingMachine\GraphQLite\NamingStrategy" />
+
+        <service id="TheCodingMachine\GraphQLite\Types\TypeResolver" />
+
+        <service id="TheCodingMachine\GraphQLite\TypeRegistry" />
+    </services>
+
+</container>

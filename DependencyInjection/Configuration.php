@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\DependencyInjection;
+namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -11,7 +11,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('graphql_controllers');
+        $rootNode = $treeBuilder->root('graphqlite');
 
         $rootNode
             ->children()

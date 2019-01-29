@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\Mappers;
+namespace TheCodingMachine\Graphqlite\Bundle\Mappers;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\NamedType;
@@ -10,11 +10,11 @@ use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\InputType;
 use GraphQL\Type\Definition\OutputType;
 use Psr\Container\ContainerInterface;
-use TheCodingMachine\GraphQL\Controllers\Mappers\CannotMapTypeException;
-use TheCodingMachine\GraphQL\Controllers\Mappers\CannotMapTypeExceptionInterface;
-use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
-use TheCodingMachine\GraphQL\Controllers\Mappers\TypeMapperInterface;
-use TheCodingMachine\GraphQL\Controllers\Types\MutableObjectType;
+use TheCodingMachine\GraphQLite\Mappers\CannotMapTypeException;
+use TheCodingMachine\GraphQLite\Mappers\CannotMapTypeExceptionInterface;
+use TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapperInterface;
+use TheCodingMachine\GraphQLite\Mappers\TypeMapperInterface;
+use TheCodingMachine\GraphQLite\Types\MutableObjectType;
 
 /**
  * A type mapper that fetches types from the container that is directly injected in the type mapper.
