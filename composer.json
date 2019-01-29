@@ -1,12 +1,12 @@
 {
-  "name" : "thecodingmachine/graphql-controllers-bundle",
-  "description" : "A Symfony bundle for thecodingmachine/graphql-controllers.",
+  "name" : "thecodingmachine/graphqlite-bundle",
+  "description" : "A Symfony bundle for thecodingmachine/graphqlite.",
   "keywords" : [
     "graphql",
     "bundle",
     "symfony"
   ],
-  "homepage" : "https://github.com/thecodingmachine/graphql-controllers",
+  "homepage" : "https://github.com/thecodingmachine/graphqlite",
   "type" : "symfony-bundle",
   "license" : "MIT",
   "authors" : [{
@@ -17,7 +17,7 @@
   ],
   "require" : {
     "php" : ">=7.1",
-    "thecodingmachine/graphql-controllers" : "^3",
+    "thecodingmachine/graphqlite" : "^3",
     "symfony/framework-bundle": "^4.1.9",
     "doctrine/annotations": "^1.6",
     "doctrine/cache": "^1.8",
@@ -33,14 +33,14 @@
     "beberlei/porpaginas": "^1.2"
   },
   "scripts": {
-    "phpstan": "phpstan analyse GraphqlControllersBundle.php DependencyInjection/ EventListeners/ Mappers/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
+    "phpstan": "phpstan analyse GraphqliteBundle.php DependencyInjection/ EventListeners/ Mappers/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
   },
   "suggest": {
     "symfony/security-bundle": "To use @Logged or @Right annotations"
   },
   "autoload" : {
     "psr-4" : {
-      "TheCodingMachine\\Graphql\\Controllers\\Bundle\\" : ""
+      "TheCodingMachine\\Graphqlite\\Bundle\\" : ""
     }
   },
   "extra": {

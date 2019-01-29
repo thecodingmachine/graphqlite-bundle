@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\EventListeners;
+namespace TheCodingMachine\Graphqlite\Bundle\EventListeners;
 
 
 use GraphQL\Error\Debug;

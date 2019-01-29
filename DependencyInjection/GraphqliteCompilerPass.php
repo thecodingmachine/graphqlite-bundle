@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\DependencyInjection;
+namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
 
 use function class_exists;
 use Doctrine\Common\Annotations\AnnotationException;
@@ -20,26 +20,26 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use TheCodingMachine\GraphQL\Controllers\AnnotationReader;
-use TheCodingMachine\GraphQL\Controllers\Annotations\Mutation;
-use TheCodingMachine\GraphQL\Controllers\Annotations\Query;
-use TheCodingMachine\Graphql\Controllers\Bundle\Mappers\ContainerFetcherTypeMapper;
-use TheCodingMachine\Graphql\Controllers\Bundle\QueryProviders\ControllerQueryProvider;
-use TheCodingMachine\GraphQL\Controllers\FieldsBuilderFactory;
-use TheCodingMachine\GraphQL\Controllers\InputTypeGenerator;
-use TheCodingMachine\GraphQL\Controllers\InputTypeUtils;
-use TheCodingMachine\GraphQL\Controllers\Mappers\GlobTypeMapper;
-use TheCodingMachine\GraphQL\Controllers\Mappers\RecursiveTypeMapperInterface;
-use TheCodingMachine\GraphQL\Controllers\Mappers\StaticTypeMapper;
-use TheCodingMachine\GraphQL\Controllers\NamingStrategy;
-use TheCodingMachine\GraphQL\Controllers\TypeGenerator;
-use TheCodingMachine\GraphQL\Controllers\Types\MutableObjectType;
-use TheCodingMachine\GraphQL\Controllers\Types\ResolvableInputObjectType;
+use TheCodingMachine\GraphQLite\AnnotationReader;
+use TheCodingMachine\GraphQLite\Annotations\Mutation;
+use TheCodingMachine\GraphQLite\Annotations\Query;
+use TheCodingMachine\Graphqlite\Bundle\Mappers\ContainerFetcherTypeMapper;
+use TheCodingMachine\Graphqlite\Bundle\QueryProviders\ControllerQueryProvider;
+use TheCodingMachine\GraphQLite\FieldsBuilderFactory;
+use TheCodingMachine\GraphQLite\InputTypeGenerator;
+use TheCodingMachine\GraphQLite\InputTypeUtils;
+use TheCodingMachine\GraphQLite\Mappers\GlobTypeMapper;
+use TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapperInterface;
+use TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper;
+use TheCodingMachine\GraphQLite\NamingStrategy;
+use TheCodingMachine\GraphQLite\TypeGenerator;
+use TheCodingMachine\GraphQLite\Types\MutableObjectType;
+use TheCodingMachine\GraphQLite\Types\ResolvableInputObjectType;
 
 /**
  * Detects controllers and types automatically and tag them.
  */
-class GraphqlControllersCompilerPass implements CompilerPassInterface
+class GraphqliteCompilerPass implements CompilerPassInterface
 {
     /**
      * @var AnnotationReader
@@ -71,8 +71,8 @@ class GraphqlControllersCompilerPass implements CompilerPassInterface
         //$inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
 
         // Let's scan the whole container and tag the services that belong to the namespace we want to inspect.
-        $controllersNamespaces = $container->getParameter('graphql_controllers.namespace.controllers');
-        $typesNamespaces = $container->getParameter('graphql_controllers.namespace.types');
+        $controllersNamespaces = $container->getParameter('graphqlite.namespace.controllers');
+        $typesNamespaces = $container->getParameter('graphqlite.namespace.types');
 
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->getClass() === null) {

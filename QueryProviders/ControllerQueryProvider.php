@@ -1,12 +1,12 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\QueryProviders;
+namespace TheCodingMachine\Graphqlite\Bundle\QueryProviders;
 
 
-use TheCodingMachine\GraphQL\Controllers\FieldsBuilder;
-use TheCodingMachine\GraphQL\Controllers\QueryField;
-use TheCodingMachine\GraphQL\Controllers\QueryProviderInterface;
+use TheCodingMachine\GraphQLite\FieldsBuilder;
+use TheCodingMachine\GraphQLite\QueryField;
+use TheCodingMachine\GraphQLite\QueryProviderInterface;
 
 class ControllerQueryProvider implements QueryProviderInterface
 {

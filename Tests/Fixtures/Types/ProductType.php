@@ -1,11 +1,11 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Types;
+namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Types;
 
-use TheCodingMachine\GraphQL\Controllers\Annotations\SourceField;
-use TheCodingMachine\GraphQL\Controllers\Annotations\Type;
-use TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Entities\Product;
+use TheCodingMachine\GraphQLite\Annotations\SourceField;
+use TheCodingMachine\GraphQLite\Annotations\Type;
+use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Product;
 
 
 /**

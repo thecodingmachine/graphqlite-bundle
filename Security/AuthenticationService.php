@@ -1,11 +1,11 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\Security;
+namespace TheCodingMachine\Graphqlite\Bundle\Security;
 
 
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use TheCodingMachine\GraphQL\Controllers\Security\AuthenticationServiceInterface;
+use TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface;
 
 class AuthenticationService implements AuthenticationServiceInterface
 {

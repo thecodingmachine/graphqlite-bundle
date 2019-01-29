@@ -1,12 +1,12 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Types;
+namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Types;
 
 use function strtoupper;
-use TheCodingMachine\GraphQL\Controllers\Annotations\ExtendType;
-use TheCodingMachine\GraphQL\Controllers\Annotations\Field;
-use TheCodingMachine\Graphql\Controllers\Bundle\Tests\Fixtures\Entities\Contact;
+use TheCodingMachine\GraphQLite\Annotations\ExtendType;
+use TheCodingMachine\GraphQLite\Annotations\Field;
+use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Contact;
 
 
 /**

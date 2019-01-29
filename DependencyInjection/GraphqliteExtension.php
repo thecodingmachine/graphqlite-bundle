@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphql\Controllers\Bundle\DependencyInjection;
+namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
 
 
 use GraphQL\Error\Debug;
@@ -15,10 +15,10 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use TheCodingMachine\GraphQL\Controllers\GraphQLException;
+use TheCodingMachine\GraphQLite\GraphQLException;
 use function var_dump;
 
-class GraphqlControllersExtension extends Extension
+class GraphqliteExtension extends Extension
 {
 
     /**
@@ -37,10 +37,10 @@ class GraphqlControllersExtension extends Extension
         $namespaceController = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $configs[0]['namespace']['controllers']);
         $namespaceType = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $configs[0]['namespace']['types']);
 
-        $container->setParameter('graphql_controllers.namespace.controllers', $namespaceController);
-        $container->setParameter('graphql_controllers.namespace.types', $namespaceType);
+        $container->setParameter('graphqlite.namespace.controllers', $namespaceController);
+        $container->setParameter('graphqlite.namespace.types', $namespaceType);
 
-        $loader->load('graphql-controllers.xml');
+        $loader->load('graphqlite.xml');
 
         $definition = $container->getDefinition(ServerConfig::class);
         if (isset($config['debug'])) {
@@ -78,9 +78,9 @@ class GraphqlControllersExtension extends Extension
 
         $possibleFileNames = $classNameMapper->getPossibleFileNames($namespace.'Xxx');
         if (count($possibleFileNames) > 1) {
-            throw new \RuntimeException(sprintf('According to your composer.json, classes belonging to the "%s" namespace can be located in several directories: %s. This is an issue for the GraphQL-Controllers lib. Please make sure that a namespace can only be resolved to one PHP file.', $namespace, implode(", ", $possibleFileNames)));
+            throw new \RuntimeException(sprintf('According to your composer.json, classes belonging to the "%s" namespace can be located in several directories: %s. This is an issue for the GraphQLite lib. Please make sure that a namespace can only be resolved to one PHP file.', $namespace, implode(", ", $possibleFileNames)));
         } elseif (empty($possibleFileNames)) {
-            throw new \RuntimeException(sprintf('Files in namespace "%s" cannot be autoloaded by Composer. Please set up a PSR-4 autoloader in Composer or change the namespace configured in "graphql_controllers.namespace.controllers" and "graphql_controllers.namespace.types"', $namespace));
+            throw new \RuntimeException(sprintf('Files in namespace "%s" cannot be autoloaded by Composer. Please set up a PSR-4 autoloader in Composer or change the namespace configured in "graphqlite.namespace.controllers" and "graphqlite.namespace.types"', $namespace));
         }
 
         return substr($possibleFileNames[0], 0, -8);
