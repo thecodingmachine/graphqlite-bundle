@@ -34,8 +34,8 @@ class GraphqliteExtension extends Extension
         //$config = $this->processConfiguration($this->getConfiguration($config, $container), $config);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/container'));
 
-        $namespaceController = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $configs[0]['namespace']['controllers']);
-        $namespaceType = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $configs[0]['namespace']['types']);
+        $namespaceController = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $config['namespace']['controllers']);
+        $namespaceType = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $config['namespace']['types']);
 
         $container->setParameter('graphqlite.namespace.controllers', $namespaceController);
         $container->setParameter('graphqlite.namespace.types', $namespaceType);
