@@ -33,7 +33,7 @@
     "beberlei/porpaginas": "^1.2"
   },
   "scripts": {
-    "phpstan": "phpstan analyse GraphqliteBundle.php DependencyInjection/ EventListeners/ Mappers/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
+    "phpstan": "phpstan analyse GraphqliteBundle.php DependencyInjection/ Controller/ Mappers/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
   },
   "suggest": {
     "symfony/security-bundle": "To use @Logged or @Right annotations"

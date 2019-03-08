@@ -61,10 +61,6 @@
 
         <service id="TheCodingMachine\GraphQLite\InputTypeUtils" />
 
-        <service id="TheCodingMachine\Graphqlite\Bundle\EventListeners\RequestHandler">
-            <tag name="kernel.event_subscriber" />
-        </service>
-
         <service id="GraphQL\Server\StandardServer">
             <argument type="service" id="GraphQL\Server\ServerConfig" />
         </service>
@@ -101,6 +97,8 @@
         <service id="TheCodingMachine\GraphQLite\Types\TypeResolver" />
 
         <service id="TheCodingMachine\GraphQLite\TypeRegistry" />
+
+        <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController" public="true" />
     </services>
 
 </container>
