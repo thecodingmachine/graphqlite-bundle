@@ -98,10 +98,6 @@
 
         <service id="TheCodingMachine\GraphQLite\TypeRegistry" />
 
-        <service id="TheCodingMachine\Graphqlite\Bundle\Routing\GraphqliteRouteLoader">
-            <tag name="routing.loader" />
-        </service>
-
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController" public="true" />
     </services>
 

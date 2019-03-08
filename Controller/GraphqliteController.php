@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
  * Listens to every single request and forward Graphql requests to Graphql Webonix standardServer.
@@ -43,13 +45,22 @@ class GraphqliteController
         $this->debug = $debug ?? false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function getSubscribedEvents()
+    public function loadRoutes(): RouteCollection
     {
-        $events[KernelEvents::REQUEST][] = array('handleRequest', 33);
-        return $events;
+        $routes = new RouteCollection();
+
+        // prepare a new route
+        $path = '/graphql';
+        $defaults = [
+            '_controller' => self::class.'::handleRequest',
+        ];
+        $route = new Route($path, $defaults);
+
+        // add the new route to the route collection
+        $routeName = 'graphqliteRoute';
+        $routes->add($routeName, $route);
+
+        return $routes;
     }
 
     public function handleRequest(Request $request): Response
