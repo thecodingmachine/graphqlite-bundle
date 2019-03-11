@@ -90,7 +90,11 @@ class GraphqliteCompilerPass implements CompilerPassInterface
                     //$definition->addTag('graphql.annotated.type');
                     // Set the types public
                     $reflectionClass = new ReflectionClass($class);
-                    if ($this->getAnnotationReader()->getTypeAnnotation($reflectionClass) !== null || $this->getAnnotationReader()->getExtendTypeAnnotation($reflectionClass) !== null) {
+                    $typeAnnotation = $this->getAnnotationReader()->getTypeAnnotation($reflectionClass);
+                    if ($typeAnnotation !== null && $typeAnnotation->isSelfType()) {
+                        continue;
+                    }
+                    if ($typeAnnotation !== null || $this->getAnnotationReader()->getExtendTypeAnnotation($reflectionClass) !== null) {
                         $definition->setPublic(true);
                     } else {
                         foreach ($reflectionClass->getMethods() as $method) {
