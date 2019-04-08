@@ -13,7 +13,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('graphqlite');
         $rootNode = $treeBuilder->getRootNode();
 
-        $rootNode
+        $rootNode->info('Read more about GraphQLite available options at: https://graphqlite.thecodingmachine.io/docs/symfony-bundle')
             ->children()
             //->scalarNode('controllers_namespace')->defaultValue('App\\Controllers')->end()
             //->scalarNode('types_namespace')->defaultValue('App\\Types')->end()
@@ -33,10 +33,10 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->arrayNode('debug')
                 ->children()
-                ->booleanNode('INCLUDE_DEBUG_MESSAGE')->defaultFalse()->end()
-                ->booleanNode('INCLUDE_TRACE')->defaultFalse()->end()
-                ->booleanNode('RETHROW_INTERNAL_EXCEPTIONS')->defaultFalse()->end()
-                ->booleanNode('RETHROW_UNSAFE_EXCEPTIONS')->defaultTrue()->end()
+                ->booleanNode('INCLUDE_DEBUG_MESSAGE')->defaultFalse()->info('Include exception messages in output when an error arises')->end()
+                ->booleanNode('INCLUDE_TRACE')->defaultFalse()->info('Include stacktrace in output when an error arises')->end()
+                ->booleanNode('RETHROW_INTERNAL_EXCEPTIONS')->defaultFalse()->info('Exceptions are not caught by the engine and propagated to Symfony')->end()
+                ->booleanNode('RETHROW_UNSAFE_EXCEPTIONS')->defaultTrue()->info('Exceptions that do not implement ClientAware interface are not caught by the engine and propagated to Symfony.')->end()
             ->end()
             ->end()
         ;
