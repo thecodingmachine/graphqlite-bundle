@@ -10,14 +10,14 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('graphqlite');
+        $treeBuilder = new TreeBuilder('graphqlite');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
             //->scalarNode('controllers_namespace')->defaultValue('App\\Controllers')->end()
             //->scalarNode('types_namespace')->defaultValue('App\\Types')->end()
-            ->arrayNode('namespace')->isRequired()
+            ->arrayNode('namespace')/*->isRequired()*/
                 ->children()
                 ->arrayNode('controllers')
                     ->requiresAtLeastOneElement()
