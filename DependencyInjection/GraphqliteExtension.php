@@ -4,12 +4,14 @@
 namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
 
 
+use function array_map;
 use GraphQL\Error\Debug;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Type\Definition\ObjectType;
 use function implode;
 use function is_dir;
 use Mouf\Composer\ClassNameMapper;
+use function rtrim;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -34,8 +36,16 @@ class GraphqliteExtension extends Extension
         //$config = $this->processConfiguration($this->getConfiguration($config, $container), $config);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/container'));
 
-        $namespaceController = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $config['namespace']['controllers']);
-        $namespaceType = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $config['namespace']['types']);
+        if (isset($configs[0]['namespace']['controllers'])) {
+            $namespaceController = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $configs[0]['namespace']['controllers']);
+        } else {
+            $namespaceController = [];
+        }
+        if (isset($configs[0]['namespace']['types'])) {
+            $namespaceType = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $configs[0]['namespace']['types']);
+        } else {
+            $namespaceType = [];
+        }
 
         $container->setParameter('graphqlite.namespace.controllers', $namespaceController);
         $container->setParameter('graphqlite.namespace.types', $namespaceType);
