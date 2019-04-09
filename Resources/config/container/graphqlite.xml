@@ -98,6 +98,8 @@
 
         <service id="TheCodingMachine\GraphQLite\TypeRegistry" />
 
+        <service id="TheCodingMachine\GraphQLite\Types\ArgumentResolver" />
+
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController" public="true" />
     </services>
 
