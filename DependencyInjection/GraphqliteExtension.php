@@ -33,16 +33,23 @@ class GraphqliteExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        //$config = $this->processConfiguration($this->getConfiguration($config, $container), $config);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/container'));
 
         if (isset($configs[0]['namespace']['controllers'])) {
-            $namespaceController = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $configs[0]['namespace']['controllers']);
+            $controllers = $configs[0]['namespace']['controllers'];
+            if (!is_array($controllers)) {
+                $controllers = [ $controllers ];
+            }
+            $namespaceController = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $controllers);
         } else {
             $namespaceController = [];
         }
         if (isset($configs[0]['namespace']['types'])) {
-            $namespaceType = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $configs[0]['namespace']['types']);
+            $types = $configs[0]['namespace']['types'];
+            if (!is_array($types)) {
+                $types = [ $types ];
+            }
+            $namespaceType = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $types);
         } else {
             $namespaceType = [];
         }
@@ -62,24 +69,6 @@ class GraphqliteExtension extends Extension
 
         $container->registerForAutoconfiguration(ObjectType::class)
             ->addTag('graphql.output_type');
-
-
-        /*$definition = $container->getDefinition(Configuration::class);
-        $definition->replaceArgument(0, $config['bean_namespace']);
-        $definition->replaceArgument(1, $config['dao_namespace']);
-
-        if (isset($config['naming'])) {
-            $definitionNamingStrategy = $container->getDefinition(\TheCodingMachine\TDBM\Utils\DefaultNamingStrategy::class);
-            $definitionNamingStrategy->addMethodCall('setBeanPrefix', [$config['naming']['bean_prefix']]);
-            $definitionNamingStrategy->addMethodCall('setBeanSuffix', [$config['naming']['bean_suffix']]);
-            $definitionNamingStrategy->addMethodCall('setBaseBeanPrefix', [$config['naming']['base_bean_prefix']]);
-            $definitionNamingStrategy->addMethodCall('setBaseBeanSuffix', [$config['naming']['base_bean_suffix']]);
-            $definitionNamingStrategy->addMethodCall('setDaoPrefix', [$config['naming']['dao_prefix']]);
-            $definitionNamingStrategy->addMethodCall('setDaoSuffix', [$config['naming']['dao_suffix']]);
-            $definitionNamingStrategy->addMethodCall('setBaseDaoPrefix', [$config['naming']['base_dao_prefix']]);
-            $definitionNamingStrategy->addMethodCall('setBaseDaoSuffix', [$config['naming']['base_dao_suffix']]);
-            $definitionNamingStrategy->addMethodCall('setExceptions', [$config['naming']['exceptions']]);
-        }*/
     }
 
     private function getNamespaceDir(string $namespace): string
