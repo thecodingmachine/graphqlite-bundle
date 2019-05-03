@@ -23,7 +23,6 @@ use Symfony\Component\DependencyInjection\Reference;
 use TheCodingMachine\GraphQLite\AnnotationReader;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Query;
-use TheCodingMachine\Graphqlite\Bundle\Mappers\ContainerFetcherTypeMapper;
 use TheCodingMachine\Graphqlite\Bundle\QueryProviders\ControllerQueryProvider;
 use TheCodingMachine\GraphQLite\FieldsBuilder;
 use TheCodingMachine\GraphQLite\FieldsBuilderFactory;

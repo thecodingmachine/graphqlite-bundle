@@ -85,15 +85,6 @@
             </call>
         </service>
 
-        <!-- <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\ContainerFetcherTypeMapper">
-            <argument type="service" id="service_container" />
-            <argument type="collection" />
-            <argument type="collection" />
-            <argument type="collection" />
-
-            <tag name="graphql.type_mapper"/>
-        </service> -->
-
         <service id="TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper">
             <tag name="graphql.type_mapper"/>
         </service>
