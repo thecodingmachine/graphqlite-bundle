@@ -23,13 +23,15 @@ use Symfony\Component\DependencyInjection\Reference;
 use TheCodingMachine\GraphQLite\AnnotationReader;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Query;
-use TheCodingMachine\Graphqlite\Bundle\Mappers\ContainerFetcherTypeMapper;
 use TheCodingMachine\Graphqlite\Bundle\QueryProviders\ControllerQueryProvider;
+use TheCodingMachine\GraphQLite\FieldsBuilder;
 use TheCodingMachine\GraphQLite\FieldsBuilderFactory;
 use TheCodingMachine\GraphQLite\InputTypeGenerator;
 use TheCodingMachine\GraphQLite\InputTypeUtils;
+use TheCodingMachine\GraphQLite\Mappers\CompositeTypeMapper;
 use TheCodingMachine\GraphQLite\Mappers\GlobTypeMapper;
 use TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapperInterface;
+use TheCodingMachine\GraphQLite\Mappers\Root\CompositeRootTypeMapper;
 use TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper;
 use TheCodingMachine\GraphQLite\NamingStrategy;
 use TheCodingMachine\GraphQLite\TypeGenerator;
@@ -130,8 +132,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
                 $queryProvider->setPrivate(true);
                 $queryProvider->setFactory([self::class, 'createQueryProvider']);
                 $queryProvider->addArgument(new Reference($id));
-                $queryProvider->addArgument(new Reference(FieldsBuilderFactory::class));
-                $queryProvider->addArgument(new Reference(RecursiveTypeMapperInterface::class));
+                $queryProvider->addArgument(new Reference(FieldsBuilder::class));
                 $queryProvider->addTag('graphql.queryprovider');
                 $container->setDefinition($controllerIdentifier, $queryProvider);
             }
@@ -174,14 +175,22 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             $definition = $container->getDefinition(StaticTypeMapper::class);
             $definition->addMethodCall('setNotMappedTypes', [$customNotMappedTypes]);
         }
+
+        // Register type mappers
+        $typeMapperServices = $container->findTaggedServiceIds('graphql.type_mapper');
+        $compositeTypeMapper = $container->getDefinition(CompositeTypeMapper::class);
+        foreach ($typeMapperServices as $id => $tags) {
+            // add the transport service to the TransportChain service
+            $compositeTypeMapper->addMethodCall('addTypeMapper', [new Reference($id)]);
+        }
     }
 
     /**
      * @param object $controller
      */
-    public static function createQueryProvider($controller, FieldsBuilderFactory $fieldsBuilderFactory, RecursiveTypeMapperInterface $recursiveTypeMapper): ControllerQueryProvider
+    public static function createQueryProvider($controller, FieldsBuilder $fieldsBuilder): ControllerQueryProvider
     {
-        return new ControllerQueryProvider($controller, $fieldsBuilderFactory->buildFieldsBuilder($recursiveTypeMapper));
+        return new ControllerQueryProvider($controller, $fieldsBuilder);
     }
 
     /**
