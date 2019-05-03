@@ -23,7 +23,21 @@
 
         <service id="TheCodingMachine\GraphQLite\QueryProviderInterface" alias="TheCodingMachine\GraphQLite\AggregateQueryProvider" />
 
-        <service id="TheCodingMachine\GraphQLite\FieldsBuilderFactory" public="true" />
+        <service id="TheCodingMachine\GraphQLite\Mappers\Root\CompositeRootTypeMapper">
+            <argument type="tagged" tag="graphql.root_type_mapper" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\Root\RootTypeMapperInterface" alias="TheCodingMachine\GraphQLite\Mappers\Root\CompositeRootTypeMapper" />
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\Root\MyCLabsEnumTypeMapper">
+            <tag name="graphql.root_type_mapper" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\Root\BaseTypeMapper">
+            <tag name="graphql.root_type_mapper" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\FieldsBuilder" public="true" />
 
         <service id="TheCodingMachine\GraphQLite\AnnotationReader" >
             <argument key="$mode">%graphqlite.annotations.error_mode%</argument>
