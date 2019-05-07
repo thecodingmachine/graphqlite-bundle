@@ -29,6 +29,12 @@
 
         <service id="TheCodingMachine\GraphQLite\Mappers\Root\RootTypeMapperInterface" alias="TheCodingMachine\GraphQLite\Mappers\Root\CompositeRootTypeMapper" />
 
+        <service id="TheCodingMachine\GraphQLite\Mappers\Parameters\CompositeParameterMapper">
+            <argument type="tagged" tag="graphql.parameter_mapper" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\Parameters\ParameterMapperInterface" alias="TheCodingMachine\GraphQLite\Mappers\Parameters\CompositeParameterMapper" />
+
         <service id="TheCodingMachine\GraphQLite\Mappers\Root\MyCLabsEnumTypeMapper">
             <tag name="graphql.root_type_mapper" />
         </service>
