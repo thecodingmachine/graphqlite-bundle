@@ -16,7 +16,7 @@
   }
   ],
   "require" : {
-    "php" : ">=7.1",
+    "php" : ">=7.2",
     "thecodingmachine/graphqlite" : "~4.0.0",
     "symfony/framework-bundle": "^4.1.9",
     "doctrine/annotations": "^1.6",
