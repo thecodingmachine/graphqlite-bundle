@@ -56,4 +56,13 @@ class TestGraphqlController
     {
         return new ArrayResult([new Contact('Mouf')]);
     }
+
+    /**
+     * @Query()
+     * @return string
+     */
+    public function triggerError(): string
+    {
+        throw new MyException('Boom');
+    }
 }

@@ -58,4 +58,29 @@ class FunctionalTest extends TestCase
             ]
         ], $result);
     }
+
+    public function testErrors()
+    {
+        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          notExists
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $this->assertSame(400, $response->getStatusCode());
+
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          triggerError
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $this->assertSame(500, $response->getStatusCode());
+
+    }
 }
