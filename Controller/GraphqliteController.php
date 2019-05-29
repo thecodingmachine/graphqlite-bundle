@@ -12,6 +12,7 @@ use GraphQL\Executor\ExecutionResult;
 use GraphQL\Executor\Promise\Promise;
 use GraphQL\Server\StandardServer;
 use GraphQL\Upload\UploadMiddleware;
+use function in_array;
 use function json_decode;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -131,6 +132,10 @@ class GraphqliteController
                 $code = 400;
             } else {
                 $code = $error->getCode();
+                if (!isset(Response::$statusTexts[$code])) {
+                    // The exception code is not a valid HTTP code. Let's ignore it
+                    continue;
+                }
             }
             $status = max($status, $code);
         }
