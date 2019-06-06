@@ -162,7 +162,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
                     }
                     $customTypes[$phpClass] = new Reference($id);
                 } else {
-                    $customNotMappedTypes = new Reference($id);
+                    $customNotMappedTypes[] = new Reference($id);
                 }
             }
         }
