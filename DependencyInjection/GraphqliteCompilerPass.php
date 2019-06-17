@@ -9,18 +9,32 @@ use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Cache\ApcuCache;
+use function error_log;
+use Mouf\Composer\ClassNameMapper;
+use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Simple\ApcuCache as SymfonyApcuCache;
+use Symfony\Component\Cache\Simple\PhpFilesCache as SymfonyPhpFilesCache;
 use function function_exists;
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
+use ReflectionMethod;
 use function str_replace;
 use function strpos;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use TheCodingMachine\CacheUtils\ClassBoundCache;
+use TheCodingMachine\CacheUtils\ClassBoundCacheContract;
+use TheCodingMachine\CacheUtils\ClassBoundCacheContractInterface;
+use TheCodingMachine\CacheUtils\ClassBoundMemoryAdapter;
+use TheCodingMachine\CacheUtils\FileBoundCache;
+use TheCodingMachine\ClassExplorer\Glob\GlobClassExplorer;
 use TheCodingMachine\GraphQLite\AnnotationReader;
+use TheCodingMachine\GraphQLite\Annotations\AbstractRequest;
+use TheCodingMachine\GraphQLite\Annotations\Field;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Query;
 use TheCodingMachine\Graphqlite\Bundle\QueryProviders\ControllerQueryProvider;
@@ -68,6 +82,11 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             $globTtl = 2;
         }
 
+        /**
+         * @var array<string, array<int, string>>
+         */
+        $classToServicesMap = [];
+
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->getClass() === null) {
                 continue;
@@ -90,15 +109,26 @@ class GraphqliteCompilerPass implements CompilerPassInterface
                     }
                     if ($typeAnnotation !== null || $this->getAnnotationReader()->getExtendTypeAnnotation($reflectionClass) !== null) {
                         $definition->setPublic(true);
-                    } else {
-                        foreach ($reflectionClass->getMethods() as $method) {
-                            $factory = $reader->getFactoryAnnotation($method);
-                            if ($factory !== null) {
-                                $definition->setPublic(true);
-                            }
+                    }
+                    foreach ($reflectionClass->getMethods() as $method) {
+                        $factory = $reader->getFactoryAnnotation($method);
+                        if ($factory !== null) {
+                            $definition->setPublic(true);
                         }
                     }
                 }
+            }
+        }
+
+        foreach ($controllersNamespaces as $controllersNamespace) {
+            foreach ($this->getClassList($controllersNamespace) as $className => $refClass) {
+                $this->makePublicInjectedServices($refClass, $reader, $container);
+            }
+        }
+
+        foreach ($typesNamespaces as $typeNamespace) {
+            foreach ($this->getClassList($typeNamespace) as $className => $refClass) {
+                $this->makePublicInjectedServices($refClass, $reader, $container);
             }
         }
 
@@ -185,6 +215,45 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         }
     }
 
+    private function makePublicInjectedServices(ReflectionClass $refClass, AnnotationReader $reader, ContainerBuilder $container): void
+    {
+        $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container) {
+            $services = [];
+            foreach ($refClass->getMethods() as $method) {
+                $field = $reader->getRequestAnnotation($method, AbstractRequest::class);
+                if ($field !== null) {
+                    $services += $this->getListOfInjectedServices($method, $container);
+                }
+            }
+            return $services;
+        });
+
+        foreach ($services as $service) {
+            $container->getDefinition($service)->setPublic(true);
+        }
+
+    }
+
+    /**
+     * @param ReflectionMethod $method
+     * @param ContainerBuilder $container
+     * @return array<string, string> key = value = service name
+     */
+    private function getListOfInjectedServices(ReflectionMethod $method, ContainerBuilder $container): array
+    {
+        $services = [];
+        foreach ($method->getParameters() as $parameter) {
+            $type = $parameter->getType();
+            if ($type !== null) {
+                $fqcn = $type->getName();
+                if ($container->has($fqcn)) {
+                    $services[$fqcn] = $fqcn;
+                }
+            }
+        }
+        return $services;
+    }
+
     /**
      * @param object $controller
      */
@@ -211,4 +280,59 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         }
         return $this->annotationReader;
     }
+
+    /**
+     * @var CacheInterface
+     */
+    private $cache;
+
+    private function getPsr16Cache(): CacheInterface
+    {
+        if ($this->cache === null) {
+            if (function_exists('apcu_fetch')) {
+                $this->cache = new SymfonyApcuCache('graphqlite_bundle');
+            } else {
+                $this->cache = new SymfonyPhpFilesCache('graphqlite_bundle');
+            }
+        }
+        return $this->cache;
+    }
+
+    /**
+     * @var ClassBoundCacheContractInterface
+     */
+    private $codeCache;
+
+    private function getCodeCache(): ClassBoundCacheContractInterface
+    {
+        if ($this->codeCache === null) {
+            $this->codeCache = new ClassBoundCacheContract(new ClassBoundMemoryAdapter(new ClassBoundCache(new FileBoundCache($this->getPsr16Cache()))));
+        }
+        return $this->codeCache;
+    }
+
+    /**
+     * Returns the array of globbed classes.
+     * Only instantiable classes are returned.
+     *
+     * @return array<string,ReflectionClass> Key: fully qualified class name
+     */
+    private function getClassList(string $namespace, int $globTtl = 2, bool $recursive = true): array
+    {
+        $explorer      = new GlobClassExplorer($namespace, $this->getPsr16Cache(), $globTtl, ClassNameMapper::createFromComposerFile(null, null, true), $recursive);
+        $allClasses       = $explorer->getClasses();
+        foreach ($allClasses as $className) {
+            if (! class_exists($className)) {
+                continue;
+            }
+            $refClass = new ReflectionClass($className);
+            if (! $refClass->isInstantiable()) {
+                continue;
+            }
+            $classes[$className] = $refClass;
+        }
+
+        return $classes;
+    }
+
 }

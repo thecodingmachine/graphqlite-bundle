@@ -17,14 +17,15 @@
   ],
   "require" : {
     "php" : ">=7.2",
-    "thecodingmachine/graphqlite" : "~4.0.0",
+    "thecodingmachine/graphqlite" : "dev-autowiring as 4.0.0",
     "symfony/framework-bundle": "^4.1.9",
     "doctrine/annotations": "^1.6",
     "doctrine/cache": "^1.8",
     "symfony/psr-http-message-bridge": "^1",
     "nyholm/psr7": "^1.1",
     "zendframework/zend-diactoros": "^1.8.6",
-    "overblog/graphiql-bundle": "^0.1.2"
+    "overblog/graphiql-bundle": "^0.1.2",
+    "thecodingmachine/cache-utils": "^1"
   },
   "require-dev": {
     "symfony/security-bundle": "^4.1.9",
@@ -33,6 +34,12 @@
     "phpstan/phpstan": "^0.10.6",
     "beberlei/porpaginas": "^1.2"
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/moufmouf/graphqlite"
+    }
+  ],
   "scripts": {
     "phpstan": "phpstan analyse GraphqliteBundle.php DependencyInjection/ Controller/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
   },
