@@ -75,6 +75,9 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         $controllersNamespaces = $container->getParameter('graphqlite.namespace.controllers');
         $typesNamespaces = $container->getParameter('graphqlite.namespace.types');
 
+        $autowireByParameterName = $container->getParameter('graphqlite.autowire.by_parameter_name');
+        $autowireByClassName = $container->getParameter('graphqlite.autowire.by_class_name');
+
         // 2 seconds of TTL in environment mode. Otherwise, let's cache forever!
         $env = $container->getParameter('kernel.environment');
         $globTtl = null;
@@ -120,15 +123,17 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             }
         }
 
-        foreach ($controllersNamespaces as $controllersNamespace) {
-            foreach ($this->getClassList($controllersNamespace) as $className => $refClass) {
-                $this->makePublicInjectedServices($refClass, $reader, $container);
+        if ($autowireByParameterName || $autowireByClassName) {
+            foreach ($controllersNamespaces as $controllersNamespace) {
+                foreach ($this->getClassList($controllersNamespace) as $className => $refClass) {
+                    $this->makePublicInjectedServices($refClass, $reader, $container, $autowireByClassName, $autowireByParameterName);
+                }
             }
-        }
 
-        foreach ($typesNamespaces as $typeNamespace) {
-            foreach ($this->getClassList($typeNamespace) as $className => $refClass) {
-                $this->makePublicInjectedServices($refClass, $reader, $container);
+            foreach ($typesNamespaces as $typeNamespace) {
+                foreach ($this->getClassList($typeNamespace) as $className => $refClass) {
+                    $this->makePublicInjectedServices($refClass, $reader, $container, $autowireByClassName, $autowireByParameterName);
+                }
             }
         }
 
@@ -215,14 +220,14 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         }
     }
 
-    private function makePublicInjectedServices(ReflectionClass $refClass, AnnotationReader $reader, ContainerBuilder $container): void
+    private function makePublicInjectedServices(ReflectionClass $refClass, AnnotationReader $reader, ContainerBuilder $container, bool $autowireByClassName, bool $autowireByParameterName): void
     {
-        $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container) {
+        $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container, $autowireByClassName, $autowireByParameterName) {
             $services = [];
             foreach ($refClass->getMethods() as $method) {
                 $field = $reader->getRequestAnnotation($method, AbstractRequest::class);
                 if ($field !== null) {
-                    $services += $this->getListOfInjectedServices($method, $container);
+                    $services += $this->getListOfInjectedServices($method, $container, $autowireByClassName, $autowireByParameterName);
                 }
             }
             return $services;
@@ -239,15 +244,23 @@ class GraphqliteCompilerPass implements CompilerPassInterface
      * @param ContainerBuilder $container
      * @return array<string, string> key = value = service name
      */
-    private function getListOfInjectedServices(ReflectionMethod $method, ContainerBuilder $container): array
+    private function getListOfInjectedServices(ReflectionMethod $method, ContainerBuilder $container, bool $autowireByClassName, bool $autowireByParameterName): array
     {
         $services = [];
         foreach ($method->getParameters() as $parameter) {
-            $type = $parameter->getType();
-            if ($type !== null) {
-                $fqcn = $type->getName();
-                if ($container->has($fqcn)) {
-                    $services[$fqcn] = $fqcn;
+            if ($autowireByParameterName) {
+                $parameterName = $parameter->getName();
+                if ($container->has($parameterName)) {
+                    $services[$parameterName] = $parameterName;
+                }
+            }
+            if ($autowireByClassName) {
+                $type = $parameter->getType();
+                if ($type !== null) {
+                    $fqcn = $type->getName();
+                    if ($container->has($fqcn)) {
+                        $services[$fqcn] = $fqcn;
+                    }
                 }
             }
         }

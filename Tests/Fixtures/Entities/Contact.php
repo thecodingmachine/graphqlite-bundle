@@ -38,9 +38,9 @@ class Contact
      * @Field()
      * @return string
      */
-    public function injectService(TestGraphqlController $testService = null): string
+    public function injectService(TestGraphqlController $testService = null, stdClass $someService = null): string
     {
-        if (!$testService instanceof TestGraphqlController) {
+        if (!$testService instanceof TestGraphqlController || $someService === null) {
             return 'KO';
         }
         return 'OK';
