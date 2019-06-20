@@ -40,6 +40,9 @@ class GraphqliteTestingKernel extends Kernel
                 'namespace' => [
                     'controllers' => ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Controller\\'],
                     'types' => ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Entities\\']
+                ],
+                'autowire' => [
+                    'by_parameter_name' => true
                 ]
             ));
         });

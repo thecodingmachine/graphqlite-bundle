@@ -29,6 +29,17 @@
 
         <service id="TheCodingMachine\GraphQLite\Mappers\Root\RootTypeMapperInterface" alias="TheCodingMachine\GraphQLite\Mappers\Root\CompositeRootTypeMapper" />
 
+        <service id="TheCodingMachine\GraphQLite\Mappers\Parameters\ResolveInfoParameterMapper">
+            <tag name="graphql.parameter_mapper" />
+        </service>
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\Parameters\ContainerParameterMapper">
+            <argument type="service" id="service_container" />
+            <argument>%graphqlite.autowire.by_class_name%</argument>
+            <argument>%graphqlite.autowire.by_parameter_name%</argument>
+            <tag name="graphql.parameter_mapper" />
+        </service>
+
         <service id="TheCodingMachine\GraphQLite\Mappers\Parameters\CompositeParameterMapper">
             <argument type="tagged" tag="graphql.parameter_mapper" />
         </service>

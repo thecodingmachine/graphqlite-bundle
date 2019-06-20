@@ -54,8 +54,22 @@ class GraphqliteExtension extends Extension
             $namespaceType = [];
         }
 
+        if (isset($configs[0]['autowire']['by_class_name'])) {
+            $autowireByClassName = $configs[0]['autowire']['by_class_name'];
+        } else {
+            $autowireByClassName = true;
+        }
+        if (isset($configs[0]['autowire']['by_parameter_name'])) {
+            $autowireByParameterName = $configs[0]['autowire']['by_parameter_name'];
+        } else {
+            $autowireByParameterName = false;
+        }
+
         $container->setParameter('graphqlite.namespace.controllers', $namespaceController);
         $container->setParameter('graphqlite.namespace.types', $namespaceType);
+
+        $container->setParameter('graphqlite.autowire.by_class_name', $autowireByClassName);
+        $container->setParameter('graphqlite.autowire.by_parameter_name', $autowireByParameterName);
 
         $loader->load('graphqlite.xml');
 

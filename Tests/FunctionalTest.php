@@ -2,6 +2,7 @@
 
 namespace TheCodingMachine\Graphqlite\Bundle\Tests;
 
+use function json_decode;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use TheCodingMachine\GraphQLite\Schema;
@@ -54,6 +55,36 @@ class FunctionalTest extends TestCase
                 ],
                 'contacts' => [
                     'count' => 1
+                ]
+            ]
+        ], $result);
+    }
+
+    public function testServiceAutowiring()
+    {
+        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        $schema = $container->get(Schema::class);
+        $this->assertInstanceOf(Schema::class, $schema);
+        $schema->assertValid();
+
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          contact {
+            injectService
+          } 
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame([
+            'data' => [
+                'contact' => [
+                    'injectService' => 'OK',
                 ]
             ]
         ], $result);
