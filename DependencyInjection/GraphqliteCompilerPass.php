@@ -332,8 +332,9 @@ class GraphqliteCompilerPass implements CompilerPassInterface
      */
     private function getClassList(string $namespace, int $globTtl = 2, bool $recursive = true): array
     {
-        $explorer      = new GlobClassExplorer($namespace, $this->getPsr16Cache(), $globTtl, ClassNameMapper::createFromComposerFile(null, null, true), $recursive);
-        $allClasses       = $explorer->getClasses();
+        $explorer = new GlobClassExplorer($namespace, $this->getPsr16Cache(), $globTtl, ClassNameMapper::createFromComposerFile(null, null, true), $recursive);
+        $allClasses = $explorer->getClasses();
+        $classes = [];
         foreach ($allClasses as $className) {
             if (! class_exists($className)) {
                 continue;
