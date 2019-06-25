@@ -248,37 +248,33 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         $services = [];
 
         /**
-         * @var Parameter[] $parameterAnnotations
+         * @var Autowire[] $autowireAnnotations
          */
-        $parameterAnnotations = $this->getAnnotationReader()->getMethodAnnotations($method, Parameter::class);
+        $autowireAnnotations = $this->getAnnotationReader()->getMethodAnnotations($method, Autowire::class);
 
         $parametersByName = null;
 
-        foreach ($parameterAnnotations as $parameterAnnotation) {
-            /** @var Autowire|null $autowire */
-            $autowire = $parameterAnnotation->getAnnotationByType(Autowire::class);
-            if ($autowire) {
-                $target = $parameterAnnotation->getFor();
+        foreach ($autowireAnnotations as $autowire) {
+            $target = $autowire->getTarget();
 
-                if ($parametersByName === null) {
-                    $parametersByName = self::getParametersByName($method);
-                }
+            if ($parametersByName === null) {
+                $parametersByName = self::getParametersByName($method);
+            }
 
-                if (!isset($parametersByName[$target])) {
-                    throw new GraphQLException('In method '.$method->getDeclaringClass()->getName().'::'.$method->getName().', the @Autowire annotation refers to a non existing parameter named "'.$target.'"');
-                }
+            if (!isset($parametersByName[$target])) {
+                throw new GraphQLException('In method '.$method->getDeclaringClass()->getName().'::'.$method->getName().', the @Autowire annotation refers to a non existing parameter named "'.$target.'"');
+            }
 
-                $id = $autowire->getIdentifier();
-                if ($id !== null) {
-                    $services[$id] = $id;
-                } else {
-                    $parameter = $parametersByName[$target];
-                    $type = $parameter->getType();
-                    if ($type !== null) {
-                        $fqcn = $type->getName();
-                        if ($container->has($fqcn)) {
-                            $services[$fqcn] = $fqcn;
-                        }
+            $id = $autowire->getIdentifier();
+            if ($id !== null) {
+                $services[$id] = $id;
+            } else {
+                $parameter = $parametersByName[$target];
+                $type = $parameter->getType();
+                if ($type !== null) {
+                    $fqcn = $type->getName();
+                    if ($container->has($fqcn)) {
+                        $services[$fqcn] = $fqcn;
                     }
                 }
             }

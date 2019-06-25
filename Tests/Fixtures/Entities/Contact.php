@@ -4,11 +4,8 @@
 namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities;
 
 
-use DateTimeInterface;
-use Psr\Http\Message\UploadedFileInterface;
 use stdClass;
 use TheCodingMachine\GraphQLite\Annotations\Field;
-use TheCodingMachine\GraphQLite\Annotations\Parameter;
 use TheCodingMachine\GraphQLite\Annotations\Type;
 use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Controller\TestGraphqlController;
 use TheCodingMachine\GraphQLite\Annotations\Autowire;
@@ -38,8 +35,8 @@ class Contact
 
     /**
      * @Field()
-     * @Parameter(for="$testService", annotations={@Autowire})
-     * @Parameter(for="$someService", annotations={@Autowire(identifier="someService")})
+     * @Autowire(for="$testService")
+     * @Autowire(for="$someService", identifier="someService")
      * @return string
      */
     public function injectService(TestGraphqlController $testService = null, stdClass $someService = null): string
