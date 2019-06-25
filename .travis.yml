@@ -53,3 +53,6 @@ script:
   #- ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS
   - composer phpstan
   - ./vendor/bin/phpunit
+
+after_script:
+  - ./vendor/bin/php-coveralls -v
