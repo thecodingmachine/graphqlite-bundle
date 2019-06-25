@@ -128,14 +128,15 @@ class GraphqliteController
         $status = 0;
         // There might be many errors. Let's return the highest code we encounter.
         foreach ($result->errors as $error) {
-            if ($error->getCategory() === Error::CATEGORY_GRAPHQL) {
-                $code = 400;
-            } else {
-                $code = $error->getCode();
+            $wrappedException = $error->getPrevious();
+            if ($wrappedException !== null) {
+                $code = $wrappedException->getCode();
                 if (!isset(Response::$statusTexts[$code])) {
                     // The exception code is not a valid HTTP code. Let's ignore it
                     continue;
                 }
+            } else {
+                $code = 400;
             }
             $status = max($status, $code);
         }
