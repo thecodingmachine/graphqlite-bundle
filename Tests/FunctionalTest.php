@@ -113,5 +113,13 @@ class FunctionalTest extends TestCase
 
         $this->assertSame(500, $response->getStatusCode());
 
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          triggerError(code: 404)
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $this->assertSame(404, $response->getStatusCode(), $response->getContent());
     }
 }
