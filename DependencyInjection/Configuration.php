@@ -37,12 +37,6 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('RETHROW_UNSAFE_EXCEPTIONS')->defaultTrue()->info('Exceptions that do not implement ClientAware interface are not caught by the engine and propagated to Symfony.')->end()
                 ->end()
             ->end()
-            ->arrayNode('autowire')
-                ->children()
-                ->booleanNode('by_class_name')->defaultTrue()->info('Autowire services based on the parameter\'s fully qualified class name')->end()
-                ->booleanNode('by_parameter_name')->defaultFalse()->info('Autowire services based on the parameter\'s name')->end()
-                ->end()
-            ->end()
         ;
 
         return $treeBuilder;
