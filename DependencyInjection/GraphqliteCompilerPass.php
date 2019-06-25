@@ -79,9 +79,6 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         $controllersNamespaces = $container->getParameter('graphqlite.namespace.controllers');
         $typesNamespaces = $container->getParameter('graphqlite.namespace.types');
 
-        $autowireByParameterName = $container->getParameter('graphqlite.autowire.by_parameter_name');
-        $autowireByClassName = $container->getParameter('graphqlite.autowire.by_class_name');
-
         // 2 seconds of TTL in environment mode. Otherwise, let's cache forever!
         $env = $container->getParameter('kernel.environment');
         $globTtl = null;
@@ -127,17 +124,15 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             }
         }
 
-        if ($autowireByParameterName || $autowireByClassName) {
-            foreach ($controllersNamespaces as $controllersNamespace) {
-                foreach ($this->getClassList($controllersNamespace) as $className => $refClass) {
-                    $this->makePublicInjectedServices($refClass, $reader, $container, $autowireByClassName, $autowireByParameterName);
-                }
+        foreach ($controllersNamespaces as $controllersNamespace) {
+            foreach ($this->getClassList($controllersNamespace) as $className => $refClass) {
+                $this->makePublicInjectedServices($refClass, $reader, $container);
             }
+        }
 
-            foreach ($typesNamespaces as $typeNamespace) {
-                foreach ($this->getClassList($typeNamespace) as $className => $refClass) {
-                    $this->makePublicInjectedServices($refClass, $reader, $container, $autowireByClassName, $autowireByParameterName);
-                }
+        foreach ($typesNamespaces as $typeNamespace) {
+            foreach ($this->getClassList($typeNamespace) as $className => $refClass) {
+                $this->makePublicInjectedServices($refClass, $reader, $container);
             }
         }
 
@@ -224,14 +219,14 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         }
     }
 
-    private function makePublicInjectedServices(ReflectionClass $refClass, AnnotationReader $reader, ContainerBuilder $container, bool $autowireByClassName, bool $autowireByParameterName): void
+    private function makePublicInjectedServices(ReflectionClass $refClass, AnnotationReader $reader, ContainerBuilder $container): void
     {
-        $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container, $autowireByClassName, $autowireByParameterName) {
+        $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container) {
             $services = [];
             foreach ($refClass->getMethods() as $method) {
                 $field = $reader->getRequestAnnotation($method, AbstractRequest::class);
                 if ($field !== null) {
-                    $services += $this->getListOfInjectedServices($method, $container, $autowireByClassName, $autowireByParameterName);
+                    $services += $this->getListOfInjectedServices($method, $container);
                 }
             }
             return $services;
@@ -248,7 +243,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
      * @param ContainerBuilder $container
      * @return array<string, string> key = value = service name
      */
-    private function getListOfInjectedServices(ReflectionMethod $method, ContainerBuilder $container, bool $autowireByClassName, bool $autowireByParameterName): array
+    private function getListOfInjectedServices(ReflectionMethod $method, ContainerBuilder $container): array
     {
         $services = [];
 
