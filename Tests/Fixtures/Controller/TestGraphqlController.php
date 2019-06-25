@@ -62,7 +62,7 @@ class TestGraphqlController
      * @Query()
      * @return string
      */
-    public function triggerException(int $code = 500): string
+    public function triggerException(int $code = 0): string
     {
         throw new MyException('Boom', $code);
     }

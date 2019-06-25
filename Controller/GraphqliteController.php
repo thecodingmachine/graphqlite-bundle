@@ -117,11 +117,7 @@ class GraphqliteController
     private function decideHttpStatusCode(ExecutionResult $result): int
     {
         // If the data entry in the response has any value other than null (when the operation has successfully executed without error) then the response should use the 200 (OK) status code.
-        if ($result->data !== null) {
-            return 200;
-        }
-
-        if (empty($result->errors)) {
+        if ($result->data !== null || empty($result->errors)) {
             return 200;
         }
 
