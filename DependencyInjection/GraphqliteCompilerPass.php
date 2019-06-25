@@ -12,6 +12,7 @@ use Doctrine\Common\Cache\ApcuCache;
 use function error_log;
 use Mouf\Composer\ClassNameMapper;
 use Psr\SimpleCache\CacheInterface;
+use ReflectionParameter;
 use Symfony\Component\Cache\Simple\ApcuCache as SymfonyApcuCache;
 use Symfony\Component\Cache\Simple\PhpFilesCache as SymfonyPhpFilesCache;
 use function function_exists;
@@ -34,12 +35,15 @@ use TheCodingMachine\CacheUtils\FileBoundCache;
 use TheCodingMachine\ClassExplorer\Glob\GlobClassExplorer;
 use TheCodingMachine\GraphQLite\AnnotationReader;
 use TheCodingMachine\GraphQLite\Annotations\AbstractRequest;
+use TheCodingMachine\GraphQLite\Annotations\Autowire;
 use TheCodingMachine\GraphQLite\Annotations\Field;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
+use TheCodingMachine\GraphQLite\Annotations\Parameter;
 use TheCodingMachine\GraphQLite\Annotations\Query;
 use TheCodingMachine\Graphqlite\Bundle\QueryProviders\ControllerQueryProvider;
 use TheCodingMachine\GraphQLite\FieldsBuilder;
 use TheCodingMachine\GraphQLite\FieldsBuilderFactory;
+use TheCodingMachine\GraphQLite\GraphQLException;
 use TheCodingMachine\GraphQLite\InputTypeGenerator;
 use TheCodingMachine\GraphQLite\InputTypeUtils;
 use TheCodingMachine\GraphQLite\Mappers\CompositeTypeMapper;
@@ -247,24 +251,58 @@ class GraphqliteCompilerPass implements CompilerPassInterface
     private function getListOfInjectedServices(ReflectionMethod $method, ContainerBuilder $container, bool $autowireByClassName, bool $autowireByParameterName): array
     {
         $services = [];
-        foreach ($method->getParameters() as $parameter) {
-            if ($autowireByParameterName) {
-                $parameterName = $parameter->getName();
-                if ($container->has($parameterName)) {
-                    $services[$parameterName] = $parameterName;
+
+        /**
+         * @var Parameter[] $parameterAnnotations
+         */
+        $parameterAnnotations = $this->getAnnotationReader()->getMethodAnnotations($method, Parameter::class);
+
+        $parametersByName = null;
+
+        foreach ($parameterAnnotations as $parameterAnnotation) {
+            /** @var Autowire|null $autowire */
+            $autowire = $parameterAnnotation->getAnnotationByType(Autowire::class);
+            if ($autowire) {
+                $target = $parameterAnnotation->getFor();
+
+                if ($parametersByName === null) {
+                    $parametersByName = self::getParametersByName($method);
                 }
-            }
-            if ($autowireByClassName) {
-                $type = $parameter->getType();
-                if ($type !== null) {
-                    $fqcn = $type->getName();
-                    if ($container->has($fqcn)) {
-                        $services[$fqcn] = $fqcn;
+
+                if (!isset($parametersByName[$target])) {
+                    throw new GraphQLException('In method '.$method->getDeclaringClass()->getName().'::'.$method->getName().', the @Autowire annotation refers to a non existing parameter named "'.$target.'"');
+                }
+
+                $id = $autowire->getIdentifier();
+                if ($id !== null) {
+                    $services[$id] = $id;
+                } else {
+                    $parameter = $parametersByName[$target];
+                    $type = $parameter->getType();
+                    if ($type !== null) {
+                        $fqcn = $type->getName();
+                        if ($container->has($fqcn)) {
+                            $services[$fqcn] = $fqcn;
+                        }
                     }
                 }
             }
         }
+
         return $services;
+    }
+
+    /**
+     * @param ReflectionMethod $method
+     * @return array<string, ReflectionParameter>
+     */
+    private static function getParametersByName(ReflectionMethod $method): array
+    {
+        $parameters = [];
+        foreach ($method->getParameters() as $parameter) {
+            $parameters[$parameter->getName()] = $parameter;
+        }
+        return $parameters;
     }
 
     /**
