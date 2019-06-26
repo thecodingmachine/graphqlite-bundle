@@ -8,6 +8,7 @@ use GraphQL\Error\Error;
 use Porpaginas\Arrays\ArrayResult;
 use TheCodingMachine\GraphQLite\Annotations\FailWith;
 use TheCodingMachine\GraphQLite\Annotations\Logged;
+use TheCodingMachine\GraphQLite\Annotations\Right;
 use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Contact;
 use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Product;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
@@ -76,6 +77,28 @@ class TestGraphqlController
      * @return string
      */
     public function loggedQuery(): string
+    {
+        return 'foo';
+    }
+
+    /**
+     * @Query()
+     * @Right("ROLE_ADMIN")
+     * @FailWith(null)
+     * @return string
+     */
+    public function withAdminRight(): string
+    {
+        return 'foo';
+    }
+
+    /**
+     * @Query()
+     * @Right("ROLE_USER")
+     * @FailWith(null)
+     * @return string
+     */
+    public function withUserRight(): string
     {
         return 'foo';
     }

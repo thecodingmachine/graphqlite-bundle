@@ -12,65 +12,28 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
+        <service id="TheCodingMachine\GraphQLite\SchemaFactory">
+            <argument index="1" type="service" id="service_container" />
+            <call method="setAuthenticationService">
+                <argument type="service" id="TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface" />
+            </call>
+            <call method="setAuthorizationService">
+                <argument type="service" id="TheCodingMachine\GraphQLite\Security\AuthorizationServiceInterface" />
+            </call>
+        </service>
+
         <service id="TheCodingMachine\GraphQLite\Schema" public="true">
+            <factory service="TheCodingMachine\GraphQLite\SchemaFactory"
+                     method="createSchema"
+            />
         </service>
 
         <service id="GraphQL\Type\Schema" alias="TheCodingMachine\GraphQLite\Schema" />
 
-        <service id="TheCodingMachine\GraphQLite\AggregateQueryProvider">
-            <argument type="tagged" tag="graphql.queryprovider" />
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\QueryProviderInterface" alias="TheCodingMachine\GraphQLite\AggregateQueryProvider" />
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\Root\CompositeRootTypeMapper">
-            <argument type="tagged" tag="graphql.root_type_mapper" />
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\Root\RootTypeMapperInterface" alias="TheCodingMachine\GraphQLite\Mappers\Root\CompositeRootTypeMapper" />
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\Parameters\ResolveInfoParameterMapper">
-            <tag name="graphql.parameter_mapper" />
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\Parameters\ContainerParameterMapper">
-            <argument type="service" id="service_container" />
-            <tag name="graphql.parameter_mapper" />
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\Parameters\CompositeParameterMapper">
-            <argument type="tagged" tag="graphql.parameter_mapper" />
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\Middlewares\FieldMiddlewareInterface" alias="TheCodingMachine\GraphQLite\Middlewares\FieldMiddlewarePipe" />
-
-        <service id="TheCodingMachine\GraphQLite\Middlewares\FieldMiddlewarePipe">
-            <argument type="tagged" tag="graphql.field_middleware" />
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\Middlewares\AuthorizationFieldMiddleware">
-            <tag name="graphql.field_middleware" />
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\Parameters\ParameterMapperInterface" alias="TheCodingMachine\GraphQLite\Mappers\Parameters\CompositeParameterMapper" />
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\Root\MyCLabsEnumTypeMapper">
-            <tag name="graphql.root_type_mapper" />
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\Root\BaseTypeMapper">
-            <tag name="graphql.root_type_mapper" />
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\FieldsBuilder" public="true" />
 
         <service id="TheCodingMachine\GraphQLite\AnnotationReader" >
             <argument key="$mode">%graphqlite.annotations.error_mode%</argument>
         </service>
-
-        <service id="TheCodingMachine\GraphQLite\Hydrators\FactoryHydrator" />
-
-        <service id="TheCodingMachine\GraphQLite\Hydrators\HydratorInterface" alias="TheCodingMachine\GraphQLite\Hydrators\FactoryHydrator" />
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Security\AuthenticationService">
             <argument type="service" id="security.token_storage" on-invalid="null" />
@@ -83,22 +46,6 @@
         </service>
 
         <service id="TheCodingMachine\GraphQLite\Security\AuthorizationServiceInterface" alias="TheCodingMachine\Graphqlite\Bundle\Security\AuthorizationService" />
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapper" public="true" />
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapperInterface" alias="TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapper" public="true" />
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\CompositeTypeMapper">
-            <argument type="tagged" tag="graphql.type_mapper" />
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\TypeMapperInterface" alias="TheCodingMachine\GraphQLite\Mappers\CompositeTypeMapper" />
-
-        <service id="TheCodingMachine\GraphQLite\TypeGenerator" public="true" />
-
-        <service id="TheCodingMachine\GraphQLite\InputTypeGenerator" public="true" />
-
-        <service id="TheCodingMachine\GraphQLite\InputTypeUtils" />
 
         <service id="GraphQL\Server\StandardServer">
             <argument type="service" id="GraphQL\Server\ServerConfig" />
@@ -113,22 +60,6 @@
         <service id="TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper">
             <tag name="graphql.type_mapper"/>
         </service>
-
-        <service id="TheCodingMachine\GraphQLite\Mappers\PorpaginasTypeMapper">
-            <tag name="graphql.type_mapper"/>
-        </service>
-
-        <service id="TheCodingMachine\GraphQLite\Reflection\CachedDocBlockFactory" />
-
-        <service id="TheCodingMachine\GraphQLite\NamingStrategy" />
-
-        <service id="TheCodingMachine\GraphQLite\NamingStrategyInterface" alias="TheCodingMachine\GraphQLite\NamingStrategy" />
-
-        <service id="TheCodingMachine\GraphQLite\Types\TypeResolver" />
-
-        <service id="TheCodingMachine\GraphQLite\TypeRegistry" />
-
-        <service id="TheCodingMachine\GraphQLite\Types\ArgumentResolver" />
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController" public="true" />
     </services>

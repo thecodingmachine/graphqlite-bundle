@@ -4,7 +4,9 @@
 namespace TheCodingMachine\Graphqlite\Bundle\Tests;
 
 
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
@@ -25,7 +27,8 @@ class GraphqliteTestingKernel extends Kernel
     public function registerBundles()
     {
         return [
-            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new FrameworkBundle(),
+            new SecurityBundle(),
             new GraphqliteBundle(),
         ];
     }
@@ -35,6 +38,16 @@ class GraphqliteTestingKernel extends Kernel
         $loader->load(function(ContainerBuilder $container) {
             $container->loadFromExtension('framework', array(
                 'secret' => 'S0ME_SECRET',
+            ));
+            $container->loadFromExtension('security', array(
+                'providers' => [
+                    'in_memory' => ['memory' => null],
+                ],
+                'firewalls' => [
+                    'main' => [
+                        'anonymous' => true
+                    ]
+                ]
             ));
             $container->loadFromExtension('graphqlite', array(
                 'namespace' => [

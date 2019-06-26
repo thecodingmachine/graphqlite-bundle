@@ -40,7 +40,6 @@ use TheCodingMachine\GraphQLite\Annotations\Field;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Parameter;
 use TheCodingMachine\GraphQLite\Annotations\Query;
-use TheCodingMachine\Graphqlite\Bundle\QueryProviders\ControllerQueryProvider;
 use TheCodingMachine\GraphQLite\FieldsBuilder;
 use TheCodingMachine\GraphQLite\FieldsBuilderFactory;
 use TheCodingMachine\GraphQLite\GraphQLException;
@@ -52,6 +51,7 @@ use TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapperInterface;
 use TheCodingMachine\GraphQLite\Mappers\Root\CompositeRootTypeMapper;
 use TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper;
 use TheCodingMachine\GraphQLite\NamingStrategy;
+use TheCodingMachine\GraphQLite\SchemaFactory;
 use TheCodingMachine\GraphQLite\TypeGenerator;
 use TheCodingMachine\GraphQLite\Types\MutableObjectType;
 use TheCodingMachine\GraphQLite\Types\ResolvableInputObjectType;
@@ -86,10 +86,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             $globTtl = 2;
         }
 
-        /**
-         * @var array<string, array<int, string>>
-         */
-        $classToServicesMap = [];
+        $schemaFactory = $container->getDefinition(SchemaFactory::class);
 
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->getClass() === null) {
@@ -125,62 +122,18 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         }
 
         foreach ($controllersNamespaces as $controllersNamespace) {
+            $schemaFactory->addMethodCall('addControllerNamespace', [ $controllersNamespace ]);
             foreach ($this->getClassList($controllersNamespace) as $className => $refClass) {
                 $this->makePublicInjectedServices($refClass, $reader, $container);
             }
         }
 
         foreach ($typesNamespaces as $typeNamespace) {
+            $schemaFactory->addMethodCall('addTypeNamespace', [ $typeNamespace ]);
             foreach ($this->getClassList($typeNamespace) as $className => $refClass) {
                 $this->makePublicInjectedServices($refClass, $reader, $container);
             }
         }
-
-        foreach ($container->findTaggedServiceIds('graphql.annotated.controller') as $id => $tag) {
-            $definition = $container->findDefinition($id);
-            $class = $definition->getClass();
-            if ($class === null) {
-                throw new \RuntimeException(sprintf('Service %s has no class defined.', $id));
-            }
-
-            $reflectionClass = new ReflectionClass($class);
-            $isController = false;
-            $method = null;
-            foreach ($reflectionClass->getMethods() as $method) {
-                $query = $reader->getRequestAnnotation($method, Query::class);
-                if ($query !== null) {
-                    $isController = true;
-                    break;
-                }
-                $mutation = $reader->getRequestAnnotation($method, Mutation::class);
-                if ($mutation !== null) {
-                    $isController = true;
-                    break;
-                }
-            }
-
-            if ($isController) {
-                // Let's create a QueryProvider from this controller
-                $controllerIdentifier = $class.'__QueryProvider';
-                $queryProvider = new Definition(ControllerQueryProvider::class);
-                $queryProvider->setPrivate(true);
-                $queryProvider->setFactory([self::class, 'createQueryProvider']);
-                $queryProvider->addArgument(new Reference($id));
-                $queryProvider->addArgument(new Reference(FieldsBuilder::class));
-                $queryProvider->addTag('graphql.queryprovider');
-                $container->setDefinition($controllerIdentifier, $queryProvider);
-            }
-        }
-
-        foreach ($typesNamespaces as $typesNamespace) {
-            $definition = new Definition(GlobTypeMapper::class);
-            $definition->addArgument($typesNamespace);
-            $definition->setArgument('$globTtl', $globTtl);
-            $definition->setAutowired(true);
-            $definition->addTag('graphql.type_mapper');
-            $container->setDefinition('globTypeMapper_'.str_replace('\\', '__', $typesNamespace), $definition);
-        }
-
 
         // Register custom output types
         $taggedServices = $container->findTaggedServiceIds('graphql.output_type');
@@ -210,12 +163,27 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             $definition->addMethodCall('setNotMappedTypes', [$customNotMappedTypes]);
         }
 
-        // Register type mappers
-        $typeMapperServices = $container->findTaggedServiceIds('graphql.type_mapper');
-        $compositeTypeMapper = $container->getDefinition(CompositeTypeMapper::class);
-        foreach ($typeMapperServices as $id => $tags) {
+        // Register graphql.queryprovider
+        $this->mapAdderToTag('graphql.queryprovider', 'addQueryProvider', $container, $schemaFactory);
+        $this->mapAdderToTag('graphql.root_type_mapper', 'addRootTypeMapper', $container, $schemaFactory);
+        $this->mapAdderToTag('graphql.parameter_mapper', 'addParameterMapper', $container, $schemaFactory);
+        $this->mapAdderToTag('graphql.field_middleware', 'addFieldMiddleware', $container, $schemaFactory);
+        $this->mapAdderToTag('graphql.type_mapper', 'addTypeMapper', $container, $schemaFactory);
+    }
+
+    /**
+     * Register a method call on SchemaFactory for each tagged service, passing the service in parameter.
+     *
+     * @param string $tag
+     * @param string $methodName
+     */
+    private function mapAdderToTag(string $tag, string $methodName, ContainerBuilder $container, Definition $schemaFactory): void
+    {
+        $taggedServices = $container->findTaggedServiceIds($tag);
+
+        foreach ($taggedServices as $id => $tags) {
             // add the transport service to the TransportChain service
-            $compositeTypeMapper->addMethodCall('addTypeMapper', [new Reference($id)]);
+            $schemaFactory->addMethodCall($methodName, [new Reference($id)]);
         }
     }
 
@@ -294,14 +262,6 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             $parameters[$parameter->getName()] = $parameter;
         }
         return $parameters;
-    }
-
-    /**
-     * @param object $controller
-     */
-    public static function createQueryProvider($controller, FieldsBuilder $fieldsBuilder): ControllerQueryProvider
-    {
-        return new ControllerQueryProvider($controller, $fieldsBuilder);
     }
 
     /**
