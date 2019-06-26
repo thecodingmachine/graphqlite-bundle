@@ -125,4 +125,25 @@ class FunctionalTest extends TestCase
 
         $this->assertSame(404, $response->getStatusCode(), $response->getContent());
     }
+
+    public function testLoggedMiddleware()
+    {
+        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          loggedQuery
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame([
+            'data' => [
+                'loggedQuery' => null
+            ]
+        ], $result);
+    }
 }
