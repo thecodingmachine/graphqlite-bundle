@@ -106,12 +106,23 @@ class FunctionalTest extends TestCase
 
         $request = Request::create('/graphql', 'GET', ['query' => '
         { 
-          triggerError
+          triggerException
         }']);
 
         $response = $kernel->handle($request);
 
         $this->assertSame(500, $response->getStatusCode());
 
+        // Let's test that the highest exception code compatible with an HTTP is kept.
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          triggerError1: triggerException(code: 404) 
+          triggerError2: triggerException(code: 401)
+          triggerError3: triggerException(code: 10245)
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $this->assertSame(404, $response->getStatusCode(), $response->getContent());
     }
 }

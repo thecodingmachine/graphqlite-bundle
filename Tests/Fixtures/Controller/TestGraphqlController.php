@@ -4,6 +4,7 @@
 namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Controller;
 
 
+use GraphQL\Error\Error;
 use Porpaginas\Arrays\ArrayResult;
 use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Contact;
 use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Product;
@@ -61,8 +62,8 @@ class TestGraphqlController
      * @Query()
      * @return string
      */
-    public function triggerError(): string
+    public function triggerException(int $code = 0): string
     {
-        throw new MyException('Boom');
+        throw new MyException('Boom', $code);
     }
 }
