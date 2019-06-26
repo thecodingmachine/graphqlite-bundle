@@ -3,7 +3,6 @@
 
 namespace TheCodingMachine\Graphqlite\Bundle\Security;
 
-
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface;
 
