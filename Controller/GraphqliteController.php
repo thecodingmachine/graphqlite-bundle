@@ -10,6 +10,7 @@ use GraphQL\Error\Debug;
 use GraphQL\Error\Error;
 use GraphQL\Executor\ExecutionResult;
 use GraphQL\Executor\Promise\Promise;
+use GraphQL\Server\ServerConfig;
 use GraphQL\Server\StandardServer;
 use GraphQL\Upload\UploadMiddleware;
 use function in_array;
@@ -27,6 +28,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use TheCodingMachine\Graphqlite\Bundle\Context\SymfonyGraphQLContext;
 
 /**
  * Listens to every single request and forward Graphql requests to Graphql Webonix standardServer.
@@ -37,14 +39,16 @@ class GraphqliteController
      * @var HttpMessageFactoryInterface
      */
     private $httpMessageFactory;
-    /** @var StandardServer */
-    private $standardServer;
     /** @var bool|int */
     private $debug;
+    /**
+     * @var ServerConfig
+     */
+    private $serverConfig;
 
-    public function __construct(StandardServer $standardServer, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = Debug::RETHROW_UNSAFE_EXCEPTIONS)
+    public function __construct(ServerConfig $serverConfig, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = Debug::RETHROW_UNSAFE_EXCEPTIONS)
     {
-        $this->standardServer = $standardServer;
+        $this->serverConfig = $serverConfig;
         $this->httpMessageFactory = $httpMessageFactory ?: new DiactorosFactory();
         $this->debug = $debug ?? false;
     }
@@ -84,12 +88,17 @@ class GraphqliteController
         $uploadMiddleware = new UploadMiddleware();
         $psr7Request = $uploadMiddleware->processRequest($psr7Request);
 
-        return $this->handlePsr7Request($psr7Request);
+        return $this->handlePsr7Request($psr7Request, $request);
     }
 
-    private function handlePsr7Request(ServerRequestInterface $request): JsonResponse
+    private function handlePsr7Request(ServerRequestInterface $request, Request $symfonyRequest): JsonResponse
     {
-        $result = $this->standardServer->executePsrRequest($request);
+        // Let's put the request in the context.
+        $serverConfig = clone $this->serverConfig;
+        $serverConfig->setContext(new SymfonyGraphQLContext($symfonyRequest));
+
+        $standardService = new StandardServer($serverConfig);
+        $result = $standardService->executePsrRequest($request);
 
         if ($result instanceof ExecutionResult) {
             return new JsonResponse($result->toArray($this->debug), $this->decideHttpStatusCode($result));

@@ -17,7 +17,7 @@ use function var_dump;
 
 class FunctionalTest extends TestCase
 {
-    public function testServiceWiring()
+    public function testServiceWiring(): void
     {
         $kernel = new GraphqliteTestingKernel('test', true);
         $kernel->boot();
@@ -68,7 +68,7 @@ class FunctionalTest extends TestCase
         ], $result);
     }
 
-    public function testServiceAutowiring()
+    public function testServiceAutowiring(): void
     {
         $kernel = new GraphqliteTestingKernel('test', true);
         $kernel->boot();
@@ -98,7 +98,7 @@ class FunctionalTest extends TestCase
         ], $result);
     }
 
-    public function testErrors()
+    public function testErrors(): void
     {
         $kernel = new GraphqliteTestingKernel('test', true);
         $kernel->boot();
@@ -134,7 +134,7 @@ class FunctionalTest extends TestCase
         $this->assertSame(404, $response->getStatusCode(), $response->getContent());
     }
 
-    public function testLoggedMiddleware()
+    public function testLoggedMiddleware(): void
     {
         $kernel = new GraphqliteTestingKernel('test', true);
         $kernel->boot();
@@ -155,7 +155,7 @@ class FunctionalTest extends TestCase
         ], $result);
     }
 
-    public function testLoggedMiddleware2()
+    public function testLoggedMiddleware2(): void
     {
         $kernel = new GraphqliteTestingKernel('test', true);
         $kernel->boot();
@@ -183,6 +183,27 @@ class FunctionalTest extends TestCase
             ]
         ], $result);
 
+    }
+
+    public function testInjectQuery(): void
+    {
+        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          uri
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame([
+            'data' => [
+                'uri' => '/graphql'
+            ]
+        ], $result);
     }
 
     private function logIn(ContainerInterface $container)

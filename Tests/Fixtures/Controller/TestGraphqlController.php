@@ -6,6 +6,7 @@ namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Controller;
 
 use GraphQL\Error\Error;
 use Porpaginas\Arrays\ArrayResult;
+use Symfony\Component\HttpFoundation\Request;
 use TheCodingMachine\GraphQLite\Annotations\FailWith;
 use TheCodingMachine\GraphQLite\Annotations\Logged;
 use TheCodingMachine\GraphQLite\Annotations\Right;
@@ -101,5 +102,14 @@ class TestGraphqlController
     public function withUserRight(): string
     {
         return 'foo';
+    }
+
+    /**
+     * @Query()
+     * @return string
+     */
+    public function getUri(Request $request): string
+    {
+        return $request->getPathInfo();
     }
 }

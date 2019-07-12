@@ -47,10 +47,6 @@
 
         <service id="TheCodingMachine\GraphQLite\Security\AuthorizationServiceInterface" alias="TheCodingMachine\Graphqlite\Bundle\Security\AuthorizationService" />
 
-        <service id="GraphQL\Server\StandardServer">
-            <argument type="service" id="GraphQL\Server\ServerConfig" />
-        </service>
-
         <service id="GraphQL\Server\ServerConfig">
             <call method="setSchema">
                 <argument type="service" id="TheCodingMachine\GraphQLite\Schema"/>
@@ -62,6 +58,10 @@
         </service>
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController" public="true" />
+
+        <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\RequestParameterMapper">
+            <tag name="graphql.parameter_mapper"/>
+        </service>
     </services>
 
 </container>
