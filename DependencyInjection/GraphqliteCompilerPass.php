@@ -33,6 +33,7 @@ use TheCodingMachine\CacheUtils\ClassBoundCacheContractInterface;
 use TheCodingMachine\CacheUtils\ClassBoundMemoryAdapter;
 use TheCodingMachine\CacheUtils\FileBoundCache;
 use TheCodingMachine\ClassExplorer\Glob\GlobClassExplorer;
+use TheCodingMachine\GraphQLite\AggregateControllerQueryProviderFactory;
 use TheCodingMachine\GraphQLite\AnnotationReader;
 use TheCodingMachine\GraphQLite\Annotations\AbstractRequest;
 use TheCodingMachine\GraphQLite\Annotations\Autowire;
@@ -40,6 +41,7 @@ use TheCodingMachine\GraphQLite\Annotations\Field;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Parameter;
 use TheCodingMachine\GraphQLite\Annotations\Query;
+use TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController;
 use TheCodingMachine\GraphQLite\FieldsBuilder;
 use TheCodingMachine\GraphQLite\FieldsBuilderFactory;
 use TheCodingMachine\GraphQLite\GraphQLException;
@@ -88,16 +90,22 @@ class GraphqliteCompilerPass implements CompilerPassInterface
 
         $schemaFactory = $container->getDefinition(SchemaFactory::class);
 
+        // If the security is disabled, let's remove the LoginController
+        if ($container->getParameter('graphqlite.security.enable_login') === false) {
+            $container->removeDefinition(LoginController::class);
+            $container->removeDefinition(AggregateControllerQueryProviderFactory::class);
+        }
+
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->getClass() === null) {
                 continue;
             }
             $class = $definition->getClass();
-            foreach ($controllersNamespaces as $controllersNamespace) {
+/*            foreach ($controllersNamespaces as $controllersNamespace) {
                 if (strpos($class, $controllersNamespace) === 0) {
                     $definition->addTag('graphql.annotated.controller');
                 }
-            }
+            }*/
 
             foreach ($typesNamespaces as $typesNamespace) {
                 if (strpos($class, $typesNamespace) === 0) {
@@ -165,10 +173,12 @@ class GraphqliteCompilerPass implements CompilerPassInterface
 
         // Register graphql.queryprovider
         $this->mapAdderToTag('graphql.queryprovider', 'addQueryProvider', $container, $schemaFactory);
+        $this->mapAdderToTag('graphql.queryprovider_factory', 'addQueryProviderFactory', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.root_type_mapper', 'addRootTypeMapper', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.parameter_mapper', 'addParameterMapper', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.field_middleware', 'addFieldMiddleware', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.type_mapper', 'addTypeMapper', $container, $schemaFactory);
+        $this->mapAdderToTag('graphql.type_mapper_factory', 'addTypeMapperFactory', $container, $schemaFactory);
     }
 
     /**

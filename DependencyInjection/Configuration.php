@@ -37,6 +37,12 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('RETHROW_UNSAFE_EXCEPTIONS')->defaultTrue()->info('Exceptions that do not implement ClientAware interface are not caught by the engine and propagated to Symfony.')->end()
                 ->end()
             ->end()
+            ->arrayNode('security')
+                ->children()
+                ->booleanNode('enable_login')->defaultFalse()->info('Set to true to automatically create a login/logout request')->end()
+                ->scalarNode('firewall_name')->defaultValue('main')->info('The name of the firewall to use for login')->end()
+                ->end()
+            ->end()
         ;
 
         return $treeBuilder;

@@ -9,6 +9,8 @@ use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 use TheCodingMachine\Graphqlite\Bundle\GraphqliteBundle;
@@ -18,10 +20,20 @@ class GraphqliteTestingKernel extends Kernel
     use MicroKernelTrait;
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
+    /**
+     * @var bool
+     */
+    private $enableSession;
+    /**
+     * @var bool
+     */
+    private $enableLogin;
 
-    public function __construct()
+    public function __construct(bool $enableSession = true, bool $enableLogin = true)
     {
         parent::__construct('test', true);
+        $this->enableSession = $enableSession;
+        $this->enableLogin = $enableLogin;
     }
 
     public function registerBundles()
@@ -36,9 +48,18 @@ class GraphqliteTestingKernel extends Kernel
     public function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
     {
         $loader->load(function(ContainerBuilder $container) {
-            $container->loadFromExtension('framework', array(
-                'secret' => 'S0ME_SECRET',
-            ));
+            $frameworkConf = array(
+                'secret' => 'S0ME_SECRET'
+            );
+
+            if ($this->enableSession) {
+                $frameworkConf['session'] =[
+                    'enabled' => true,
+                    'handler_id' => NullSessionHandler::class
+                ];
+            }
+
+            $container->loadFromExtension('framework', $frameworkConf);
             $container->loadFromExtension('security', array(
                 'providers' => [
                     'in_memory' => ['memory' => null],
@@ -49,12 +70,21 @@ class GraphqliteTestingKernel extends Kernel
                     ]
                 ]
             ));
-            $container->loadFromExtension('graphqlite', array(
+
+            $graphqliteConf = array(
                 'namespace' => [
                     'controllers' => ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Controller\\'],
                     'types' => ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Entities\\']
                 ],
-            ));
+            );
+
+            if ($this->enableLogin) {
+                $graphqliteConf['security'] = [
+                    'enable_login' => true,
+                ];
+            }
+
+            $container->loadFromExtension('graphqlite', $graphqliteConf);
         });
         $confDir = $this->getProjectDir().'/Tests/Fixtures/config';
 

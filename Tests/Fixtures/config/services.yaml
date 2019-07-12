@@ -19,6 +19,9 @@ services:
 
     someService:
         class: stdClass
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler:
+        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
     #App\Controller\:

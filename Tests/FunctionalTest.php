@@ -19,7 +19,7 @@ class FunctionalTest extends TestCase
 {
     public function testServiceWiring(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
         $container = $kernel->getContainer();
 
@@ -70,7 +70,7 @@ class FunctionalTest extends TestCase
 
     public function testServiceAutowiring(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
         $container = $kernel->getContainer();
 
@@ -100,7 +100,7 @@ class FunctionalTest extends TestCase
 
     public function testErrors(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -136,7 +136,7 @@ class FunctionalTest extends TestCase
 
     public function testLoggedMiddleware(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -157,7 +157,7 @@ class FunctionalTest extends TestCase
 
     public function testLoggedMiddleware2(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -204,6 +204,44 @@ class FunctionalTest extends TestCase
                 'uri' => '/graphql'
             ]
         ], $result);
+    }
+
+    public function testLoginQuery(): void
+    {
+        $kernel = new GraphqliteTestingKernel();
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          login(userName: "foo", password: "bar")
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame([
+            'data' => [
+                'login' => true
+            ]
+        ], $result);
+    }
+
+    public function testNoLoginNoSessionQuery(): void
+    {
+        $kernel = new GraphqliteTestingKernel(false, false);
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          login(userName: "foo", password: "bar")
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame('Cannot query field "login" on type "Query".', $result['errors'][0]['message']);
     }
 
     private function logIn(ContainerInterface $container)
