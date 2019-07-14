@@ -28,6 +28,13 @@
             />
         </service>
 
+        <service id="TheCodingMachine\GraphQLite\AggregateControllerQueryProviderFactory">
+            <argument type="collection">
+                <argument>TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController</argument>
+            </argument>
+            <tag name="graphql.queryprovider_factory" />
+        </service>
+
         <service id="GraphQL\Type\Schema" alias="TheCodingMachine\GraphQLite\Schema" />
 
 
@@ -62,6 +69,13 @@
         <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\RequestParameterMapper">
             <tag name="graphql.parameter_mapper"/>
         </service>
-    </services>
 
+        <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\RequestParameterMapper">
+            <tag name="graphql.parameter_mapper"/>
+        </service>
+
+        <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController" public="true">
+            <argument key="$firewallName">%graphqlite.security.firewall_name%</argument>
+        </service>
+    </services>
 </container>

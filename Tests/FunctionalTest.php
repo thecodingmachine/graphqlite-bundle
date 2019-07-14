@@ -8,10 +8,13 @@ use Psr\Container\ContainerInterface;
 use function spl_object_hash;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\User\User;
 use TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController;
 use TheCodingMachine\Graphqlite\Bundle\Security\AuthenticationService;
+use TheCodingMachine\GraphQLite\GraphQLException;
 use TheCodingMachine\GraphQLite\Schema;
 use function var_dump;
 
@@ -19,7 +22,7 @@ class FunctionalTest extends TestCase
 {
     public function testServiceWiring(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
         $container = $kernel->getContainer();
 
@@ -70,7 +73,7 @@ class FunctionalTest extends TestCase
 
     public function testServiceAutowiring(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
         $container = $kernel->getContainer();
 
@@ -100,7 +103,7 @@ class FunctionalTest extends TestCase
 
     public function testErrors(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -136,7 +139,7 @@ class FunctionalTest extends TestCase
 
     public function testLoggedMiddleware(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -157,7 +160,7 @@ class FunctionalTest extends TestCase
 
     public function testLoggedMiddleware2(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -187,7 +190,7 @@ class FunctionalTest extends TestCase
 
     public function testInjectQuery(): void
     {
-        $kernel = new GraphqliteTestingKernel('test', true);
+        $kernel = new GraphqliteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -204,6 +207,64 @@ class FunctionalTest extends TestCase
                 'uri' => '/graphql'
             ]
         ], $result);
+    }
+
+    public function testLoginQuery(): void
+    {
+        $kernel = new GraphqliteTestingKernel();
+        $kernel->boot();
+
+        $session = new Session(new MockArraySessionStorage());
+        $container = $kernel->getContainer();
+        $container->set('session', $session);
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        mutation login { 
+          login(userName: "foo", password: "bar")
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame([
+            'data' => [
+                'login' => true
+            ]
+        ], $result);
+    }
+
+    public function testNoLoginNoSessionQuery(): void
+    {
+        $kernel = new GraphqliteTestingKernel(false, 'off');
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        mutation login { 
+          login(userName: "foo", password: "bar")
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame('Cannot query field "login" on type "Mutation".', $result['errors'][0]['message']);
+    }
+
+    public function testForceLoginNoSession(): void
+    {
+        $kernel = new GraphqliteTestingKernel(false, 'on');
+        $this->expectException(GraphQLException::class);
+        $this->expectExceptionMessage('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to enable session support (via the "framework.session.enabled" config parameter)');
+        $kernel->boot();
+    }
+
+    public function testForceLoginNoSecurity(): void
+    {
+        $kernel = new GraphqliteTestingKernel(true, 'on', false);
+        $this->expectException(GraphQLException::class);
+        $this->expectExceptionMessage('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to install the security bundle. Please be sure to correctly configure the user provider (in the security.providers configuration settings)');
+        $kernel->boot();
     }
 
     private function logIn(ContainerInterface $container)

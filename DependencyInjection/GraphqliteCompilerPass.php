@@ -27,12 +27,18 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 use TheCodingMachine\CacheUtils\ClassBoundCache;
 use TheCodingMachine\CacheUtils\ClassBoundCacheContract;
 use TheCodingMachine\CacheUtils\ClassBoundCacheContractInterface;
 use TheCodingMachine\CacheUtils\ClassBoundMemoryAdapter;
 use TheCodingMachine\CacheUtils\FileBoundCache;
 use TheCodingMachine\ClassExplorer\Glob\GlobClassExplorer;
+use TheCodingMachine\GraphQLite\AggregateControllerQueryProviderFactory;
 use TheCodingMachine\GraphQLite\AnnotationReader;
 use TheCodingMachine\GraphQLite\Annotations\AbstractRequest;
 use TheCodingMachine\GraphQLite\Annotations\Autowire;
@@ -40,6 +46,7 @@ use TheCodingMachine\GraphQLite\Annotations\Field;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Parameter;
 use TheCodingMachine\GraphQLite\Annotations\Query;
+use TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController;
 use TheCodingMachine\GraphQLite\FieldsBuilder;
 use TheCodingMachine\GraphQLite\FieldsBuilderFactory;
 use TheCodingMachine\GraphQLite\GraphQLException;
@@ -80,24 +87,54 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         $typesNamespaces = $container->getParameter('graphqlite.namespace.types');
 
         // 2 seconds of TTL in environment mode. Otherwise, let's cache forever!
-        $env = $container->getParameter('kernel.environment');
-        $globTtl = null;
-        if ($env === 'dev') {
-            $globTtl = 2;
-        }
 
         $schemaFactory = $container->getDefinition(SchemaFactory::class);
+
+        $env = $container->getParameter('kernel.environment');
+        if ($env === 'prod') {
+            $schemaFactory->addMethodCall('prodMode');
+        } elseif ($env === 'dev') {
+            $schemaFactory->addMethodCall('devMode');
+        }
+
+        $disableLogin = false;
+        if ($container->getParameter('graphqlite.security.enable_login') === 'auto'
+         && (!$container->has(UserProviderInterface::class) ||
+                !$container->has(UserPasswordEncoderInterface::class) ||
+                !$container->has(TokenStorageInterface::class) ||
+                !$container->has(SessionInterface::class)
+            )) {
+            $disableLogin = true;
+        }
+        if ($container->getParameter('graphqlite.security.enable_login') === 'off') {
+            $disableLogin = true;
+        }
+        // If the security is disabled, let's remove the LoginController
+        if ($disableLogin === true) {
+            $container->removeDefinition(LoginController::class);
+            $container->removeDefinition(AggregateControllerQueryProviderFactory::class);
+        }
+
+        if ($container->getParameter('graphqlite.security.enable_login') === 'on') {
+            if (!$container->has(SessionInterface::class)) {
+                throw new GraphQLException('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to enable session support (via the "framework.session.enabled" config parameter).');
+            }
+            if (!$container->has(UserPasswordEncoderInterface::class) || !$container->has(TokenStorageInterface::class) || !$container->has(UserProviderInterface::class)) {
+                throw new GraphQLException('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to install the security bundle. Please be sure to correctly configure the user provider (in the security.providers configuration settings)');
+            }
+        }
+
 
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->getClass() === null) {
                 continue;
             }
             $class = $definition->getClass();
-            foreach ($controllersNamespaces as $controllersNamespace) {
+/*            foreach ($controllersNamespaces as $controllersNamespace) {
                 if (strpos($class, $controllersNamespace) === 0) {
                     $definition->addTag('graphql.annotated.controller');
                 }
-            }
+            }*/
 
             foreach ($typesNamespaces as $typesNamespace) {
                 if (strpos($class, $typesNamespace) === 0) {
@@ -165,10 +202,12 @@ class GraphqliteCompilerPass implements CompilerPassInterface
 
         // Register graphql.queryprovider
         $this->mapAdderToTag('graphql.queryprovider', 'addQueryProvider', $container, $schemaFactory);
+        $this->mapAdderToTag('graphql.queryprovider_factory', 'addQueryProviderFactory', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.root_type_mapper', 'addRootTypeMapper', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.parameter_mapper', 'addParameterMapper', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.field_middleware', 'addFieldMiddleware', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.type_mapper', 'addTypeMapper', $container, $schemaFactory);
+        $this->mapAdderToTag('graphql.type_mapper_factory', 'addTypeMapperFactory', $container, $schemaFactory);
     }
 
     /**
