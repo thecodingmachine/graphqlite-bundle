@@ -27,6 +27,11 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 use TheCodingMachine\CacheUtils\ClassBoundCache;
 use TheCodingMachine\CacheUtils\ClassBoundCacheContract;
 use TheCodingMachine\CacheUtils\ClassBoundCacheContractInterface;
@@ -82,19 +87,43 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         $typesNamespaces = $container->getParameter('graphqlite.namespace.types');
 
         // 2 seconds of TTL in environment mode. Otherwise, let's cache forever!
-        $env = $container->getParameter('kernel.environment');
-        $globTtl = null;
-        if ($env === 'dev') {
-            $globTtl = 2;
-        }
 
         $schemaFactory = $container->getDefinition(SchemaFactory::class);
 
+        $env = $container->getParameter('kernel.environment');
+        if ($env === 'prod') {
+            $schemaFactory->addMethodCall('prodMode');
+        } elseif ($env === 'dev') {
+            $schemaFactory->addMethodCall('devMode');
+        }
+
+        $disableLogin = false;
+        if ($container->getParameter('graphqlite.security.enable_login') === 'auto'
+         && (!$container->has(UserProviderInterface::class) ||
+                !$container->has(UserPasswordEncoderInterface::class) ||
+                !$container->has(TokenStorageInterface::class) ||
+                !$container->has(SessionInterface::class)
+            )) {
+            $disableLogin = true;
+        }
+        if ($container->getParameter('graphqlite.security.enable_login') === 'off') {
+            $disableLogin = true;
+        }
         // If the security is disabled, let's remove the LoginController
-        if ($container->getParameter('graphqlite.security.enable_login') === false) {
+        if ($disableLogin === true) {
             $container->removeDefinition(LoginController::class);
             $container->removeDefinition(AggregateControllerQueryProviderFactory::class);
         }
+
+        if ($container->getParameter('graphqlite.security.enable_login') === 'on') {
+            if (!$container->has(SessionInterface::class)) {
+                throw new GraphQLException('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to enable session support (via the "framework.session.enabled" config parameter).');
+            }
+            if (!$container->has(UserPasswordEncoderInterface::class) || !$container->has(TokenStorageInterface::class) || !$container->has(UserProviderInterface::class)) {
+                throw new GraphQLException('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to install the security bundle. Please be sure to correctly configure the user provider (in the security.providers configuration settings)');
+            }
+        }
+
 
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->getClass() === null) {

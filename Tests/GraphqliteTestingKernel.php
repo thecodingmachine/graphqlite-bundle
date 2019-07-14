@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 use TheCodingMachine\Graphqlite\Bundle\GraphqliteBundle;
+use Symfony\Component\Security\Core\User\User;
 
 class GraphqliteTestingKernel extends Kernel
 {
@@ -25,15 +26,20 @@ class GraphqliteTestingKernel extends Kernel
      */
     private $enableSession;
     /**
-     * @var bool
+     * @var string
      */
     private $enableLogin;
+    /**
+     * @var bool
+     */
+    private $enableSecurity;
 
-    public function __construct(bool $enableSession = true, bool $enableLogin = true)
+    public function __construct(bool $enableSession = true, ?string $enableLogin = null, bool $enableSecurity = true)
     {
         parent::__construct('test', true);
         $this->enableSession = $enableSession;
         $this->enableLogin = $enableLogin;
+        $this->enableSecurity = $enableSecurity;
     }
 
     public function registerBundles()
@@ -60,16 +66,30 @@ class GraphqliteTestingKernel extends Kernel
             }
 
             $container->loadFromExtension('framework', $frameworkConf);
-            $container->loadFromExtension('security', array(
-                'providers' => [
-                    'in_memory' => ['memory' => null],
-                ],
-                'firewalls' => [
-                    'main' => [
-                        'anonymous' => true
-                    ]
-                ]
-            ));
+            if ($this->enableSecurity) {
+                $container->loadFromExtension('security', array(
+                    'providers' => [
+                        'in_memory' => [
+                            'memory' => [
+                                'users' => [
+                                    'foo' => [
+                                        'password' => 'bar',
+                                        'roles' => 'ROLE_USER',
+                                    ],
+                               ],
+                            ],
+                        ],
+                    ],
+                    'firewalls' => [
+                        'main' => [
+                            'anonymous' => true
+                        ]
+                    ],
+                    'encoders' => [
+                        User::class => 'plaintext',
+                    ],
+                ));
+            }
 
             $graphqliteConf = array(
                 'namespace' => [
@@ -80,7 +100,7 @@ class GraphqliteTestingKernel extends Kernel
 
             if ($this->enableLogin) {
                 $graphqliteConf['security'] = [
-                    'enable_login' => true,
+                    'enable_login' => $this->enableLogin,
                 ];
             }
 

@@ -54,7 +54,7 @@ class GraphqliteExtension extends Extension
             $namespaceType = [];
         }
 
-        $enableLogin = $configs[0]['security']['enable_login'] ?? false;
+        $enableLogin = $configs[0]['security']['enable_login'] ?? 'auto';
 
         $container->setParameter('graphqlite.namespace.controllers', $namespaceController);
         $container->setParameter('graphqlite.namespace.types', $namespaceType);

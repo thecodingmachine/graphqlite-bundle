@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Query;
 
 class LoginController
@@ -52,7 +53,7 @@ class LoginController
     }
 
     /**
-     * @Query()
+     * @Mutation()
      */
     public function login(string $userName, string $password, Request $request): bool
     {
@@ -86,7 +87,7 @@ class LoginController
     }
 
     /**
-     * @Query()
+     * @Mutation()
      */
     public function logout(): bool
     {

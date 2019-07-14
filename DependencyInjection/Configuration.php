@@ -39,7 +39,7 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->arrayNode('security')
                 ->children()
-                ->booleanNode('enable_login')->defaultFalse()->info('Set to true to automatically create a login/logout request')->end()
+                ->enumNode('enable_login')->values(['on', 'off', 'auto'])->defaultValue('auto')->info('Enable to automatically create a login/logout mutation. "on": enable, "auto": enable if security bundle is available.')->end()
                 ->scalarNode('firewall_name')->defaultValue('main')->info('The name of the firewall to use for login')->end()
                 ->end()
             ->end()
