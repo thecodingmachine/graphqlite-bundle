@@ -81,7 +81,7 @@ class LoginController
 
         // Fire the login event manually
         $event = new InteractiveLoginEvent($request, $token);
-        $this->eventDispatcher->dispatch('security.interactive_login', $event);
+        $this->eventDispatcher->dispatch($event, 'security.interactive_login');
 
         return true;
     }
