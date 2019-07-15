@@ -86,6 +86,9 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         $controllersNamespaces = $container->getParameter('graphqlite.namespace.controllers');
         $typesNamespaces = $container->getParameter('graphqlite.namespace.types');
 
+        $firewallName = $container->getParameter('graphqlite.security.firewall_name');
+        $firewallConfigServiceName = 'security.firewall.map.config.'.$firewallName;
+
         // 2 seconds of TTL in environment mode. Otherwise, let's cache forever!
 
         $schemaFactory = $container->getDefinition(SchemaFactory::class);
@@ -99,7 +102,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
 
         $disableLogin = false;
         if ($container->getParameter('graphqlite.security.enable_login') === 'auto'
-         && (!$container->has(UserProviderInterface::class) ||
+         && (!$container->has($firewallConfigServiceName) ||
                 !$container->has(UserPasswordEncoderInterface::class) ||
                 !$container->has(TokenStorageInterface::class) ||
                 !$container->has(SessionInterface::class)
@@ -119,9 +122,16 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             if (!$container->has(SessionInterface::class)) {
                 throw new GraphQLException('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to enable session support (via the "framework.session.enabled" config parameter).');
             }
-            if (!$container->has(UserPasswordEncoderInterface::class) || !$container->has(TokenStorageInterface::class) || !$container->has(UserProviderInterface::class)) {
+            if (!$container->has(UserPasswordEncoderInterface::class) || !$container->has(TokenStorageInterface::class) || !$container->has($firewallConfigServiceName)) {
                 throw new GraphQLException('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to install the security bundle. Please be sure to correctly configure the user provider (in the security.providers configuration settings)');
             }
+        }
+
+        if ($disableLogin === false) {
+            // Let's do some dark magic. We need the user provider. We need its name. It is stored in the "config" object.
+            $provider = $container->findDefinition('security.firewall.map.config.'.$firewallName)->getArgument(5);
+
+            $container->findDefinition(LoginController::class)->setArgument(0, new Reference($provider));
         }
 
 
