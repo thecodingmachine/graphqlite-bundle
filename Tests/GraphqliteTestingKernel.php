@@ -79,10 +79,21 @@ class GraphqliteTestingKernel extends Kernel
                                ],
                             ],
                         ],
+                        'in_memory_other' => [
+                            'memory' => [
+                                'users' => [
+                                    'foo' => [
+                                        'password' => 'bar',
+                                        'roles' => 'ROLE_USER',
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
                     'firewalls' => [
                         'main' => [
-                            'anonymous' => true
+                            'anonymous' => true,
+                            'provider' => 'in_memory'
                         ]
                     ],
                     'encoders' => [
