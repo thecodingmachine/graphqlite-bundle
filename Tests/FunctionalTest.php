@@ -220,7 +220,9 @@ class FunctionalTest extends TestCase
 
         $request = Request::create('/graphql', 'POST', ['query' => '
         mutation login { 
-          login(userName: "foo", password: "bar")
+          login(userName: "foo", password: "bar") {
+            userName
+          }
         }']);
 
         $response = $kernel->handle($request);
@@ -229,9 +231,34 @@ class FunctionalTest extends TestCase
 
         $this->assertSame([
             'data' => [
-                'login' => true
+                'login' => [
+                    'userName' => 'foo'
+                ]
             ]
         ], $result);
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        {
+          me {
+            userName
+            roles
+          }
+        }
+        ']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame([
+            'data' => [
+                'me' => [
+                    'userName' => 'foo',
+                    'roles' => [],
+                ]
+            ]
+        ], $result);
+
     }
 
     public function testNoLoginNoSessionQuery(): void
@@ -241,7 +268,9 @@ class FunctionalTest extends TestCase
 
         $request = Request::create('/graphql', 'POST', ['query' => '
         mutation login { 
-          login(userName: "foo", password: "bar")
+          login(userName: "foo", password: "bar") {
+            userName
+          }
         }']);
 
         $response = $kernel->handle($request);

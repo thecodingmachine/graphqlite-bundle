@@ -9,6 +9,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
@@ -55,12 +56,12 @@ class LoginController
     /**
      * @Mutation()
      */
-    public function login(string $userName, string $password, Request $request): bool
+    public function login(string $userName, string $password, Request $request): UserInterface
     {
         try {
             $user = $this->userProvider->loadUserByUsername($userName);
         } catch (UsernameNotFoundException $e) {
-            // FIXME: should we return false instead???
+            // FIXME: should we return null instead???
             throw InvalidUserPasswordException::create($e);
         }
 
@@ -83,7 +84,7 @@ class LoginController
         $event = new InteractiveLoginEvent($request, $token);
         $this->eventDispatcher->dispatch($event, 'security.interactive_login');
 
-        return true;
+        return $user;
     }
 
     /**

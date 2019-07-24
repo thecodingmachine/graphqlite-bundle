@@ -55,10 +55,12 @@ class GraphqliteExtension extends Extension
         }
 
         $enableLogin = $configs[0]['security']['enable_login'] ?? 'auto';
+        $enableMe = $configs[0]['security']['enable_me'] ?? 'auto';
 
         $container->setParameter('graphqlite.namespace.controllers', $namespaceController);
         $container->setParameter('graphqlite.namespace.types', $namespaceType);
         $container->setParameter('graphqlite.security.enable_login', $enableLogin);
+        $container->setParameter('graphqlite.security.enable_me', $enableMe);
         $container->setParameter('graphqlite.security.firewall_name', $configs[0]['security']['firewall_name'] ?? 'main');
 
         $loader->load('graphqlite.xml');
