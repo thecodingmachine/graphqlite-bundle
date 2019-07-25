@@ -20,11 +20,6 @@
             <call method="setAuthorizationService">
                 <argument type="service" id="TheCodingMachine\GraphQLite\Security\AuthorizationServiceInterface" />
             </call>
-            <!-- Ideally, we would not need to go through the GlobTypeMapper for types in packages. We shoul
-             have the opportunity to add types / models through another class (like the AggregateControllerQueryProviderFactory for queries) -->
-            <call method="addTypeNamespace">
-                <argument type="string">TheCodingMachine\Graphqlite\Bundle\Types</argument>
-            </call>
         </service>
 
         <service id="TheCodingMachine\GraphQLite\Schema" public="true">
@@ -85,5 +80,12 @@
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\MeController" public="true" />
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Types\UserType" public="true"/>
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory">
+            <argument type="collection">
+                <argument>TheCodingMachine\Graphqlite\Bundle\Types\UserType</argument>
+            </argument>
+            <tag name="graphql.type_mapper_factory"/>
+        </service>
     </services>
 </container>
