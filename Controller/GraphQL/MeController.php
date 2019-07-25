@@ -38,7 +38,7 @@ class MeController
             return null;
         }
 
-        $user = $this->tokenStorage->getToken()->getUser();
+        $user = $token->getUser();
 
         if (!$user instanceof UserInterface) {
             // getUser() can be an object with a toString or a string
