@@ -236,6 +236,16 @@ class FunctionalTest extends TestCase
                 ]
             ]
         ], $result);
+    }
+
+    public function testMeQuery(): void
+    {
+        $kernel = new GraphqliteTestingKernel();
+        $kernel->boot();
+
+        $session = new Session(new MockArraySessionStorage());
+        $container = $kernel->getContainer();
+        $container->set('session', $session);
 
         $request = Request::create('/graphql', 'POST', ['query' => '
         {
@@ -253,7 +263,7 @@ class FunctionalTest extends TestCase
         $this->assertSame([
             'data' => [
                 'me' => [
-                    'userName' => 'foo',
+                    'userName' => 'anon.',
                     'roles' => [],
                 ]
             ]
