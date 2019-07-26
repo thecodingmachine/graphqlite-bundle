@@ -164,7 +164,6 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             $container->removeDefinition(AggregateControllerQueryProviderFactory::class);
         }
 
-
         foreach ($container->getDefinitions() as $id => $definition) {
             if ($definition->isAbstract() || $definition->getClass() === null) {
                 continue;
