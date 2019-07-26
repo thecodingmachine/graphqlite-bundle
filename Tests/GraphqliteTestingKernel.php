@@ -115,15 +115,11 @@ class GraphqliteTestingKernel extends Kernel
             );
 
             if ($this->enableLogin) {
-                $graphqliteConf['security'] = [
-                    'enable_login' => $this->enableLogin,
-                ];
+                $graphqliteConf['security']['enable_login'] = $this->enableLogin;
             }
 
             if ($this->enableMe) {
-                $graphqliteConf['security'] = [
-                    'enable_me' => $this->enableMe,
-                ];
+                $graphqliteConf['security']['enable_me'] = $this->enableMe;
             }
 
             $container->loadFromExtension('graphqlite', $graphqliteConf);
