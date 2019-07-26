@@ -30,7 +30,6 @@
 
         <service id="TheCodingMachine\GraphQLite\AggregateControllerQueryProviderFactory">
             <argument type="collection">
-                <argument>TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController</argument>
             </argument>
             <tag name="graphql.queryprovider_factory" />
         </service>
@@ -76,6 +75,17 @@
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController" public="true">
             <argument key="$firewallName">%graphqlite.security.firewall_name%</argument>
+        </service>
+
+        <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\MeController" public="true" />
+
+        <service id="TheCodingMachine\Graphqlite\Bundle\Types\UserType" public="true"/>
+
+        <service id="TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory">
+            <argument type="collection">
+                <argument>TheCodingMachine\Graphqlite\Bundle\Types\UserType</argument>
+            </argument>
+            <tag name="graphql.type_mapper_factory"/>
         </service>
     </services>
 </container>

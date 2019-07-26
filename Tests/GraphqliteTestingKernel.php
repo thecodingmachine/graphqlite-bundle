@@ -33,13 +33,18 @@ class GraphqliteTestingKernel extends Kernel
      * @var bool
      */
     private $enableSecurity;
+    /**
+     * @var string|null
+     */
+    private $enableMe;
 
-    public function __construct(bool $enableSession = true, ?string $enableLogin = null, bool $enableSecurity = true)
+    public function __construct(bool $enableSession = true, ?string $enableLogin = null, bool $enableSecurity = true, ?string $enableMe = null)
     {
         parent::__construct('test', true);
         $this->enableSession = $enableSession;
         $this->enableLogin = $enableLogin;
         $this->enableSecurity = $enableSecurity;
+        $this->enableMe = $enableMe;
     }
 
     public function registerBundles()
@@ -112,6 +117,12 @@ class GraphqliteTestingKernel extends Kernel
             if ($this->enableLogin) {
                 $graphqliteConf['security'] = [
                     'enable_login' => $this->enableLogin,
+                ];
+            }
+
+            if ($this->enableMe) {
+                $graphqliteConf['security'] = [
+                    'enable_me' => $this->enableMe,
                 ];
             }
 

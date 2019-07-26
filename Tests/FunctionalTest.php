@@ -220,7 +220,10 @@ class FunctionalTest extends TestCase
 
         $request = Request::create('/graphql', 'POST', ['query' => '
         mutation login { 
-          login(userName: "foo", password: "bar")
+          login(userName: "foo", password: "bar") {
+            userName
+            roles
+          }
         }']);
 
         $response = $kernel->handle($request);
@@ -229,9 +232,47 @@ class FunctionalTest extends TestCase
 
         $this->assertSame([
             'data' => [
-                'login' => true
+                'login' => [
+                    'userName' => 'foo',
+                    'roles' => [
+                        'ROLE_USER'
+                    ]
+                ]
             ]
         ], $result);
+    }
+
+    public function testMeQuery(): void
+    {
+        $kernel = new GraphqliteTestingKernel();
+        $kernel->boot();
+
+        $session = new Session(new MockArraySessionStorage());
+        $container = $kernel->getContainer();
+        $container->set('session', $session);
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        {
+          me {
+            userName
+            roles
+          }
+        }
+        ']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame([
+            'data' => [
+                'me' => [
+                    'userName' => 'anon.',
+                    'roles' => [],
+                ]
+            ]
+        ], $result);
+
     }
 
     public function testNoLoginNoSessionQuery(): void
@@ -241,7 +282,9 @@ class FunctionalTest extends TestCase
 
         $request = Request::create('/graphql', 'POST', ['query' => '
         mutation login { 
-          login(userName: "foo", password: "bar")
+          login(userName: "foo", password: "bar") {
+            userName
+          }
         }']);
 
         $response = $kernel->handle($request);
@@ -259,12 +302,77 @@ class FunctionalTest extends TestCase
         $kernel->boot();
     }
 
+    public function testForceMeNoSecurity(): void
+    {
+        $kernel = new GraphqliteTestingKernel(false, 'off', false, 'on');
+        $this->expectException(GraphQLException::class);
+        $this->expectExceptionMessage('In order to enable the "me" query (via the graphqlite.security.enable_me parameter), you need to install the security bundle.');
+        $kernel->boot();
+    }
+
     public function testForceLoginNoSecurity(): void
     {
         $kernel = new GraphqliteTestingKernel(true, 'on', false);
         $this->expectException(GraphQLException::class);
         $this->expectExceptionMessage('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to install the security bundle. Please be sure to correctly configure the user provider (in the security.providers configuration settings)');
         $kernel->boot();
+    }
+
+    /*public function testAutoMeNoSecurity(): void
+    {
+        $kernel = new GraphqliteTestingKernel(true, null, false);
+        $kernel->boot();
+
+        $session = new Session(new MockArraySessionStorage());
+        $container = $kernel->getContainer();
+        $container->set('session', $session);
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        {
+          me {
+            userName
+            roles
+          }
+        }
+        ']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame([
+            'data' => [
+                'me' => [
+                    'userName' => 'anon.',
+                    'roles' => [],
+                ]
+            ]
+        ], $result);
+    }*/
+
+    public function testAllOff(): void
+    {
+        $kernel = new GraphqliteTestingKernel(true, 'off', true, 'off');
+        $kernel->boot();
+
+        $session = new Session(new MockArraySessionStorage());
+        $container = $kernel->getContainer();
+        $container->set('session', $session);
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        {
+          me {
+            userName
+            roles
+          }
+        }
+        ']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame('Cannot query field "me" on type "Query".', $result['errors'][0]['message']);
     }
 
     private function logIn(ContainerInterface $container)

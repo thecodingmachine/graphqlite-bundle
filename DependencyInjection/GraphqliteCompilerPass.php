@@ -47,6 +47,7 @@ use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Parameter;
 use TheCodingMachine\GraphQLite\Annotations\Query;
 use TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController;
+use TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\MeController;
 use TheCodingMachine\GraphQLite\FieldsBuilder;
 use TheCodingMachine\GraphQLite\FieldsBuilderFactory;
 use TheCodingMachine\GraphQLite\GraphQLException;
@@ -115,7 +116,6 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         // If the security is disabled, let's remove the LoginController
         if ($disableLogin === true) {
             $container->removeDefinition(LoginController::class);
-            $container->removeDefinition(AggregateControllerQueryProviderFactory::class);
         }
 
         if ($container->getParameter('graphqlite.security.enable_login') === 'on') {
@@ -132,6 +132,36 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             $provider = $container->findDefinition('security.firewall.map.config.'.$firewallName)->getArgument(5);
 
             $container->findDefinition(LoginController::class)->setArgument(0, new Reference($provider));
+
+            $this->registerController(LoginController::class, $container);
+        }
+
+        $disableMe = false;
+        if ($container->getParameter('graphqlite.security.enable_me') === 'auto'
+            && !$container->has(TokenStorageInterface::class)) {
+            $disableMe = true;
+        }
+        if ($container->getParameter('graphqlite.security.enable_me') === 'off') {
+            $disableMe = true;
+        }
+        // If the security is disabled, let's remove the LoginController
+        if ($disableMe === true) {
+            $container->removeDefinition(MeController::class);
+        }
+
+        if ($container->getParameter('graphqlite.security.enable_me') === 'on') {
+            if (!$container->has(TokenStorageInterface::class)) {
+                throw new GraphQLException('In order to enable the "me" query (via the graphqlite.security.enable_me parameter), you need to install the security bundle.');
+            }
+        }
+
+        if ($disableMe === false) {
+            $this->registerController(MeController::class, $container);
+        }
+
+        // Perf improvement: let's remove the AggregateControllerQueryProviderFactory if it is empty.
+        if (empty($container->findDefinition(AggregateControllerQueryProviderFactory::class)->getArgument(0))) {
+            $container->removeDefinition(AggregateControllerQueryProviderFactory::class);
         }
 
 
@@ -218,6 +248,14 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         $this->mapAdderToTag('graphql.field_middleware', 'addFieldMiddleware', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.type_mapper', 'addTypeMapper', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.type_mapper_factory', 'addTypeMapperFactory', $container, $schemaFactory);
+    }
+
+    private function registerController(string $controllerClassName, ContainerBuilder $container): void
+    {
+        $aggregateQueryProvider = $container->findDefinition(AggregateControllerQueryProviderFactory::class);
+        $controllersList = $aggregateQueryProvider->getArgument(0);
+        $controllersList[] = $controllerClassName;
+        $aggregateQueryProvider->setArgument(0, $controllersList);
     }
 
     /**
