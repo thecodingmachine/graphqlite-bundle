@@ -79,11 +79,11 @@
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\MeController" public="true" />
 
-        <service id="TheCodingMachine\Graphqlite\Bundle\Types\UserType" public="true"/>
+        <service id="TheCodingMachine\Graphqlite\Bundle\Types\SymfonyUserInterfaceType" public="true"/>
 
         <service id="TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory">
             <argument type="collection">
-                <argument>TheCodingMachine\Graphqlite\Bundle\Types\UserType</argument>
+                <argument>TheCodingMachine\Graphqlite\Bundle\Types\SymfonyUserInterfaceType</argument>
             </argument>
             <tag name="graphql.type_mapper_factory"/>
         </service>

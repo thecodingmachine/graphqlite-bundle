@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @Type(class=UserInterface::class)
  * @SourceField(name="userName")
  */
-class UserType
+class SymfonyUserInterfaceType
 {
     /**
      * @Field()
