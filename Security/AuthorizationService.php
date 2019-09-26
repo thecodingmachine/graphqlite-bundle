@@ -28,10 +28,9 @@ class AuthorizationService implements AuthorizationServiceInterface
     /**
      * Returns true if the "current" user has access to the right "$right"
      *
-     * @param string $right
-     * @return bool
+     * @param mixed $subject The scope this right applies on. $subject is typically an object or a FQCN. Set $subject to "null" if the right is global.
      */
-    public function isAllowed(string $right): bool
+    public function isAllowed(string $right, $subject = null): bool
     {
         if ($this->authorizationChecker === null || $this->tokenStorage === null) {
             throw new \LogicException('The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".');
@@ -42,6 +41,6 @@ class AuthorizationService implements AuthorizationServiceInterface
             return false;
         }
 
-        return $this->authorizationChecker->isGranted($right);
+        return $this->authorizationChecker->isGranted($right, $subject);
     }
 }
