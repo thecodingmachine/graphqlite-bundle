@@ -200,14 +200,14 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         foreach ($controllersNamespaces as $controllersNamespace) {
             $schemaFactory->addMethodCall('addControllerNamespace', [ $controllersNamespace ]);
             foreach ($this->getClassList($controllersNamespace) as $className => $refClass) {
-                $this->makePublicInjectedServices($refClass, $reader, $container);
+                $this->makePublicInjectedServices($refClass, $reader, $container, true);
             }
         }
 
         foreach ($typesNamespaces as $typeNamespace) {
             $schemaFactory->addMethodCall('addTypeNamespace', [ $typeNamespace ]);
             foreach ($this->getClassList($typeNamespace) as $className => $refClass) {
-                $this->makePublicInjectedServices($refClass, $reader, $container);
+                $this->makePublicInjectedServices($refClass, $reader, $container, false);
             }
         }
 
@@ -273,13 +273,16 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         }
     }
 
-    private function makePublicInjectedServices(ReflectionClass $refClass, AnnotationReader $reader, ContainerBuilder $container): void
+    private function makePublicInjectedServices(ReflectionClass $refClass, AnnotationReader $reader, ContainerBuilder $container, bool $isController): void
     {
-        $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container) {
+        $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container, $isController) {
             $services = [];
             foreach ($refClass->getMethods() as $method) {
                 $field = $reader->getRequestAnnotation($method, AbstractRequest::class);
                 if ($field !== null) {
+                    if ($isController) {
+                        $services[$refClass->getName()] = $refClass->getName();
+                    }
                     $services += $this->getListOfInjectedServices($method, $container);
                 }
             }
