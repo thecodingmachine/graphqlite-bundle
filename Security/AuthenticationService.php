@@ -5,6 +5,7 @@ namespace TheCodingMachine\Graphqlite\Bundle\Security;
 
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface;
+use function is_object;
 
 class AuthenticationService implements AuthenticationServiceInterface
 {
@@ -25,20 +26,29 @@ class AuthenticationService implements AuthenticationServiceInterface
      */
     public function isLogged(): bool
     {
+        return $this->getUser() !== null;
+    }
+
+    /**
+     * Returns an object representing the current logged user.
+     * Can return null if the user is not logged.
+     */
+    public function getUser(): ?object
+    {
         if ($this->tokenStorage === null) {
             throw new \LogicException('The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".');
         }
 
         $token = $this->tokenStorage->getToken();
         if (null === $token) {
-            return false;
+            return null;
         }
 
-        if (!\is_object($token->getUser())) {
+        $user = $token->getUser();
+        if (!\is_object($user)) {
             // e.g. anonymous authentication
-            return false;
+            return null;
         }
-
-        return true;
+        return $user;
     }
 }
