@@ -4,6 +4,7 @@
 namespace TheCodingMachine\Graphqlite\Bundle\Controller;
 
 
+use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
 use function array_map;
 use GraphQL\Error\ClientAware;
 use GraphQL\Error\Debug;
@@ -100,15 +101,16 @@ class GraphqliteController
         $standardService = new StandardServer($serverConfig);
         $result = $standardService->executePsrRequest($request);
 
+        $httpCodeDecider = new HttpCodeDecider();
         if ($result instanceof ExecutionResult) {
-            return new JsonResponse($result->toArray($this->debug), $this->decideHttpStatusCode($result));
+            return new JsonResponse($result->toArray($this->debug), $httpCodeDecider->decideHttpStatusCode($result));
         }
         if (is_array($result)) {
             $finalResult = array_map(function (ExecutionResult $executionResult) {
                 return $executionResult->toArray($this->debug);
             }, $result);
             // Let's return the highest result.
-            $statuses = array_map([$this, 'decideHttpStatusCode'], $result);
+            $statuses = array_map([$httpCodeDecider, 'decideHttpStatusCode'], $result);
             $status = max($statuses);
             return new JsonResponse($finalResult, $status);
         }
@@ -116,41 +118,5 @@ class GraphqliteController
             throw new RuntimeException('Only SyncPromiseAdapter is supported');
         }
         throw new RuntimeException('Unexpected response from StandardServer::executePsrRequest'); // @codeCoverageIgnore
-    }
-
-    /**
-     * Decides the HTTP status code based on the answer.
-     *
-     * @see https://github.com/APIs-guru/graphql-over-http#status-codes
-     */
-    private function decideHttpStatusCode(ExecutionResult $result): int
-    {
-        // If the data entry in the response has any value other than null (when the operation has successfully executed without error) then the response should use the 200 (OK) status code.
-        if ($result->data !== null || empty($result->errors)) {
-            return 200;
-        }
-
-        $status = 0;
-        // There might be many errors. Let's return the highest code we encounter.
-        foreach ($result->errors as $error) {
-            $wrappedException = $error->getPrevious();
-            if ($wrappedException !== null) {
-                $code = $wrappedException->getCode();
-                if (!isset(Response::$statusTexts[$code])) {
-                    // The exception code is not a valid HTTP code. Let's ignore it
-                    continue;
-                }
-            } else {
-                $code = 400;
-            }
-            $status = max($status, $code);
-        }
-
-        // If exceptions have been thrown and they have not a "HTTP like code", let's throw a 500.
-        if ($status < 200) {
-            $status = 500;
-        }
-
-        return $status;
     }
 }
