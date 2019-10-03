@@ -66,11 +66,11 @@
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController" public="true" />
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\RequestParameterMapper">
-            <tag name="graphql.parameter_mapper"/>
+            <tag name="graphql.parameter_middleware"/>
         </service>
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\RequestParameterMapper">
-            <tag name="graphql.parameter_mapper"/>
+            <tag name="graphql.parameter_middleware"/>
         </service>
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController" public="true">
