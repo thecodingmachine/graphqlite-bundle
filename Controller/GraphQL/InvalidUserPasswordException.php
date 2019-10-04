@@ -5,7 +5,7 @@ namespace TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL;
 
 
 use Exception;
-use TheCodingMachine\GraphQLite\GraphQLException;
+use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
 
 class InvalidUserPasswordException extends GraphQLException
 {

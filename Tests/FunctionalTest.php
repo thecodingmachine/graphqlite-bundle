@@ -14,7 +14,7 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\User\User;
 use TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController;
 use TheCodingMachine\Graphqlite\Bundle\Security\AuthenticationService;
-use TheCodingMachine\GraphQLite\GraphQLException;
+use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
 use TheCodingMachine\GraphQLite\Schema;
 use function var_dump;
 
