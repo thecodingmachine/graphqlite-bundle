@@ -50,7 +50,7 @@ use TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController;
 use TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\MeController;
 use TheCodingMachine\GraphQLite\FieldsBuilder;
 use TheCodingMachine\GraphQLite\FieldsBuilderFactory;
-use TheCodingMachine\GraphQLite\GraphQLException;
+use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
 use TheCodingMachine\GraphQLite\InputTypeGenerator;
 use TheCodingMachine\GraphQLite\InputTypeUtils;
 use TheCodingMachine\GraphQLite\Mappers\CompositeTypeMapper;

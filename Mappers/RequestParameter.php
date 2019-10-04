@@ -6,7 +6,7 @@ namespace TheCodingMachine\Graphqlite\Bundle\Mappers;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use TheCodingMachine\Graphqlite\Bundle\Context\SymfonyRequestContextInterface;
-use TheCodingMachine\GraphQLite\GraphQLException;
+use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
 use TheCodingMachine\GraphQLite\Parameters\ParameterInterface;
 
 class RequestParameter implements ParameterInterface
