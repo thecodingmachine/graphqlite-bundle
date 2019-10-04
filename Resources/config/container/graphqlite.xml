@@ -65,11 +65,7 @@
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController" public="true" />
 
-        <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\RequestParameterMapper">
-            <tag name="graphql.parameter_middleware"/>
-        </service>
-
-        <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\RequestParameterMapper">
+        <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\RequestParameterMiddleware">
             <tag name="graphql.parameter_middleware"/>
         </service>
 
