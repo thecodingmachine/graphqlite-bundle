@@ -17,8 +17,11 @@
   ],
   "require" : {
     "php" : ">=7.2",
-    "thecodingmachine/graphqlite" : "^4",
+    "thecodingmachine/graphqlite" : "~4.0.0",
+    "thecodingmachine/graphqlite-symfony-validator-bridge" : "~4.0.0",
     "symfony/framework-bundle": "^4.1.9",
+    "symfony/validator": "^4.1.9",
+    "symfony/translation": "^4.1.9",
     "doctrine/annotations": "^1.6",
     "doctrine/cache": "^1.8",
     "symfony/psr-http-message-bridge": "^1",

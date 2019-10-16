@@ -152,10 +152,11 @@ class FunctionalTest extends TestCase
         $this->assertSame(404, $response->getStatusCode());
 
         $result = json_decode($response->getContent(), true);
-        var_dump($result);
 
-        //$this->assertSame('Cannot query field "me" on type "Query".', $result['errors'][0]['message']);
-
+        $this->assertSame('foo', $result['errors'][0]['message']);
+        $this->assertSame('bar', $result['errors'][1]['message']);
+        $this->assertSame('MyCat', $result['errors'][1]['extensions']['category']);
+        $this->assertSame('baz', $result['errors'][1]['extensions']['field']);
     }
 
     public function testLoggedMiddleware(): void
@@ -394,6 +395,31 @@ class FunctionalTest extends TestCase
         $result = json_decode($response->getContent(), true);
 
         $this->assertSame('Cannot query field "me" on type "Query".', $result['errors'][0]['message']);
+    }
+
+    public function testValidation(): void
+    {
+        $kernel = new GraphqliteTestingKernel(true, 'off', true, 'off');
+        $kernel->boot();
+
+        $session = new Session(new MockArraySessionStorage());
+        $container = $kernel->getContainer();
+        $container->set('session', $session);
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        {
+          findByMail(email: "notvalid")
+        }
+        ']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+        $errors = $result['errors'];
+
+        $this->assertSame('This value is not a valid email address.', $errors[0]['message']);
+        $this->assertSame('email', $errors[0]['extensions']['field']);
+        $this->assertSame('Validate', $errors[0]['extensions']['category']);
     }
 
     private function logIn(ContainerInterface $container)

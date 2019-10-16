@@ -81,6 +81,11 @@
             <tag name="graphql.parameter_middleware"/>
         </service>
 
+        <service id="TheCodingMachine\Graphqlite\Validator\Mappers\Parameters\AssertParameterMiddleware">
+            <argument type="service" id="validator.validator_factory" />
+            <tag name="graphql.parameter_middleware"/>
+        </service>
+
         <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController" public="true">
             <argument key="$firewallName">%graphqlite.security.firewall_name%</argument>
         </service>
