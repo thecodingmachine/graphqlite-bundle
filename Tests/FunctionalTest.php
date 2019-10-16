@@ -137,6 +137,27 @@ class FunctionalTest extends TestCase
         $this->assertSame(404, $response->getStatusCode(), $response->getContent());
     }
 
+    public function testExceptionHandler(): void
+    {
+        $kernel = new GraphqliteTestingKernel();
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          triggerAggregateException
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $this->assertSame(404, $response->getStatusCode());
+
+        $result = json_decode($response->getContent(), true);
+        var_dump($result);
+
+        //$this->assertSame('Cannot query field "me" on type "Query".', $result['errors'][0]['message']);
+
+    }
+
     public function testLoggedMiddleware(): void
     {
         $kernel = new GraphqliteTestingKernel();

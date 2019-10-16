@@ -14,6 +14,8 @@ use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Contact;
 use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Product;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Query;
+use TheCodingMachine\GraphQLite\Exceptions\GraphQLAggregateException;
+use TheCodingMachine\GraphQLite\Exceptions\GraphQLException;
 
 class TestGraphqlController
 {
@@ -69,6 +71,17 @@ class TestGraphqlController
     public function triggerException(int $code = 0): string
     {
         throw new MyException('Boom', $code);
+    }
+
+    /**
+     * @Query()
+     * @return string
+     */
+    public function triggerAggregateException(): string
+    {
+        $exception1 = new GraphQLException('foo', 401);
+        $exception2 = new GraphQLException('bar', 404, null, 'MyCat', ['field' => 'baz']);
+        throw new GraphQLAggregateException([$exception1, $exception2]);
     }
 
     /**
