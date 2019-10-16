@@ -57,6 +57,18 @@
             <call method="setSchema">
                 <argument type="service" id="TheCodingMachine\GraphQLite\Schema"/>
             </call>
+            <call method="setErrorFormatter">
+                <argument type="collection">
+                    <argument>\TheCodingMachine\GraphQLite\Exceptions\WebonyxErrorHandler</argument>
+                    <argument>errorFormatter</argument>
+                </argument>
+            </call>
+            <call method="setErrorsHandler">
+                <argument type="collection">
+                    <argument>\TheCodingMachine\GraphQLite\Exceptions\WebonyxErrorHandler</argument>
+                    <argument>errorHandler</argument>
+                </argument>
+            </call>
         </service>
 
         <service id="TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper">
