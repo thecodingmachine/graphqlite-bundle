@@ -245,7 +245,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         // Register graphql.queryprovider
         $this->mapAdderToTag('graphql.queryprovider', 'addQueryProvider', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.queryprovider_factory', 'addQueryProviderFactory', $container, $schemaFactory);
-        $this->mapAdderToTag('graphql.root_type_mapper', 'addRootTypeMapper', $container, $schemaFactory);
+        $this->mapAdderToTag('graphql.root_type_mapper_factory', 'addRootTypeMapperFactory', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.parameter_middleware', 'addParameterMiddleware', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.field_middleware', 'addFieldMiddleware', $container, $schemaFactory);
         $this->mapAdderToTag('graphql.type_mapper', 'addTypeMapper', $container, $schemaFactory);
