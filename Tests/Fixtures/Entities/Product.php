@@ -30,7 +30,7 @@ class Product
     }
 
     /**
-     * @return string
+     * @return float
      */
     public function getPrice(): float
     {

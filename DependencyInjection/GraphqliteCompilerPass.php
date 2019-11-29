@@ -3,6 +3,9 @@
 
 namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
 
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 use function class_exists;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
@@ -381,9 +384,9 @@ class GraphqliteCompilerPass implements CompilerPassInterface
     {
         if ($this->cache === null) {
             if (function_exists('apcu_fetch')) {
-                $this->cache = new SymfonyApcuCache('graphqlite_bundle');
+                $this->cache = new Psr16Cache(new ApcuAdapter('graphqlite_bundle'));
             } else {
-                $this->cache = new SymfonyPhpFilesCache('graphqlite_bundle');
+                $this->cache = new Psr16Cache(new PhpFilesAdapter('graphqlite_bundle'));
             }
         }
         return $this->cache;
