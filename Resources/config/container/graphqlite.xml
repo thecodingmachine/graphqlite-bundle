@@ -75,7 +75,9 @@
             <tag name="graphql.type_mapper"/>
         </service>
 
-        <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController" public="true" />
+        <service id="TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController" public="true">
+            <tag name="routing.route_loader"/>
+        </service>
 
         <service id="TheCodingMachine\Graphqlite\Bundle\Mappers\RequestParameterMiddleware">
             <tag name="graphql.parameter_middleware"/>
