@@ -15,20 +15,20 @@ matrix:
   include:
       # Test the latest stable release
     - php: 7.2
-    - php: 7.4
+    - php: 7.3
       env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text"
 
       # Test LTS versions.
-    - php: 7.4
+    - php: 7.3
       env: DEPENDENCIES="symfony/lts:^4"
 
       # Latest commit to master
-    - php: 7.4
+    - php: 7.3
       env: STABILITY="dev"
 
   allow_failures:
     # Minimum supported dependencies with the latest and oldest PHP version
-    - php: 7.4
+    - php: 7.3
       env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
     - php: 7.2
       env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
