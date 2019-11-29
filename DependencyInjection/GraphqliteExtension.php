@@ -4,6 +4,7 @@
 namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
 
 
+use TheCodingMachine\GraphQLite\Mappers\Root\RootTypeMapperFactoryInterface;
 use function array_map;
 use GraphQL\Error\Debug;
 use GraphQL\Server\ServerConfig;
@@ -75,6 +76,8 @@ class GraphqliteExtension extends Extension
 
         $container->registerForAutoconfiguration(ObjectType::class)
             ->addTag('graphql.output_type');
+        $container->registerForAutoconfiguration(RootTypeMapperFactoryInterface::class)
+            ->addTag('graphql.root_type_mapper_factory');
     }
 
     private function getNamespaceDir(string $namespace): string
