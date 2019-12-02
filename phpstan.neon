@@ -1,9 +1,5 @@
 parameters:
     ignoreErrors:
         - "#Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition::children\\(\\)#"
-        # Error triggered by a bad PHPDoc in Symfony
-        - '#Parameter \#4 $roles of class Symfony\\Component\\Security\\Core\\Authentication\\Token\\UsernamePasswordToken constructor expects array<string>, array<string|Symfony\\Component\\Security\\Core\\Role\\Role> given.#'
-        - '#Method Symfony\\Contracts\\EventDispatcher\\EventDispatcherInterface::dispatch\(\) invoked with 2 parameters, 1 required.#'
-        - '#Cannot cast object|string to string.#'
 #includes:
 #    - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
