@@ -13,7 +13,8 @@
         <defaults autowire="true" autoconfigure="true" public="false" />
 
         <service id="TheCodingMachine\GraphQLite\SchemaFactory">
-            <argument index="1" type="service" id="service_container" />
+            <argument type="service" id="graphqlite.psr16cache" />
+            <argument type="service" id="service_container" />
             <call method="setAuthenticationService">
                 <argument type="service" id="TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface" />
             </call>
@@ -101,6 +102,25 @@
                 <argument>TheCodingMachine\Graphqlite\Bundle\Types\SymfonyUserInterfaceType</argument>
             </argument>
             <tag name="graphql.type_mapper_factory"/>
+        </service>
+        
+        <service id="graphqlite.phpfilescache" class="Symfony\Component\Cache\Adapter\PhpFilesAdapter">
+            <argument>graphqlite</argument>
+        </service>
+
+        <service id="graphqlite.apcucache" class="Symfony\Component\Cache\Adapter\ApcuAdapter">
+            <argument>graphqlite</argument>
+        </service>
+
+        <service id="graphqlite.psr16cache" class="Symfony\Component\Cache\Psr16Cache">
+            <argument type="service" id="graphqlite.cache" />
+        </service>
+
+        <service id="graphqlite.cacheclearer" class="Symfony\Component\HttpKernel\CacheClearer\Psr6CacheClearer">
+            <argument type="collection">
+                <argument/>
+            </argument>
+            <tag name="kernel.cache_clearer"/>
         </service>
     </services>
 </container>
