@@ -27,7 +27,7 @@
     "symfony/psr-http-message-bridge": "^1",
     "nyholm/psr7": "^1.1",
     "zendframework/zend-diactoros": "^1.8.6",
-    "overblog/graphiql-bundle": "^0.1.2",
+    "overblog/graphiql-bundle": "^0.1.2 | ^0.2",
     "thecodingmachine/cache-utils": "^1"
   },
   "require-dev": {
