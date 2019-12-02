@@ -15,6 +15,7 @@ matrix:
   include:
       # Test the latest stable release
     - php: 7.2
+      env: PHPSTAN=true
     - php: 7.3
       env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text"
 
@@ -51,7 +52,7 @@ script:
   # simple-phpunit is the PHPUnit wrapper provided by the PHPUnit Bridge component and
   # it helps with testing legacy code and deprecations (composer require symfony/phpunit-bridge)
   #- ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS
-  - composer phpstan
+  - if [[ $PHPSTAN == true ]]; then composer phpstan; fi
   - ./vendor/bin/phpunit
 
 after_script:
