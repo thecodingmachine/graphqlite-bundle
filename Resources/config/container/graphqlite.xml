@@ -118,7 +118,7 @@
 
         <service id="graphqlite.cacheclearer" class="Symfony\Component\HttpKernel\CacheClearer\Psr6CacheClearer">
             <argument type="collection">
-                <argument/>
+                <argument type="service" id="graphqlite.cache" />
             </argument>
             <tag name="kernel.cache_clearer"/>
         </service>
