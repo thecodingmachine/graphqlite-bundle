@@ -63,6 +63,10 @@ class GraphqliteTestingKernel extends Kernel
                 'secret' => 'S0ME_SECRET'
             );
 
+            $frameworkConf['cache'] =[
+                'app' => 'cache.adapter.array',
+            ];
+
             if ($this->enableSession) {
                 $frameworkConf['session'] =[
                     'enabled' => true,
@@ -139,6 +143,6 @@ class GraphqliteTestingKernel extends Kernel
 
     public function getCacheDir()
     {
-        return __DIR__.'/../cache/'.spl_object_hash($this);
+        return __DIR__.'/../cache/'.($this->enableSession?'withSession':'withoutSession').$this->enableLogin.($this->enableSecurity?'withSecurity':'withoutSecurity').$this->enableMe;
     }
 }
