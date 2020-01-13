@@ -18,12 +18,16 @@ use Psr\SimpleCache\CacheInterface;
 use ReflectionParameter;
 use Symfony\Component\Cache\Simple\ApcuCache as SymfonyApcuCache;
 use Symfony\Component\Cache\Simple\PhpFilesCache as SymfonyPhpFilesCache;
+use function filter_var;
 use function function_exists;
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionMethod;
+use function ini_get;
+use function interface_exists;
+use function php_sapi_name;
 use function str_replace;
 use function strpos;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -252,7 +256,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         $this->mapAdderToTag('graphql.type_mapper_factory', 'addTypeMapperFactory', $container, $schemaFactory);
 
         // Configure cache
-        if (ApcuAdapter::isSupported()) {
+        if (ApcuAdapter::isSupported() && (PHP_SAPI !== 'cli' || filter_var(ini_get('apc.enabled_cli')))) {
             $container->setAlias('graphqlite.cache', 'graphqlite.apcucache');
         } else {
             $container->setAlias('graphqlite.cache', 'graphqlite.phpfilescache');
@@ -421,12 +425,21 @@ class GraphqliteCompilerPass implements CompilerPassInterface
     private function getClassList(string $namespace, int $globTtl = 2, bool $recursive = true): array
     {
         $explorer = new GlobClassExplorer($namespace, $this->getPsr16Cache(), $globTtl, ClassNameMapper::createFromComposerFile(null, null, true), $recursive);
-        $allClasses = $explorer->getClasses();
+        $allClasses = $explorer->getClassMap();
         $classes = [];
-        foreach ($allClasses as $className) {
-            if (! class_exists($className)) {
-                continue;
+        foreach ($allClasses as $className => $phpFile) {
+            if (! class_exists($className, false)) {
+                // Let's try to load the file if it was not imported yet.
+                // We are importing the file manually to avoid triggering the autoloader.
+                // The autoloader might trigger errors if the file does not respect PSR-4 or if the
+                // Symfony DebugAutoLoader is installed. (see https://github.com/thecodingmachine/graphqlite/issues/216)
+                require_once $phpFile;
+                // Does it exists now?
+                if (! class_exists($className, false)) {
+                    continue;
+                }
             }
+
             $refClass = new ReflectionClass($className);
             if (! $refClass->isInstantiable()) {
                 continue;
