@@ -37,7 +37,7 @@ class Contact
      * @Field()
      * @Autowire(for="$testService")
      * @Autowire(for="$someService", identifier="someService")
-     * @Autowire(for="$someService", identifier="someAlias")
+     * @Autowire(for="$someAlias", identifier="someAlias")
      * @return string
      */
     public function injectService(TestGraphqlController $testService = null, stdClass $someService = null, stdClass $someAlias = null): string

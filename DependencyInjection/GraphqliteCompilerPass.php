@@ -304,7 +304,11 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         });
 
         foreach ($services as $service) {
-            $container->getDefinition($service)->setPublic(true);
+            if ($container->hasAlias($service)) {
+                $container->getAlias($service)->setPublic(true);
+            } else {
+                $container->getDefinition($service)->setPublic(true);
+            }
         }
 
     }
