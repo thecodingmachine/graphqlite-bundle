@@ -20,6 +20,9 @@ services:
     someService:
         class: stdClass
 
+    someAlias:
+        alias: someService
+
     Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler:
         class: Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler
     # controllers are imported separately to make sure services can be injected

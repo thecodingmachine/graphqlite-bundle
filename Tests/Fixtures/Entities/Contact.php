@@ -37,11 +37,12 @@ class Contact
      * @Field()
      * @Autowire(for="$testService")
      * @Autowire(for="$someService", identifier="someService")
+     * @Autowire(for="$someService", identifier="someAlias")
      * @return string
      */
-    public function injectService(TestGraphqlController $testService = null, stdClass $someService = null): string
+    public function injectService(TestGraphqlController $testService = null, stdClass $someService = null, stdClass $someAlias = null): string
     {
-        if (!$testService instanceof TestGraphqlController || $someService === null) {
+        if (!$testService instanceof TestGraphqlController || $someService === null || $someAlias === null) {
             return 'KO';
         }
         return 'OK';
