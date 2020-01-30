@@ -85,6 +85,7 @@ class FunctionalTest extends TestCase
         { 
           contact {
             injectService
+            injectServicePrefetch
           } 
         }']);
 
@@ -96,6 +97,7 @@ class FunctionalTest extends TestCase
             'data' => [
                 'contact' => [
                     'injectService' => 'OK',
+                    'injectServicePrefetch' => 'OK',
                 ]
             ]
         ], $result);

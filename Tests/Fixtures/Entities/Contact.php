@@ -47,4 +47,23 @@ class Contact
         }
         return 'OK';
     }
+
+    /**
+     * @Field(prefetchMethod="prefetchData")
+     */
+    public function injectServicePrefetch($prefetchData): string
+    {
+        return $prefetchData;
+    }
+
+    /**
+     * @Autowire(for="$someOtherService", identifier="someOtherService")
+     */
+    public function prefetchData(iterable $iterable, stdClass $someOtherService = null)
+    {
+        if ($someOtherService === null) {
+            return 'KO';
+        }
+        return 'OK';
+    }
 }
