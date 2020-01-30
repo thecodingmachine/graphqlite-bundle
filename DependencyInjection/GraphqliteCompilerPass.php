@@ -194,7 +194,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
                     if ($typeAnnotation !== null || $this->getAnnotationReader()->getExtendTypeAnnotation($reflectionClass) !== null) {
                         $definition->setPublic(true);
                     }
-                    foreach ($reflectionClass->getMethods() as $method) {
+                    foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                         $factory = $reader->getFactoryAnnotation($method);
                         if ($factory !== null) {
                             $definition->setPublic(true);
