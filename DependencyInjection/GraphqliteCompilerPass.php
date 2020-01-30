@@ -291,13 +291,16 @@ class GraphqliteCompilerPass implements CompilerPassInterface
     {
         $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container, $isController) {
             $services = [];
-            foreach ($refClass->getMethods() as $method) {
+            foreach ($refClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 $field = $reader->getRequestAnnotation($method, AbstractRequest::class);
                 if ($field !== null) {
                     if ($isController) {
                         $services[$refClass->getName()] = $refClass->getName();
                     }
                     $services += $this->getListOfInjectedServices($method, $container);
+                    if ($field instanceof Field && $field->getPrefetchMethod() !== null) {
+                        $services += $this->getListOfInjectedServices($refClass->getMethod($field->getPrefetchMethod()), $container);
+                    }
                 }
             }
             return $services;
