@@ -41,9 +41,8 @@ class MeController
         $user = $token->getUser();
 
         if (!$user instanceof UserInterface) {
-            // getUser() can be an object with a toString or a string
-            $userName = (string) $user;
-            $user = new BasicUser($userName);
+            // getUser() can be the "anon." string.
+            return null;
         }
 
         return $user;
