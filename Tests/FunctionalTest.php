@@ -290,10 +290,7 @@ class FunctionalTest extends TestCase
 
         $this->assertSame([
             'data' => [
-                'me' => [
-                    'userName' => 'anon.',
-                    'roles' => [],
-                ]
+                'me' => null
             ]
         ], $result);
 
