@@ -4,6 +4,11 @@
 namespace TheCodingMachine\Graphqlite\Bundle\Controller;
 
 
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\StreamFactory;
+use Laminas\Diactoros\UploadedFileFactory;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
 use function array_map;
 use GraphQL\Error\ClientAware;
@@ -50,7 +55,7 @@ class GraphqliteController
     public function __construct(ServerConfig $serverConfig, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = Debug::RETHROW_UNSAFE_EXCEPTIONS)
     {
         $this->serverConfig = $serverConfig;
-        $this->httpMessageFactory = $httpMessageFactory ?: new DiactorosFactory();
+        $this->httpMessageFactory = $httpMessageFactory ?: new PsrHttpFactory(new ServerRequestFactory(), new StreamFactory(), new UploadedFileFactory(), new ResponseFactory());
         $this->debug = $debug ?? false;
     }
 
