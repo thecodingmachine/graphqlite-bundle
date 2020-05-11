@@ -13,12 +13,11 @@ use TheCodingMachine\Graphqlite\Bundle\GraphiQL\EndpointResolver;
 final class OverblogGraphiQLEndpointWiringPass implements CompilerPassInterface
 {
     //@todo https://github.com/symfony/symfony/blob/master/src/Symfony/Component/DependencyInjection/Tests/Compiler/RemoveUnusedDefinitionsPassTest.php
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $endPointDefinition = new Definition(EndpointResolver::class);
         $endPointDefinition->addArgument(new Reference('request_stack'));
 
         $container->setDefinition('overblog_graphiql.controller.graphql.endpoint', $endPointDefinition);
-
     }
 }

@@ -3,6 +3,7 @@
 
 namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
 
+use ReflectionNamedType;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Psr16Cache;
@@ -85,7 +86,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
     /**
      * You can modify the container here before it is dumped to PHP code.
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $reader = $this->getAnnotationReader();
         //$inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
@@ -175,6 +176,9 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             if ($definition->isAbstract() || $definition->getClass() === null) {
                 continue;
             }
+            /**
+             * @var class-string $class
+             */
             $class = $definition->getClass();
 /*            foreach ($controllersNamespaces as $controllersNamespace) {
                 if (strpos($class, $controllersNamespace) === 0) {
@@ -287,6 +291,9 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         }
     }
 
+    /**
+     * @param ReflectionClass<object> $refClass
+     */
     private function makePublicInjectedServices(ReflectionClass $refClass, AnnotationReader $reader, ContainerBuilder $container, bool $isController): void
     {
         $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container, $isController) {
@@ -349,7 +356,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             } else {
                 $parameter = $parametersByName[$target];
                 $type = $parameter->getType();
-                if ($type !== null) {
+                if ($type !== null && $type instanceof ReflectionNamedType) {
                     $fqcn = $type->getName();
                     if ($container->has($fqcn)) {
                         $services[$fqcn] = $fqcn;
@@ -427,7 +434,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
      * Returns the array of globbed classes.
      * Only instantiable classes are returned.
      *
-     * @return array<string,ReflectionClass> Key: fully qualified class name
+     * @return array<string,ReflectionClass<object>> Key: fully qualified class name
      */
     private function getClassList(string $namespace, int $globTtl = 2, bool $recursive = true): array
     {

@@ -11,7 +11,7 @@ use TheCodingMachine\Graphqlite\Bundle\DependencyInjection\GraphqliteCompilerPas
 
 class GraphqliteBundle extends Bundle
 {
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         parent::build($container);
 
