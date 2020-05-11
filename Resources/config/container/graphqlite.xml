@@ -72,6 +72,12 @@
             </call>
         </service>
 
+        <service id="GraphQL\Validator\Rules\DisableIntrospection" />
+
+        <service id="GraphQL\Validator\Rules\QueryComplexity" />
+
+        <service id="GraphQL\Validator\Rules\QueryDepth" />
+
         <service id="TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper">
             <tag name="graphql.type_mapper"/>
         </service>
