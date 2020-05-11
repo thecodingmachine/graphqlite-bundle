@@ -23,7 +23,6 @@ use function in_array;
 use function json_decode;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
