@@ -27,9 +27,10 @@ class GraphqliteExtension extends Extension
     /**
      * Loads a specific configuration.
      *
-     * @throws \InvalidArgumentException When provided tag is not defined in this extension
+     * @param mixed[] $configs
+     * @throws \Exception
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
@@ -94,6 +95,10 @@ class GraphqliteExtension extends Extension
         return substr($possibleFileNames[0], 0, -8);
     }
 
+    /**
+     * @param array<string, int> $debug
+     * @return int
+     */
     private function toDebugCode(array $debug): int
     {
         $code = 0;

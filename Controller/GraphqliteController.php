@@ -114,6 +114,7 @@ class GraphqliteController
         if ($result instanceof Promise) {
             throw new RuntimeException('Only SyncPromiseAdapter is supported');
         }
+        /* @phpstan-ignore-next-line */
         throw new RuntimeException('Unexpected response from StandardServer::executePsrRequest'); // @codeCoverageIgnore
     }
 }
