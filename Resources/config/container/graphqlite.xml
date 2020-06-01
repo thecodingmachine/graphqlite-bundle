@@ -32,6 +32,8 @@
         <service id="TheCodingMachine\GraphQLite\AggregateControllerQueryProviderFactory">
             <argument type="collection">
             </argument>
+            <argument type="service" id="service_container">
+            </argument>
             <tag name="graphql.queryprovider_factory" />
         </service>
 
@@ -103,7 +105,7 @@
             </argument>
             <tag name="graphql.type_mapper_factory"/>
         </service>
-        
+
         <service id="graphqlite.phpfilescache" class="Symfony\Component\Cache\Adapter\PhpFilesAdapter">
             <argument>graphqlite</argument>
         </service>
