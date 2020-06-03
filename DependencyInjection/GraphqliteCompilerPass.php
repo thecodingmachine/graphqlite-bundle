@@ -280,7 +280,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         $this->mapAdderToTag('graphql.type_mapper_factory', 'addTypeMapperFactory', $container, $schemaFactory);
 
         // Configure cache
-        if (ApcuAdapter::isSupported() && (PHP_SAPI !== 'cli' || filter_var(ini_get('apc.enabled_cli')))) {
+        if (ApcuAdapter::isSupported() && (PHP_SAPI !== 'cli' || filter_var(ini_get('apc.enable_cli'), FILTER_VALIDATE_BOOLEAN))) {
             $container->setAlias('graphqlite.cache', 'graphqlite.apcucache');
         } else {
             $container->setAlias('graphqlite.cache', 'graphqlite.phpfilescache');
