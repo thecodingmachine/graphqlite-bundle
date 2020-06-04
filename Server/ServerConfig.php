@@ -1,0 +1,35 @@
+<?php
+
+
+namespace TheCodingMachine\Graphqlite\Bundle\Server;
+
+use GraphQL\Error\InvariantViolation;
+use GraphQL\Utils\Utils;
+use GraphQL\Validator\DocumentValidator;
+use GraphQL\Validator\Rules\ValidationRule;
+use function array_merge;
+use function is_array;
+use function is_callable;
+
+/**
+ * A slightly modified version of the server config: default validators are added by default when setValidators is called.
+ */
+class ServerConfig extends \GraphQL\Server\ServerConfig
+{
+    /**
+     * Set validation rules for this server, AND adds by default all the "default" validation rules provided by Webonyx
+     *
+     * @param ValidationRule[]|callable $validationRules
+     *
+     * @return \GraphQL\Server\ServerConfig
+     *
+     * @api
+     */
+    public function setValidationRules($validationRules)
+    {
+        parent::setValidationRules(array_merge(DocumentValidator::defaultRules(), $validationRules));
+
+        return $this;
+    }
+
+}
