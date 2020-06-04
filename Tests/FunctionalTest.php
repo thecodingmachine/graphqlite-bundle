@@ -312,6 +312,7 @@ class FunctionalTest extends TestCase
 
         $result = json_decode($response->getContent(), true);
 
+        $this->assertArrayHasKey('errors', $result);
         $this->assertSame('Cannot query field "login" on type "Mutation".', $result['errors'][0]['message']);
     }
 
