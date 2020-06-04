@@ -422,6 +422,110 @@ class FunctionalTest extends TestCase
         $this->assertSame('Validate', $errors[0]['extensions']['category']);
     }
 
+    public function testWithIntrospection(): void
+    {
+        $kernel = new GraphqliteTestingKernel(true, null, true, null);
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        {
+          __schema {
+            queryType {
+              name
+            }
+          }
+        }
+        ']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+        $data = $result['data'];
+
+        $this->assertArrayHasKey('__schema', $data);
+    }
+
+    public function testDisableIntrospection(): void
+    {
+        $kernel = new GraphqliteTestingKernel(true, null, true, null, false, 2, 2);
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        {
+          __schema {
+            queryType {
+              name
+            }
+          }
+        }
+        ']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+        $errors = $result['errors'];
+
+        $this->assertSame('GraphQL introspection is not allowed, but the query contained __schema or __type', $errors[0]['message']);
+    }
+
+    public function testMaxQueryComplexity(): void
+    {
+        $kernel = new GraphqliteTestingKernel(true, null, true, null, false, 2, null);
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        { 
+          products 
+          { 
+            name,
+            price,
+            seller {
+              name
+            }
+          }
+        }
+        ']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+        $errors = $result['errors'];
+
+        $this->assertSame('Max query complexity should be 2 but got 5.', $errors[0]['message']);
+    }
+
+    public function testMaxQueryDepth(): void
+    {
+        $kernel = new GraphqliteTestingKernel(true, null, true, null, false, null, 1);
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'POST', ['query' => '
+        { 
+          products 
+          { 
+            name,
+            price,
+            seller {
+              name
+              manager {
+                name
+                manager {
+                  name
+                }
+              }
+            }
+          }
+        }
+        ']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+        $errors = $result['errors'];
+
+        $this->assertSame('Max query depth should be 1 but got 3.', $errors[0]['message']);
+    }
+
     private function logIn(ContainerInterface $container)
     {
         // put a token into the storage so the final calls can function
