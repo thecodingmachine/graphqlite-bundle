@@ -54,7 +54,7 @@
 
         <service id="TheCodingMachine\GraphQLite\Security\AuthorizationServiceInterface" alias="TheCodingMachine\Graphqlite\Bundle\Security\AuthorizationService" />
 
-        <service id="GraphQL\Server\ServerConfig">
+        <service id="GraphQL\Server\ServerConfig" class="TheCodingMachine\Graphqlite\Bundle\Server\ServerConfig">
             <call method="setSchema">
                 <argument type="service" id="TheCodingMachine\GraphQLite\Schema"/>
             </call>
@@ -71,6 +71,12 @@
                 </argument>
             </call>
         </service>
+
+        <service id="GraphQL\Validator\Rules\DisableIntrospection" />
+
+        <service id="GraphQL\Validator\Rules\QueryComplexity" />
+
+        <service id="GraphQL\Validator\Rules\QueryDepth" />
 
         <service id="TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper">
             <tag name="graphql.type_mapper"/>
@@ -103,7 +109,7 @@
             </argument>
             <tag name="graphql.type_mapper_factory"/>
         </service>
-        
+
         <service id="graphqlite.phpfilescache" class="Symfony\Component\Cache\Adapter\PhpFilesAdapter">
             <argument>graphqlite</argument>
         </service>

@@ -63,6 +63,9 @@ class GraphqliteExtension extends Extension
         $container->setParameter('graphqlite.namespace.types', $namespaceType);
         $container->setParameter('graphqlite.security.enable_login', $enableLogin);
         $container->setParameter('graphqlite.security.enable_me', $enableMe);
+        $container->setParameter('graphqlite.security.introspection', $configs[0]['security']['introspection'] ?? true);
+        $container->setParameter('graphqlite.security.maximum_query_complexity', $configs[0]['security']['maximum_query_complexity'] ?? null);
+        $container->setParameter('graphqlite.security.maximum_query_depth', $configs[0]['security']['maximum_query_depth'] ?? null);
         $container->setParameter('graphqlite.security.firewall_name', $configs[0]['security']['firewall_name'] ?? 'main');
 
         $loader->load('graphqlite.xml');

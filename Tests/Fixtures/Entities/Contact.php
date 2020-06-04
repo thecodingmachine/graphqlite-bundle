@@ -66,4 +66,12 @@ class Contact
         }
         return 'OK';
     }
+
+    /**
+     * @Field()
+     */
+    public function getManager(): ?Contact
+    {
+        return null;
+    }
 }

@@ -3,6 +3,10 @@
 
 namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
 
+use GraphQL\Server\ServerConfig;
+use GraphQL\Validator\Rules\DisableIntrospection;
+use GraphQL\Validator\Rules\QueryComplexity;
+use GraphQL\Validator\Rules\QueryDepth;
 use ReflectionNamedType;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
@@ -162,6 +166,22 @@ class GraphqliteCompilerPass implements CompilerPassInterface
                 throw new GraphQLException('In order to enable the "me" query (via the graphqlite.security.enable_me parameter), you need to install the security bundle.');
             }
         }
+
+        // ServerConfig rules
+        $serverConfigDefinition = $container->findDefinition(ServerConfig::class);
+        $rulesDefinition = [];
+        if ($container->getParameter('graphqlite.security.introspection') === false) {
+            $rulesDefinition[] =  $container->findDefinition(DisableIntrospection::class);
+        }
+        if ($container->getParameter('graphqlite.security.maximum_query_complexity')) {
+            $complexity = (int) $container->getParameter('graphqlite.security.maximum_query_complexity');
+            $rulesDefinition[] =  $container->findDefinition(QueryComplexity::class)->setArgument(0, $complexity);
+        }
+        if ($container->getParameter('graphqlite.security.maximum_query_depth')) {
+            $depth = (int) $container->getParameter('graphqlite.security.maximum_query_depth');
+            $rulesDefinition[] =  $container->findDefinition(QueryDepth::class)->setArgument(0, $depth);
+        }
+        $serverConfigDefinition->addMethodCall('setValidationRules', [$rulesDefinition]);
 
         if ($disableMe === false) {
             $this->registerController(MeController::class, $container);

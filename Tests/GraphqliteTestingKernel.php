@@ -37,14 +37,29 @@ class GraphqliteTestingKernel extends Kernel
      * @var string|null
      */
     private $enableMe;
+    /**
+     * @var bool
+     */
+    private $introspection;
+    /**
+     * @var int|null
+     */
+    private $maximumQueryComplexity;
+    /**
+     * @var int|null
+     */
+    private $maximumQueryDepth;
 
-    public function __construct(bool $enableSession = true, ?string $enableLogin = null, bool $enableSecurity = true, ?string $enableMe = null)
+    public function __construct(bool $enableSession = true, ?string $enableLogin = null, bool $enableSecurity = true, ?string $enableMe = null, bool $introspection = true, ?int $maximumQueryComplexity = null, ?int $maximumQueryDepth = null)
     {
         parent::__construct('test', true);
         $this->enableSession = $enableSession;
         $this->enableLogin = $enableLogin;
         $this->enableSecurity = $enableSecurity;
         $this->enableMe = $enableMe;
+        $this->introspection = $introspection;
+        $this->maximumQueryComplexity = $maximumQueryComplexity;
+        $this->maximumQueryDepth = $maximumQueryDepth;
     }
 
     public function registerBundles()
@@ -126,6 +141,18 @@ class GraphqliteTestingKernel extends Kernel
                 $graphqliteConf['security']['enable_me'] = $this->enableMe;
             }
 
+            if ($this->introspection === false) {
+                $graphqliteConf['security']['introspection'] = false;
+            }
+
+            if ($this->maximumQueryComplexity !== null) {
+                $graphqliteConf['security']['maximum_query_complexity'] = $this->maximumQueryComplexity;
+            }
+
+            if ($this->maximumQueryDepth !== null) {
+                $graphqliteConf['security']['maximum_query_depth'] = $this->maximumQueryDepth;
+            }
+
             $container->loadFromExtension('graphqlite', $graphqliteConf);
         });
         $confDir = $this->getProjectDir().'/Tests/Fixtures/config';
@@ -143,6 +170,6 @@ class GraphqliteTestingKernel extends Kernel
 
     public function getCacheDir()
     {
-        return __DIR__.'/../cache/'.($this->enableSession?'withSession':'withoutSession').$this->enableLogin.($this->enableSecurity?'withSecurity':'withoutSecurity').$this->enableMe;
+        return __DIR__.'/../cache/'.($this->enableSession?'withSession':'withoutSession').$this->enableLogin.($this->enableSecurity?'withSecurity':'withoutSecurity').$this->enableMe.'_'.($this->introspection?'withIntrospection':'withoutIntrospection').'_'.$this->maximumQueryComplexity.'_'.$this->maximumQueryDepth;
     }
 }

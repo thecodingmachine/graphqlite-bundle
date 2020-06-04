@@ -4,6 +4,8 @@
 namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities;
 
 
+use TheCodingMachine\GraphQLite\Annotations\Field;
+
 class Product
 {
     /**
@@ -36,6 +38,4 @@ class Product
     {
         return $this->price;
     }
-
-
 }
