@@ -53,7 +53,7 @@ script:
   # it helps with testing legacy code and deprecations (composer require symfony/phpunit-bridge)
   #- ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS
   - if [[ $PHPSTAN == true ]]; then composer phpstan; fi
-  - ./vendor/bin/phpunit
+  - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
   # Let's test without the security bundle
   - if [[ $TESTNOSECURITYBUNDLE == true ]]; then composer remove --dev symfony/security-bundle && phpunit Tests/NoSecurityBundleTest.php; fi
 
