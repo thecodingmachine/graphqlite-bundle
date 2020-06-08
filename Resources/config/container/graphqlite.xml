@@ -32,6 +32,8 @@
         <service id="TheCodingMachine\GraphQLite\AggregateControllerQueryProviderFactory">
             <argument type="collection">
             </argument>
+            <argument type="service" id="service_container">
+            </argument>
             <tag name="graphql.queryprovider_factory" />
         </service>
 

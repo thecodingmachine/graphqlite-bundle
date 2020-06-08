@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 use TheCodingMachine\Graphqlite\Bundle\GraphqliteBundle;
 use Symfony\Component\Security\Core\User\User;
@@ -80,6 +81,10 @@ class GraphqliteTestingKernel extends Kernel
 
             $frameworkConf['cache'] =[
                 'app' => 'cache.adapter.array',
+            ];
+
+            $frameworkConf['router'] =[
+                'utf8' => true,
             ];
 
             if ($this->enableSession) {
@@ -163,7 +168,8 @@ class GraphqliteTestingKernel extends Kernel
         $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
     }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes)
+    // Note: typing is disabled because using different classes in Symfony 4 and 5
+    protected function configureRoutes(/*RoutingConfigurator*/ $routes)
     {
         $routes->import(__DIR__.'/../Resources/config/routes.xml');
     }
