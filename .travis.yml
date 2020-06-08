@@ -17,7 +17,7 @@ matrix:
     - php: 7.2
       env: PHPSTAN=true
     - php: 7.4
-      env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text"
+      env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text" TESTNOSECURITYBUNDLE=true
 
       # Test LTS versions.
     - php: 7.4
@@ -55,8 +55,7 @@ script:
   - if [[ $PHPSTAN == true ]]; then composer phpstan; fi
   - ./vendor/bin/phpunit
   # Let's test without the security bundle
-  - composer remove --dev symfony/security-bundle
-  - phpunit Tests/NoSecurityBundleTest.php
+  - if [[ $TESTNOSECURITYBUNDLE == true ]]; then composer remove --dev symfony/security-bundle && phpunit Tests/NoSecurityBundleTest.php; fi
 
 after_script:
   - ./vendor/bin/php-coveralls -v
