@@ -17,7 +17,7 @@ matrix:
     - php: 7.2
       env: PHPSTAN=true
     - php: 7.4
-      env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text"
+      env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text" TESTNOSECURITYBUNDLE=true
 
       # Test LTS versions.
     - php: 7.4
@@ -53,7 +53,9 @@ script:
   # it helps with testing legacy code and deprecations (composer require symfony/phpunit-bridge)
   #- ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS
   - if [[ $PHPSTAN == true ]]; then composer phpstan; fi
-  - ./vendor/bin/phpunit
+  - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+  # Let's test without the security bundle
+  - if [[ $TESTNOSECURITYBUNDLE == true ]]; then composer remove --dev symfony/security-bundle && phpunit Tests/NoSecurityBundleTest.php; fi
 
 after_script:
   - ./vendor/bin/php-coveralls -v

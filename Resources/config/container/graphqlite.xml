@@ -107,7 +107,6 @@
 
         <service id="TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory">
             <argument type="collection">
-                <argument>TheCodingMachine\Graphqlite\Bundle\Types\SymfonyUserInterfaceType</argument>
             </argument>
             <tag name="graphql.type_mapper_factory"/>
         </service>

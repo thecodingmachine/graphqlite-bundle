@@ -16,6 +16,8 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 use TheCodingMachine\Graphqlite\Bundle\GraphqliteBundle;
 use Symfony\Component\Security\Core\User\User;
+use function class_exists;
+use function serialize;
 
 class GraphqliteTestingKernel extends Kernel
 {
@@ -50,8 +52,28 @@ class GraphqliteTestingKernel extends Kernel
      * @var int|null
      */
     private $maximumQueryDepth;
+    /**
+     * @var array|string[]
+     */
+    private $controllersNamespace;
+    /**
+     * @var array|string[]
+     */
+    private $typesNamespace;
 
-    public function __construct(bool $enableSession = true, ?string $enableLogin = null, bool $enableSecurity = true, ?string $enableMe = null, bool $introspection = true, ?int $maximumQueryComplexity = null, ?int $maximumQueryDepth = null)
+    /**
+     * @param string[] $controllersNamespace
+     * @param string[] $typesNamespace
+     */
+    public function __construct(bool $enableSession = true,
+                                ?string $enableLogin = null,
+                                bool $enableSecurity = true,
+                                ?string $enableMe = null,
+                                bool $introspection = true,
+                                ?int $maximumQueryComplexity = null,
+                                ?int $maximumQueryDepth = null,
+                                array $controllersNamespace = ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Controller\\'],
+                                array $typesNamespace = ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Entities\\'])
     {
         parent::__construct('test', true);
         $this->enableSession = $enableSession;
@@ -61,15 +83,18 @@ class GraphqliteTestingKernel extends Kernel
         $this->introspection = $introspection;
         $this->maximumQueryComplexity = $maximumQueryComplexity;
         $this->maximumQueryDepth = $maximumQueryDepth;
+        $this->controllersNamespace = $controllersNamespace;
+        $this->typesNamespace = $typesNamespace;
     }
 
     public function registerBundles()
     {
-        return [
-            new FrameworkBundle(),
-            new SecurityBundle(),
-            new GraphqliteBundle(),
-        ];
+        $bundles = [ new FrameworkBundle() ];
+        if (class_exists(SecurityBundle::class)) {
+            $bundles[] = new SecurityBundle();
+        }
+        $bundles[] = new GraphqliteBundle();
+        return $bundles;
     }
 
     public function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
@@ -133,8 +158,8 @@ class GraphqliteTestingKernel extends Kernel
 
             $graphqliteConf = array(
                 'namespace' => [
-                    'controllers' => ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Controller\\'],
-                    'types' => ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Entities\\']
+                    'controllers' => $this->controllersNamespace,
+                    'types' => $this->typesNamespace
                 ],
             );
 
@@ -176,6 +201,6 @@ class GraphqliteTestingKernel extends Kernel
 
     public function getCacheDir()
     {
-        return __DIR__.'/../cache/'.($this->enableSession?'withSession':'withoutSession').$this->enableLogin.($this->enableSecurity?'withSecurity':'withoutSecurity').$this->enableMe.'_'.($this->introspection?'withIntrospection':'withoutIntrospection').'_'.$this->maximumQueryComplexity.'_'.$this->maximumQueryDepth;
+        return __DIR__.'/../cache/'.($this->enableSession?'withSession':'withoutSession').$this->enableLogin.($this->enableSecurity?'withSecurity':'withoutSecurity').$this->enableMe.'_'.($this->introspection?'withIntrospection':'withoutIntrospection').'_'.$this->maximumQueryComplexity.'_'.$this->maximumQueryDepth.'_'.md5(serialize($this->controllersNamespace).'_'.md5(serialize($this->typesNamespace)));
     }
 }

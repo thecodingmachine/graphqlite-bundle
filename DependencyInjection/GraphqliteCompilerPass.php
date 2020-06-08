@@ -11,6 +11,8 @@ use ReflectionNamedType;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Psr16Cache;
+use TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapper;
+use TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory;
 use function class_exists;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
@@ -43,6 +45,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use TheCodingMachine\CacheUtils\ClassBoundCache;
 use TheCodingMachine\CacheUtils\ClassBoundCacheContract;
@@ -76,6 +79,7 @@ use TheCodingMachine\GraphQLite\TypeGenerator;
 use TheCodingMachine\GraphQLite\Types\MutableObjectType;
 use TheCodingMachine\GraphQLite\Types\ResolvableInputObjectType;
 use function var_dump;
+use TheCodingMachine\Graphqlite\Bundle\Types\SymfonyUserInterfaceType;
 
 /**
  * Detects controllers and types automatically and tag them.
@@ -190,6 +194,13 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         // Perf improvement: let's remove the AggregateControllerQueryProviderFactory if it is empty.
         if (empty($container->findDefinition(AggregateControllerQueryProviderFactory::class)->getArgument(0))) {
             $container->removeDefinition(AggregateControllerQueryProviderFactory::class);
+        }
+
+        // Let's register the mapping with UserInterface if UserInterface is available.
+        if (interface_exists(UserInterface::class)) {
+            $staticTypes = $container->getDefinition(StaticClassListTypeMapperFactory::class)->getArgument(0);
+            $staticTypes[] = SymfonyUserInterfaceType::class;
+            $container->getDefinition(StaticClassListTypeMapperFactory::class)->setArgument(0, $staticTypes);
         }
 
         foreach ($container->getDefinitions() as $id => $definition) {
