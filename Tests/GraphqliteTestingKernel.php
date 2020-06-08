@@ -141,7 +141,8 @@ class GraphqliteTestingKernel extends Kernel
         $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
     }
 
-    protected function configureRoutes(RoutingConfigurator $routes)
+    // Note: typing is disabled because using different classes in Symfony 4 and 5
+    protected function configureRoutes(/*RoutingConfigurator*/ $routes)
     {
         $routes->import(__DIR__.'/../Resources/config/routes.xml');
     }
