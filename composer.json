@@ -33,11 +33,11 @@
   "require-dev": {
     "symfony/security-bundle": "^4.1.9 | ^5",
     "symfony/yaml": "^4.1.9 | ^5",
-    "phpunit/phpunit": "^7.5.1",
+    "phpunit/phpunit": "^8.5.5",
     "phpstan/phpstan": "^0.12.25",
     "beberlei/porpaginas": "^1.2",
     "php-coveralls/php-coveralls": "^2.1.0",
-    "symfony/phpunit-bridge": "^5.1"
+    "symfony/phpunit-bridge": "^4.1.9 | ^5.1"
   },
   "scripts": {
     "phpstan": "phpstan analyse GraphqliteBundle.php DependencyInjection/ Controller/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
