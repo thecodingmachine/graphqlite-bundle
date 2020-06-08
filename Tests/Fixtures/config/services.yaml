@@ -17,6 +17,9 @@ services:
         resource: '../*'
         exclude: '../{Entities}'
 
+    TheCodingMachine\Graphqlite\Bundle\Tests\NoSecurityBundleFixtures\:
+        resource: '../../NoSecurityBundleFixtures/*'
+
     someService:
         class: stdClass
 

@@ -54,6 +54,9 @@ script:
   #- ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS
   - if [[ $PHPSTAN == true ]]; then composer phpstan; fi
   - ./vendor/bin/phpunit
+  # Let's test without the security bundle
+  - composer remove --dev symfony/security-bundle
+  - phpunit Tests/NoSecurityBundleTest.php
 
 after_script:
   - ./vendor/bin/php-coveralls -v
