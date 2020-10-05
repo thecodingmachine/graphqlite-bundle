@@ -17,7 +17,7 @@
   ],
   "require" : {
     "php" : ">=7.2",
-    "thecodingmachine/graphqlite" : "~4.0.1",
+    "thecodingmachine/graphqlite" : "^4.1.x-dev",
     "thecodingmachine/graphqlite-symfony-validator-bridge" : "~4.0.0",
     "symfony/framework-bundle": "^4.1.9 | ^5",
     "symfony/validator": "^4.1.9 | ^5",
