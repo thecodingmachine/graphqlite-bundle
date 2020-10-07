@@ -108,7 +108,7 @@ class GraphqliteController
             }, $result);
             // Let's return the highest result.
             $statuses = array_map([$httpCodeDecider, 'decideHttpStatusCode'], $result);
-            $status = max($statuses);
+            $status = empty($statuses) ? 500 : max($statuses);
             return new JsonResponse($finalResult, $status);
         }
         if ($result instanceof Promise) {
