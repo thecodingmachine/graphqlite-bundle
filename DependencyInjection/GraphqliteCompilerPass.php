@@ -92,11 +92,17 @@ class GraphqliteCompilerPass implements CompilerPassInterface
     private $annotationReader;
 
     /**
+     * @var string
+     */
+    private $cacheDir;
+
+    /**
      * You can modify the container here before it is dumped to PHP code.
      */
     public function process(ContainerBuilder $container): void
     {
         $reader = $this->getAnnotationReader();
+        $this->cacheDir = $container->getParameter('kernel.cache_dir');
         //$inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
 
         // Let's scan the whole container and tag the services that belong to the namespace we want to inspect.
@@ -442,7 +448,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
             if (function_exists('apcu_fetch')) {
                 $this->cache = new Psr16Cache(new ApcuAdapter('graphqlite_bundle'));
             } else {
-                $this->cache = new Psr16Cache(new PhpFilesAdapter('graphqlite_bundle'));
+                $this->cache = new Psr16Cache(new PhpFilesAdapter('graphqlite_bundle', 0, $this->cacheDir));
             }
         }
         return $this->cache;
