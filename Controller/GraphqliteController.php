@@ -44,11 +44,11 @@ class GraphqliteController
      */
     private $serverConfig;
 
-    public function __construct(ServerConfig $serverConfig, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = Debug::RETHROW_UNSAFE_EXCEPTIONS)
+    public function __construct(ServerConfig $serverConfig, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = null)
     {
         $this->serverConfig = $serverConfig;
         $this->httpMessageFactory = $httpMessageFactory ?: new PsrHttpFactory(new ServerRequestFactory(), new StreamFactory(), new UploadedFileFactory(), new ResponseFactory());
-        $this->debug = $debug ?? false;
+        $this->debug = $debug ?? $serverConfig->getDebug();
     }
 
     public function loadRoutes(): RouteCollection
