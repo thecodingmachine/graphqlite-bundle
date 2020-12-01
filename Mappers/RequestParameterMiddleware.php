@@ -18,7 +18,8 @@ class RequestParameterMiddleware implements ParameterMiddlewareInterface
 
     public function mapParameter(ReflectionParameter $parameter, DocBlock $docBlock, ?Type $paramTagType, ParameterAnnotations $parameterAnnotations, ParameterHandlerInterface $next): ParameterInterface
     {
-        if ($parameter->getType() and $parameter->getType()->getName() === Request::class) {
+        $parameterType = $parameter->getType();
+        if ($parameterType && $parameterType->getName() === Request::class) {
             return new RequestParameter();
         }
         return $next->mapParameter($parameter, $docBlock, $paramTagType, $parameterAnnotations);
