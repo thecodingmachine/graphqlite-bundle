@@ -15,7 +15,7 @@ matrix:
   include:
       # Test the latest stable release
     - php: 7.2
-      env: PHPSTAN=true
+      env: PHPSTAN=true COMPOSER1=true
     - php: 7.4
       env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text" TESTNOSECURITYBUNDLE=true
 
@@ -38,6 +38,7 @@ matrix:
 
 before_install:
   - if [[ $COVERAGE != true ]]; then phpenv config-rm xdebug.ini || true; fi
+  - if [[ $COMPOSER1 = true ]]; then composer selfupdate --1; fi
   - if ! [ -z "$STABILITY" ]; then composer config minimum-stability ${STABILITY}; fi;
   - if ! [ -v "$DEPENDENCIES" ]; then composer require --no-update ${DEPENDENCIES}; fi;
 
