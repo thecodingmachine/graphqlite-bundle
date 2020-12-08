@@ -17,6 +17,7 @@ use GraphQL\Executor\Promise\Promise;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Server\StandardServer;
 use GraphQL\Upload\UploadMiddleware;
+use function class_exists;
 use function json_decode;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -83,8 +84,10 @@ class GraphqliteController
         }
 
         // Let's parse the request and adapt it for file uploads.
-        $uploadMiddleware = new UploadMiddleware();
-        $psr7Request = $uploadMiddleware->processRequest($psr7Request);
+        if (class_exists(UploadMiddleware::class)) {
+            $uploadMiddleware = new UploadMiddleware();
+            $psr7Request = $uploadMiddleware->processRequest($psr7Request);
+        }
 
         return $this->handlePsr7Request($psr7Request, $request);
     }
