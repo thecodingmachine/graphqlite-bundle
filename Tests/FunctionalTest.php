@@ -533,4 +533,25 @@ class FunctionalTest extends TestCase
         $token = new UsernamePasswordToken($user, '', 'provider', ['ROLE_USER']);
         $container->get('security.token_storage')->setToken($token);
     }
+
+    public function testPhp8Attributes(): void
+    {
+        $kernel = new GraphqliteTestingKernel();
+        $kernel->boot();
+
+        $request = Request::create('/graphql', 'GET', ['query' => '
+        { 
+          testPhp8(foo: "bar")
+        }']);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame([
+            'data' => [
+                'testPhp8' => 'echo bar'
+            ]
+        ], $result);
+    }
 }
