@@ -37,8 +37,8 @@ class GraphqliteExtension extends Extension
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/container'));
 
-        if (isset($configs[0]['namespace']['controllers'])) {
-            $controllers = $configs[0]['namespace']['controllers'];
+        if (isset($config['namespace']['controllers'])) {
+            $controllers = $config['namespace']['controllers'];
             if (!is_array($controllers)) {
                 $controllers = [ $controllers ];
             }
@@ -46,8 +46,8 @@ class GraphqliteExtension extends Extension
         } else {
             $namespaceController = [];
         }
-        if (isset($configs[0]['namespace']['types'])) {
-            $types = $configs[0]['namespace']['types'];
+        if (isset($config['namespace']['types'])) {
+            $types = $config['namespace']['types'];
             if (!is_array($types)) {
                 $types = [ $types ];
             }
@@ -56,17 +56,17 @@ class GraphqliteExtension extends Extension
             $namespaceType = [];
         }
 
-        $enableLogin = $configs[0]['security']['enable_login'] ?? 'auto';
-        $enableMe = $configs[0]['security']['enable_me'] ?? 'auto';
+        $enableLogin = $config['security']['enable_login'] ?? 'auto';
+        $enableMe = $config['security']['enable_me'] ?? 'auto';
 
         $container->setParameter('graphqlite.namespace.controllers', $namespaceController);
         $container->setParameter('graphqlite.namespace.types', $namespaceType);
         $container->setParameter('graphqlite.security.enable_login', $enableLogin);
         $container->setParameter('graphqlite.security.enable_me', $enableMe);
-        $container->setParameter('graphqlite.security.introspection', $configs[0]['security']['introspection'] ?? true);
-        $container->setParameter('graphqlite.security.maximum_query_complexity', $configs[0]['security']['maximum_query_complexity'] ?? null);
-        $container->setParameter('graphqlite.security.maximum_query_depth', $configs[0]['security']['maximum_query_depth'] ?? null);
-        $container->setParameter('graphqlite.security.firewall_name', $configs[0]['security']['firewall_name'] ?? 'main');
+        $container->setParameter('graphqlite.security.introspection', $config['security']['introspection'] ?? true);
+        $container->setParameter('graphqlite.security.maximum_query_complexity', $config['security']['maximum_query_complexity'] ?? null);
+        $container->setParameter('graphqlite.security.maximum_query_depth', $config['security']['maximum_query_depth'] ?? null);
+        $container->setParameter('graphqlite.security.firewall_name', $config['security']['firewall_name'] ?? 'main');
 
         $loader->load('graphqlite.xml');
 
