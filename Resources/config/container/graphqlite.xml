@@ -129,5 +129,7 @@
             </argument>
             <tag name="kernel.cache_clearer"/>
         </service>
+
+        <service id="TheCodingMachine\Graphqlite\Bundle\Command\DumpSchemaCommand" />
     </services>
 </container>

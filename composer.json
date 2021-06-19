@@ -29,7 +29,8 @@
     "nyholm/psr7": "^1.1",
     "laminas/laminas-diactoros": "^2.2.2",
     "overblog/graphiql-bundle": "^0.1.2 | ^0.2",
-    "thecodingmachine/cache-utils": "^1"
+    "thecodingmachine/cache-utils": "^1",
+    "symfony/console": "^4.1.9 | ^5"
   },
   "require-dev": {
     "symfony/security-bundle": "^4.2 || ^5",
