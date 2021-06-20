@@ -2,8 +2,6 @@ version: 2
 updates:
     - package-ecosystem: github-actions
       directory: '/'
-      allow:
-          - dependency-type: all
       schedule:
           interval: weekly
       pull-request-branch-name:
@@ -11,8 +9,6 @@ updates:
     - package-ecosystem: composer
       directory: '/'
       versioning-strategy: widen
-      allow:
-          - dependency-type: all
       schedule:
           interval: weekly
       pull-request-branch-name:
