@@ -3,3 +3,4 @@
 /build
 /var
 /cache
+.phpunit.result.cache
