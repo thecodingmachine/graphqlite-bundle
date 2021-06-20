@@ -55,12 +55,12 @@ jobs:
             - name: phpstan-cache
               uses: actions/cache@v2.1.6
               with:
-                  key: phpstan-${{ github.ref }}-${{ matrix.php-version }}-${{ matrix.install-args }}-${{ github.sha }}
+                  key: phpstan-${{ matrix.php-version }}-${{ matrix.install-args }}-${{ github.ref }}-${{ github.sha }}
                   path: .phpstan-cache
                   restore-keys: |
-                      phpstan-${{ github.ref }}-${{ matrix.php-version }}-${{ matrix.install-args }}-
-                      phpstan-${{ github.ref }}-${{ matrix.php-version }}-
-                      phpstan-${{ github.ref }}-
+                      phpstan-${{ matrix.php-version }}-${{ matrix.install-args }}-${{ github.ref }}-
+                      phpstan-${{ matrix.php-version }}-${{ matrix.install-args }}-
+                      phpstan-${{ matrix.php-version }}-
                       phpstan-
 
             - name: phpstan
