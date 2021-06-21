@@ -10,6 +10,10 @@
          stopOnFailure="false"
          bootstrap="vendor/autoload.php"
 >
+    <php>
+        <server name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
+    </php>
+
     <testsuites>
         <testsuite name="Graphql controllers bundle Test Suite">
             <directory>./Tests/</directory>

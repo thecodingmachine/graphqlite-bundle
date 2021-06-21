@@ -10,6 +10,8 @@ parameters:
         - vendor
         - cache
         - .phpstan-cache
+    bootstrapFiles:
+        - vendor/bin/.phpunit/phpunit/vendor/autoload.php
     level: max
     polluteScopeWithLoopInitialAssignments: false
     polluteScopeWithAlwaysIterableForeach: false
@@ -23,4 +25,5 @@ parameters:
     checkTooWideReturnTypesInProtectedAndPublicMethods: true
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
-        - "#Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition::children\\(\\)#"
+        # Symfony's TreeBuilder has problem - some method(s) in the chain have a wrong return typehint:
+        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::\w+\(\).#'

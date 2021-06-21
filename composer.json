@@ -33,8 +33,7 @@
   "require-dev": {
     "symfony/security-bundle": "^4.1.9 | ^5",
     "symfony/yaml": "^4.1.9 | ^5",
-    "phpunit/phpunit": "^8.5.5",
-    "phpstan/phpstan": "^0.12.25",
+    "phpstan/phpstan": "^0.12.90",
     "beberlei/porpaginas": "^1.2",
     "php-coveralls/php-coveralls": "^2.1.0",
     "symfony/phpunit-bridge": "^4.1.9 | ^5.1",
