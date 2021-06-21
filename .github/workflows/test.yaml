@@ -45,7 +45,6 @@ jobs:
 
             - name: composer
               run: |
-                  composer check-platform-reqs --no-interaction
                   composer update ${{ matrix.install-args }} --no-interaction --no-progress --prefer-dist
 
             - name: phpunit
