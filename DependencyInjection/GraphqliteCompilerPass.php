@@ -323,7 +323,6 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         $taggedServices = $container->findTaggedServiceIds($tag);
 
         foreach ($taggedServices as $id => $tags) {
-            // add the transport service to the TransportChain service
             $schemaFactory->addMethodCall($methodName, [new Reference($id)]);
         }
     }
