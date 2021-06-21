@@ -38,7 +38,8 @@
     "beberlei/porpaginas": "^1.2",
     "php-coveralls/php-coveralls": "^2.1.0",
     "symfony/phpunit-bridge": "^4.1.9 | ^5.1",
-    "thecodingmachine/phpstan-strict-rules": "^0.12.1"
+    "thecodingmachine/phpstan-strict-rules": "^0.12.1",
+    "composer/package-versions-deprecated": "^1.8"
   },
   "scripts": {
     "phpstan": "phpstan analyse GraphqliteBundle.php DependencyInjection/ Controller/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
