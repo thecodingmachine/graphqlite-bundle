@@ -108,12 +108,9 @@ class GraphqliteTestingKernel extends Kernel
                 'app' => 'cache.adapter.array',
             ];
 
-            // @phpstan-ignore-next-line
-            if (self::VERSION_ID >= 42000) {
-                $frameworkConf['router'] =[
-                    'utf8' => true,
-                ];
-            }
+            $frameworkConf['router'] =[
+                'utf8' => true,
+            ];
 
             if ($this->enableSession) {
                 $frameworkConf['session'] =[

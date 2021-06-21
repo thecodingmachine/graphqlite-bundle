@@ -19,9 +19,9 @@
     "php" : ">=7.2",
     "thecodingmachine/graphqlite" : "^4.1",
     "thecodingmachine/graphqlite-symfony-validator-bridge" : "^4.1",
-    "symfony/framework-bundle": "^4.1.9 | ^5",
-    "symfony/validator": "^4.1.9 | ^5",
-    "symfony/translation": "^4.1.9 | ^5",
+    "symfony/framework-bundle": "^4.2 || ^5",
+    "symfony/validator": "^4.2 || ^5",
+    "symfony/translation": "^4.2 || ^5",
     "doctrine/annotations": "^1.6",
     "doctrine/cache": "^1.8",
     "symfony/psr-http-message-bridge": "^2.0",
@@ -31,14 +31,17 @@
     "thecodingmachine/cache-utils": "^1"
   },
   "require-dev": {
-    "symfony/security-bundle": "^4.1.9 | ^5",
-    "symfony/yaml": "^4.1.9 | ^5",
+    "symfony/security-bundle": "^4.2 || ^5",
+    "symfony/yaml": "^4.2 || ^5",
     "phpstan/phpstan": "^0.12.90",
     "beberlei/porpaginas": "^1.2",
     "php-coveralls/php-coveralls": "^2.1.0",
-    "symfony/phpunit-bridge": "^4.1.9 | ^5.1",
-    "thecodingmachine/phpstan-strict-rules": "^0.12.1",
+    "symfony/phpunit-bridge": "^5.3",
+    "thecodingmachine/phpstan-strict-rules": "^v0.12.1",
     "composer/package-versions-deprecated": "^1.8"
+  },
+  "conflict": {
+    "symfony/event-dispatcher": "<4.3"
   },
   "scripts": {
     "phpstan": "phpstan analyse GraphqliteBundle.php DependencyInjection/ Controller/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"

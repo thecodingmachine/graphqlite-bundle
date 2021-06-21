@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method Symfony\\\\Contracts\\\\EventDispatcher\\\\EventDispatcherInterface\\:\\:dispatch\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: Controller/GraphQL/LoginController.php
+
+		-
 			message: "#^Anonymous function should have native return typehint \"array\"\\.$#"
 			count: 1
 			path: Controller/GraphqliteController.php
@@ -101,17 +106,32 @@ parameters:
 			path: Tests/Fixtures/Entities/Contact.php
 
 		-
-			message: "#^Cannot call method assertValid\\(\\) on object\\|null\\.$#"
+			message: "#^Call to an undefined method object\\:\\:assertValid\\(\\)\\.$#"
 			count: 2
 			path: Tests/FunctionalTest.php
 
 		-
-			message: "#^Cannot call method handleRequest\\(\\) on object\\|null\\.$#"
+			message: "#^Call to an undefined method object\\:\\:handleRequest\\(\\)\\.$#"
 			count: 1
 			path: Tests/FunctionalTest.php
 
 		-
+			message: "#^Cannot call method get\\(\\) on Symfony\\\\Component\\\\DependencyInjection\\\\ContainerInterface\\|null\\.$#"
+			count: 3
+			path: Tests/FunctionalTest.php
+
+		-
+			message: "#^Cannot call method set\\(\\) on Symfony\\\\Component\\\\DependencyInjection\\\\ContainerInterface\\|null\\.$#"
+			count: 4
+			path: Tests/FunctionalTest.php
+
+		-
 			message: "#^Method TheCodingMachine\\\\Graphqlite\\\\Bundle\\\\Tests\\\\FunctionalTest\\:\\:logIn\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Tests/FunctionalTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$container of method TheCodingMachine\\\\Graphqlite\\\\Bundle\\\\Tests\\\\FunctionalTest\\:\\:logIn\\(\\) expects Psr\\\\Container\\\\ContainerInterface, Symfony\\\\Component\\\\DependencyInjection\\\\ContainerInterface\\|null given\\.$#"
 			count: 1
 			path: Tests/FunctionalTest.php
 
@@ -151,7 +171,12 @@ parameters:
 			path: Tests/GraphqliteTestingKernel.php
 
 		-
-			message: "#^Cannot call method assertValid\\(\\) on object\\|null\\.$#"
+			message: "#^Call to an undefined method object\\:\\:assertValid\\(\\)\\.$#"
+			count: 1
+			path: Tests/NoSecurityBundleTest.php
+
+		-
+			message: "#^Cannot call method get\\(\\) on Symfony\\\\Component\\\\DependencyInjection\\\\ContainerInterface\\|null\\.$#"
 			count: 1
 			path: Tests/NoSecurityBundleTest.php
 
@@ -159,4 +184,3 @@ parameters:
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
 			count: 1
 			path: Tests/NoSecurityBundleTest.php
-

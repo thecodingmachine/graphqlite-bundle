@@ -3,6 +3,7 @@
 
 namespace TheCodingMachine\Graphqlite\Bundle\Types;
 
+use Symfony\Component\Security\Core\Role\Role;
 use TheCodingMachine\GraphQLite\Annotations\Field;
 use TheCodingMachine\GraphQLite\Annotations\SourceField;
 use TheCodingMachine\GraphQLite\Annotations\Type;
@@ -22,7 +23,7 @@ class SymfonyUserInterfaceType
     {
         $roles = [];
         foreach ($user->getRoles() as $role) {
-            $roles[] = (string) $role;
+            $roles[] = $role instanceof Role ? $role->getRole() : $role;
         }
         return $roles;
     }

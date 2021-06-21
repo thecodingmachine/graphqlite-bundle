@@ -24,6 +24,7 @@ parameters:
     checkMissingClosureNativeReturnTypehintRule: true
     checkTooWideReturnTypesInProtectedAndPublicMethods: true
     treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         # Symfony's TreeBuilder has problem - some method(s) in the chain have a wrong return typehint:
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::\w+\(\).#'

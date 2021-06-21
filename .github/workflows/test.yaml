@@ -49,7 +49,7 @@ jobs:
 
             - name: phpunit
               run: |
-                  vendor/bin/simple-phpunit
+                  vendor/bin/simple-phpunit --no-coverage
 
             - name: phpstan-cache
               uses: actions/cache@v2.1.6
