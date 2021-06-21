@@ -1,0 +1,70 @@
+name: test
+on:
+    pull_request: ~
+    push:
+        branches:
+            - master
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        name: test
+        strategy:
+            matrix:
+                install-args: ['', '--prefer-lowest']
+                php-version: ['7.2', '7.3', '7.4', '8.0']
+        steps:
+            # Cancel previous runs of the same branch
+            - name: cancel
+              uses: styfle/cancel-workflow-action@0.9.0
+              with:
+                  access_token: ${{ github.token }}
+
+            - name: checkout
+              uses: actions/checkout@v2
+
+            - name: php
+              uses: shivammathur/setup-php@2.11.0
+              with:
+                  php-version: ${{ matrix.php-version }}
+
+            - name: composer-cache-dir
+              id: composercache
+              run: |
+                  echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            - name: composer-cache
+              uses: actions/cache@v2.1.6
+              with:
+                  path: ${{ needs.prepare.outputs.composercachedir }}
+                  key: composer-${{ hashFiles('**/composer.json') }}-${{ matrix.install-args }}
+                  restore-keys: |
+                      composer-${{ hashFiles('**/composer.json') }}-${{ matrix.install-args }}
+                      composer-${{ hashFiles('**/composer.json') }}-
+                      composer-
+
+            - name: composer
+              run: |
+                  composer check-platform-reqs --no-interaction
+                  composer update ${{ matrix.install-args }} --no-interaction --no-progress --prefer-dist
+
+            - name: phpunit
+              run: |
+                  vendor/bin/phpunit
+
+            - name: phpstan-cache
+              uses: actions/cache@v2.1.6
+              with:
+                  key: phpstan-${{ matrix.php-version }}-${{ matrix.install-args }}-${{ github.ref }}-${{ github.sha }}
+                  path: .phpstan-cache
+                  restore-keys: |
+                      phpstan-${{ matrix.php-version }}-${{ matrix.install-args }}-${{ github.ref }}-
+                      phpstan-${{ matrix.php-version }}-${{ matrix.install-args }}-
+                      phpstan-${{ matrix.php-version }}-
+                      phpstan-
+
+            - name: phpstan
+              run: |
+                  mkdir -p .phpstan-cache
+                  APP_ENV=dev bin/console cache:clear
+                  vendor/bin/phpstan analyse --no-progress --no-interaction --memory-limit=1G

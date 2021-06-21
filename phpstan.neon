@@ -1,5 +1,26 @@
+includes:
+	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
+	- vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
+	- phpstan.baseline.neon
 parameters:
+    tmpDir: .phpstan-cache
+    paths:
+        - .
+    excludePaths:
+        - vendor
+        - cache
+        - .phpstan-cache
+    level: max
+    polluteScopeWithLoopInitialAssignments: false
+    polluteScopeWithAlwaysIterableForeach: false
+    checkAlwaysTrueCheckTypeFunctionCall: true
+    checkAlwaysTrueInstanceof: true
+    checkAlwaysTrueStrictComparison: true
+    checkExplicitMixedMissingReturn: true
+    checkFunctionNameCase: true
+    checkInternalClassCaseSensitivity: true
+    checkMissingClosureNativeReturnTypehintRule: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    treatPhpDocTypesAsCertain: false
     ignoreErrors:
         - "#Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition::children\\(\\)#"
-#includes:
-#    - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
