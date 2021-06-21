@@ -65,5 +65,4 @@ jobs:
             - name: phpstan
               run: |
                   mkdir -p .phpstan-cache
-                  APP_ENV=dev bin/console cache:clear
                   vendor/bin/phpstan analyse --no-progress --no-interaction --memory-limit=1G
