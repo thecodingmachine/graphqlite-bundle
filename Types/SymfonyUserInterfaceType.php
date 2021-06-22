@@ -20,13 +20,14 @@ class SymfonyUserInterfaceType
      */
     public function getUserName(UserInterface $user): string
     {
-        // @phpstan-ignore-next-line Forward Compatibility for Symfony 5.3
+        // @phpstan-ignore-next-line Forward Compatibility for Symfony >=5.3
         if (method_exists($user, 'getUserIdentifier')) {
             return $user->getUserIdentifier();
         }
 
-        if (method_exists($user, 'getUserName')) {
-            return $user->getUserName();
+        // @phpstan-ignore-next-line Backward Compatibility for Symfony <5.3
+        if (method_exists($user, 'getUsername')) {
+            return $user->getUsername();
         }
 
         throw FieldNotFoundException::missingField(UserInterface::class, 'userName');
