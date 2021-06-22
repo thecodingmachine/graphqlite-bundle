@@ -39,7 +39,7 @@ class DumpSchemaCommand extends Command
             ->addOption('output', 'o', InputOption::VALUE_REQUIRED, 'Write output to file');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
