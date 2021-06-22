@@ -16,8 +16,8 @@
     </php>
 
     <testsuites>
-        <testsuite name="all">
-            <directory>Tests</directory>
+        <testsuite name="Graphql controllers bundle Test Suite">
+            <directory>./Tests/</directory>
         </testsuite>
     </testsuites>
 
