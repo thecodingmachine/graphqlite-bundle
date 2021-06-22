@@ -189,21 +189,23 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         if ($container->getParameter('graphqlite.security.introspection') === false) {
             $rulesDefinition[] =  $container->findDefinition(DisableIntrospection::class);
         }
-        if ($container->hasParameter('graphqlite.security.maximum_query_complexity')) {
-            $complexity = $container->getParameter('graphqlite.security.maximum_query_complexity');
+
+        $complexity = $container->getParameter('graphqlite.security.maximum_query_complexity');
+        if ($complexity) {
             Assert::integerish($complexity);
 
             $rulesDefinition[] =  $container->findDefinition(QueryComplexity::class)
                 ->setArgument(0, (int) $complexity);
         }
 
-        if ($container->hasParameter('graphqlite.security.maximum_query_depth')) {
-            $depth = $container->getParameter('graphqlite.security.maximum_query_depth');
+        $depth = $container->getParameter('graphqlite.security.maximum_query_depth');
+        if ($depth) {
             Assert::integerish($depth);
 
             $rulesDefinition[] =  $container->findDefinition(QueryDepth::class)
                 ->setArgument(0, (int) $depth);
         }
+
         $serverConfigDefinition->addMethodCall('setValidationRules', [$rulesDefinition]);
 
         if ($disableMe === false) {
