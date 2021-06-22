@@ -11,8 +11,6 @@ parameters:
         - cache
         - .phpstan-cache
         - Tests
-    bootstrapFiles:
-        - vendor/bin/.phpunit/phpunit/vendor/autoload.php
     level: max
     polluteScopeWithLoopInitialAssignments: false
     polluteScopeWithAlwaysIterableForeach: false
@@ -27,5 +25,5 @@ parameters:
     treatPhpDocTypesAsCertain: false
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
-        # Symfony's TreeBuilder has problem - some method(s) in the chain have a wrong return typehint:
+        # Wrong return type hint in Symfony's TreeBuilder
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::\w+\(\).#'

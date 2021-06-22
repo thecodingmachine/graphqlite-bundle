@@ -501,7 +501,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
                 // The autoloader might trigger errors if the file does not respect PSR-4 or if the
                 // Symfony DebugAutoLoader is installed. (see https://github.com/thecodingmachine/graphqlite/issues/216)
                 require_once $phpFile;
-                // @phpstan-ignore-next-line Does it exists now?
+                // @phpstan-ignore-next-line Does it exist now?
                 if (! class_exists($className, false)) {
                     continue;
                 }
