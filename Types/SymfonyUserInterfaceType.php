@@ -8,13 +8,30 @@ use TheCodingMachine\GraphQLite\Annotations\Field;
 use TheCodingMachine\GraphQLite\Annotations\SourceField;
 use TheCodingMachine\GraphQLite\Annotations\Type;
 use Symfony\Component\Security\Core\User\UserInterface;
+use TheCodingMachine\GraphQLite\FieldNotFoundException;
 
 /**
  * @Type(class=UserInterface::class)
- * @SourceField(name="userName")
  */
 class SymfonyUserInterfaceType
 {
+    /**
+     * @Field
+     */
+    public function getUserName(UserInterface $user): string
+    {
+        // @phpstan-ignore-next-line Forward Compatibility for Symfony 5.3
+        if (method_exists($user, 'getUserIdentifier')) {
+            return $user->getUserIdentifier();
+        }
+
+        if (method_exists($user, 'getUserName')) {
+            return $user->getUserName();
+        }
+
+        throw FieldNotFoundException::missingField(UserInterface::class, 'userName');
+    }
+
     /**
      * @Field()
      * @return string[]
