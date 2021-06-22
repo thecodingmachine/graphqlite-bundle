@@ -17,12 +17,13 @@
   ],
   "require" : {
     "php" : ">=7.2",
-    "thecodingmachine/graphqlite" : "^4.1",
+    "ext-json": "*",
+    "thecodingmachine/graphqlite" : "^4.1.2",
     "thecodingmachine/graphqlite-symfony-validator-bridge" : "^4.1",
-    "symfony/framework-bundle": "^4.1.9 | ^5",
-    "symfony/validator": "^4.1.9 | ^5",
-    "symfony/translation": "^4.1.9 | ^5",
-    "doctrine/annotations": "^1.6",
+    "symfony/framework-bundle": "^4.2 || ^5",
+    "symfony/validator": "^4.2 || ^5",
+    "symfony/translation": "^4.2 || ^5",
+    "doctrine/annotations": "^1.10.4",
     "doctrine/cache": "^1.8",
     "symfony/psr-http-message-bridge": "^2.0",
     "nyholm/psr7": "^1.1",
@@ -31,14 +32,22 @@
     "thecodingmachine/cache-utils": "^1"
   },
   "require-dev": {
-    "symfony/security-bundle": "^4.1.9 | ^5",
-    "symfony/yaml": "^4.1.9 | ^5",
-    "phpunit/phpunit": "^8.5.5",
-    "phpstan/phpstan": "^0.12.25",
+    "symfony/security-bundle": "^4.2 || ^5",
+    "symfony/yaml": "^4.2 || ^5",
+    "phpstan/phpstan": "^0.12.90",
     "beberlei/porpaginas": "^1.2",
     "php-coveralls/php-coveralls": "^2.1.0",
-    "symfony/phpunit-bridge": "^4.1.9 | ^5.1",
-    "thecodingmachine/phpstan-strict-rules": "^0.12.1"
+    "symfony/phpunit-bridge": "^5.3",
+    "thecodingmachine/phpstan-strict-rules": "^v0.12.1",
+    "composer/package-versions-deprecated": "^1.8",
+    "phpstan/phpstan-webmozart-assert": "^0.12.12"
+  },
+  "conflict": {
+    "mouf/classname-mapper": "<1.0.2",
+    "symfony/event-dispatcher": "<4.3",
+    "symfony/security-core": "<4.3",
+    "symfony/routing": "<4.3",
+    "phpdocumentor/type-resolver": "<1.4"
   },
   "scripts": {
     "phpstan": "phpstan analyse GraphqliteBundle.php DependencyInjection/ Controller/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
@@ -56,6 +65,5 @@
       "dev-master": "4.1.x-dev"
     }
   },
-  "minimum-stability": "dev",
   "prefer-stable": true
 }

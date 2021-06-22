@@ -106,18 +106,16 @@ class GraphqliteController
             return new JsonResponse($result->toArray($this->debug), $httpCodeDecider->decideHttpStatusCode($result));
         }
         if (is_array($result)) {
-            $finalResult = array_map(function (ExecutionResult $executionResult) {
+            $finalResult = array_map(function (ExecutionResult $executionResult): array {
                 return $executionResult->toArray($this->debug);
             }, $result);
             // Let's return the highest result.
             $statuses = array_map([$httpCodeDecider, 'decideHttpStatusCode'], $result);
             $status = empty($statuses) ? 500 : max($statuses);
+
             return new JsonResponse($finalResult, $status);
         }
-        if ($result instanceof Promise) {
-            throw new RuntimeException('Only SyncPromiseAdapter is supported');
-        }
-        /* @phpstan-ignore-next-line */
-        throw new RuntimeException('Unexpected response from StandardServer::executePsrRequest'); // @codeCoverageIgnore
+
+        throw new RuntimeException('Only SyncPromiseAdapter is supported');
     }
 }

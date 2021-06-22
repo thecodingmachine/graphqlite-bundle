@@ -29,6 +29,7 @@ class NoSecurityBundleTest extends TestCase
         $kernel = new GraphqliteTestingKernel(true, null, false, null, true, null, null, ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\NoSecurityBundleFixtures\\Controller\\']);
         $kernel->boot();
         $container = $kernel->getContainer();
+        self::assertNotNull($container);
 
         $schema = $container->get(Schema::class);
         $this->assertInstanceOf(Schema::class, $schema);

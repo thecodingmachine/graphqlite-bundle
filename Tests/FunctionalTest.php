@@ -534,6 +534,9 @@ class FunctionalTest extends TestCase
         $container->get('security.token_storage')->setToken($token);
     }
 
+    /**
+     * @requires PHP 8.0
+     */
     public function testPhp8Attributes(): void
     {
         $kernel = new GraphqliteTestingKernel();

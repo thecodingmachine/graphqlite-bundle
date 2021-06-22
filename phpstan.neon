@@ -1,7 +1,7 @@
 includes:
 	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
+	- vendor/phpstan/phpstan-webmozart-assert/extension.neon
 	- vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
-	- phpstan.baseline.neon
 parameters:
     tmpDir: .phpstan-cache
     paths:
@@ -10,6 +10,7 @@ parameters:
         - vendor
         - cache
         - .phpstan-cache
+        - Tests
     level: max
     polluteScopeWithLoopInitialAssignments: false
     polluteScopeWithAlwaysIterableForeach: false
@@ -22,5 +23,7 @@ parameters:
     checkMissingClosureNativeReturnTypehintRule: true
     checkTooWideReturnTypesInProtectedAndPublicMethods: true
     treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
-        - "#Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition::children\\(\\)#"
+        # Wrong return type hint in Symfony's TreeBuilder
+        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::\w+\(\).#'
