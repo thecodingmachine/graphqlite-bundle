@@ -17,6 +17,7 @@
   ],
   "require" : {
     "php" : ">=7.2",
+    "ext-json": "*",
     "thecodingmachine/graphqlite" : "^4.1.2",
     "thecodingmachine/graphqlite-symfony-validator-bridge" : "^4.1",
     "symfony/framework-bundle": "^4.2 || ^5",
