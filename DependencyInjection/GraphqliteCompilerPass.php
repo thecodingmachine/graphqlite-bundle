@@ -333,7 +333,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
      */
     private function makePublicInjectedServices(ReflectionClass $refClass, AnnotationReader $reader, ContainerBuilder $container, bool $isController): void
     {
-        $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container, $isController) {
+        $services = $this->getCodeCache()->get($refClass, function() use ($refClass, $reader, $container, $isController): array {
             $services = [];
             foreach ($refClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 $field = $reader->getRequestAnnotation($method, Field::class) ?? $reader->getRequestAnnotation($method, Query::class) ?? $reader->getRequestAnnotation($method, Mutation::class);
@@ -347,6 +347,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
                     }
                 }
             }
+
             return $services;
         });
 
@@ -485,7 +486,7 @@ class GraphqliteCompilerPass implements CompilerPassInterface
                 // The autoloader might trigger errors if the file does not respect PSR-4 or if the
                 // Symfony DebugAutoLoader is installed. (see https://github.com/thecodingmachine/graphqlite/issues/216)
                 require_once $phpFile;
-                // Does it exists now?
+                // @phpstan-ignore-next-line Does it exists now?
                 if (! class_exists($className, false)) {
                     continue;
                 }

@@ -42,7 +42,12 @@ class GraphqliteExtension extends Extension
             if (!is_array($controllers)) {
                 $controllers = [ $controllers ];
             }
-            $namespaceController = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $controllers);
+            $namespaceController = array_map(
+                function($namespace): string {
+                    return rtrim($namespace, '\\') . '\\';
+                },
+                $controllers
+            );
         } else {
             $namespaceController = [];
         }
@@ -51,7 +56,12 @@ class GraphqliteExtension extends Extension
             if (!is_array($types)) {
                 $types = [ $types ];
             }
-            $namespaceType = array_map(function($namespace) { return rtrim($namespace, '\\') . '\\'; }, $types);
+            $namespaceType = array_map(
+                function($namespace): string {
+                    return rtrim($namespace, '\\') . '\\';
+                },
+                $types
+            );
         } else {
             $namespaceType = [];
         }
@@ -82,20 +92,6 @@ class GraphqliteExtension extends Extension
             ->addTag('graphql.output_type');
         $container->registerForAutoconfiguration(RootTypeMapperFactoryInterface::class)
             ->addTag('graphql.root_type_mapper_factory');
-    }
-
-    private function getNamespaceDir(string $namespace): string
-    {
-        $classNameMapper = ClassNameMapper::createFromComposerFile(null, null, true);
-
-        $possibleFileNames = $classNameMapper->getPossibleFileNames($namespace.'Xxx');
-        if (count($possibleFileNames) > 1) {
-            throw new \RuntimeException(sprintf('According to your composer.json, classes belonging to the "%s" namespace can be located in several directories: %s. This is an issue for the GraphQLite lib. Please make sure that a namespace can only be resolved to one PHP file.', $namespace, implode(", ", $possibleFileNames)));
-        } elseif (empty($possibleFileNames)) {
-            throw new \RuntimeException(sprintf('Files in namespace "%s" cannot be autoloaded by Composer. Please set up a PSR-4 autoloader in Composer or change the namespace configured in "graphqlite.namespace.controllers" and "graphqlite.namespace.types"', $namespace));
-        }
-
-        return substr($possibleFileNames[0], 0, -8);
     }
 
     /**

@@ -1,7 +1,7 @@
 includes:
 	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
+	- vendor/phpstan/phpstan-webmozart-assert/extension.neon
 	- vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
-	- phpstan.baseline.neon
 parameters:
     tmpDir: .phpstan-cache
     paths:
@@ -10,6 +10,7 @@ parameters:
         - vendor
         - cache
         - .phpstan-cache
+        - Tests
     bootstrapFiles:
         - vendor/bin/.phpunit/phpunit/vendor/autoload.php
     level: max

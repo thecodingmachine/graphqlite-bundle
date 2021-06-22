@@ -82,6 +82,7 @@ class LoginController
 
         // Fire the login event manually
         $event = new InteractiveLoginEvent($request, $token);
+        // @phpstan-ignore-next-line BC for Symfony4
         $this->eventDispatcher->dispatch($event, 'security.interactive_login');
 
         return $user;

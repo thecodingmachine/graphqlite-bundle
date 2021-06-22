@@ -2,8 +2,6 @@
 
 namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
 
-use Overblog\GraphiQLBundle\Config\GraphiQLControllerEndpoint;
-use Overblog\GraphiQLBundle\Config\GraphqlEndpoint\RootResolver;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
