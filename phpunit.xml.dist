@@ -21,7 +21,34 @@
         </testsuite>
     </testsuites>
 
+
+    <filter>
+        <whitelist>
+            <directory>./</directory>
+            <exclude>
+                <directory>cache</directory>
+                <directory>build</directory>
+                <directory>./Resources</directory>
+                <directory>./Tests</directory>
+                <directory>./vendor</directory>
+                <directory>./var</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-html" target="build/coverage"/>
+    </logging>
+
     <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener">
+            <arguments>
+                <array>
+                    <!-- set this option to 0 to disable the DebugClassLoader integration -->
+                    <!-- See https://github.com/sebastianbergmann/phpunit/issues/4002 -->
+                    <element key="debug-class-loader"><integer>0</integer></element>
+                </array>
+            </arguments>
+        </listener>
     </listeners>
 </phpunit>
