@@ -23,7 +23,12 @@ class SymfonyUserInterfaceType
     {
         $roles = [];
         foreach ($user->getRoles() as $role) {
-            $roles[] = $role instanceof Role ? $role->getRole() : $role;
+            // @phpstan-ignore-next-line BC for Symfony 4
+            if (class_exists(Role::class) && $role instanceof Role) {
+                $role = $role->getRole();
+            }
+
+            $roles[] = $role;
         }
         return $roles;
     }

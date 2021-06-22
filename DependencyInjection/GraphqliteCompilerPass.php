@@ -13,6 +13,7 @@ use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 use TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapper;
 use TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory;
+use Webmozart\Assert\Assert;
 use function class_exists;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
@@ -102,14 +103,19 @@ class GraphqliteCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container): void
     {
         $reader = $this->getAnnotationReader();
-        $this->cacheDir = $container->getParameter('kernel.cache_dir');
+        $cacheDir = $container->getParameter('kernel.cache_dir');
+        Assert::string($cacheDir);
+        $this->cacheDir = $cacheDir;
         //$inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
 
         // Let's scan the whole container and tag the services that belong to the namespace we want to inspect.
         $controllersNamespaces = $container->getParameter('graphqlite.namespace.controllers');
+        Assert::isIterable($controllersNamespaces);
         $typesNamespaces = $container->getParameter('graphqlite.namespace.types');
+        Assert::isIterable($typesNamespaces);
 
         $firewallName = $container->getParameter('graphqlite.security.firewall_name');
+        Assert::string($firewallName);
         $firewallConfigServiceName = 'security.firewall.map.config.'.$firewallName;
 
         // 2 seconds of TTL in environment mode. Otherwise, let's cache forever!
@@ -183,13 +189,20 @@ class GraphqliteCompilerPass implements CompilerPassInterface
         if ($container->getParameter('graphqlite.security.introspection') === false) {
             $rulesDefinition[] =  $container->findDefinition(DisableIntrospection::class);
         }
-        if ($container->getParameter('graphqlite.security.maximum_query_complexity')) {
-            $complexity = (int) $container->getParameter('graphqlite.security.maximum_query_complexity');
-            $rulesDefinition[] =  $container->findDefinition(QueryComplexity::class)->setArgument(0, $complexity);
+        if ($container->hasParameter('graphqlite.security.maximum_query_complexity')) {
+            $complexity = $container->getParameter('graphqlite.security.maximum_query_complexity');
+            Assert::integerish($complexity);
+
+            $rulesDefinition[] =  $container->findDefinition(QueryComplexity::class)
+                ->setArgument(0, (int) $complexity);
         }
-        if ($container->getParameter('graphqlite.security.maximum_query_depth')) {
-            $depth = (int) $container->getParameter('graphqlite.security.maximum_query_depth');
-            $rulesDefinition[] =  $container->findDefinition(QueryDepth::class)->setArgument(0, $depth);
+
+        if ($container->hasParameter('graphqlite.security.maximum_query_depth')) {
+            $depth = $container->getParameter('graphqlite.security.maximum_query_depth');
+            Assert::integerish($depth);
+
+            $rulesDefinition[] =  $container->findDefinition(QueryDepth::class)
+                ->setArgument(0, (int) $depth);
         }
         $serverConfigDefinition->addMethodCall('setValidationRules', [$rulesDefinition]);
 
