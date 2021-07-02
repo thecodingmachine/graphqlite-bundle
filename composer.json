@@ -41,8 +41,7 @@
     "symfony/phpunit-bridge": "^5.3",
     "thecodingmachine/phpstan-strict-rules": "^v0.12.1",
     "composer/package-versions-deprecated": "^1.8",
-    "phpstan/phpstan-webmozart-assert": "^0.12.12",
-    "phpunit/phpunit": "^9.5"
+    "phpstan/phpstan-webmozart-assert": "^0.12.12"
   },
   "conflict": {
     "mouf/classname-mapper": "<1.0.2",
