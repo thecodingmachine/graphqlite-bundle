@@ -1,17 +1,18 @@
 <?php
 
-
 namespace TheCodingMachine\Graphqlite\Bundle\Tests\Command;
 
-
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use TheCodingMachine\Graphqlite\Bundle\Tests\GraphqliteTestingKernel;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 
 class DumpSchemaCommandTest extends TestCase
 {
-    public function testExecute()
+    /**
+     * @test
+     */
+    public function it_executes_successfully(): void
     {
         $kernel = new GraphqliteTestingKernel();
         $application = new Application($kernel);
@@ -20,7 +21,7 @@ class DumpSchemaCommandTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
 
-        $this->assertRegExp(
+        self::assertMatchesRegularExpression(
             '/type Product {[\s"]*seller: Contact\s*name: String!\s*price: Float!\s*}/',
             $commandTester->getDisplay()
         );
