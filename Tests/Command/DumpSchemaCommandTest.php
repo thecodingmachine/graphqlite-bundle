@@ -9,10 +9,7 @@ use TheCodingMachine\Graphqlite\Bundle\Tests\GraphqliteTestingKernel;
 
 class DumpSchemaCommandTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function it_executes_successfully(): void
+    public function testExecute(): void
     {
         $kernel = new GraphqliteTestingKernel();
         $application = new Application($kernel);
