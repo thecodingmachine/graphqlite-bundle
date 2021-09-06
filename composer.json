@@ -24,7 +24,7 @@
     "symfony/validator": "^4.2 || ^5",
     "symfony/translation": "^4.2 || ^5",
     "doctrine/annotations": "^1.10.4",
-    "doctrine/cache": "^1.8",
+    "doctrine/cache": "^1.8 || ^2.0",
     "symfony/psr-http-message-bridge": "^2.0",
     "nyholm/psr7": "^1.1",
     "laminas/laminas-diactoros": "^2.2.2",
