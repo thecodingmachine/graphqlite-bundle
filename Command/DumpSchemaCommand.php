@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TheCodingMachine\Graphqlite\Bundle\Command;
 
-use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\TypeWithFields;
 use GraphQL\Utils\SchemaPrinter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -63,7 +63,7 @@ class DumpSchemaCommand extends Command
     {
         $config = $this->schema->getConfig();
 
-        $refl = new \ReflectionProperty(ObjectType::class, 'fields');
+        $refl = new \ReflectionProperty(TypeWithFields::class, 'fields');
         $refl->setAccessible(true);
 
         $fields = $config->query->getFields();

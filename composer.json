@@ -18,8 +18,8 @@
   "require" : {
     "php" : ">=7.2",
     "ext-json": "*",
-    "thecodingmachine/graphqlite" : "^4.1.2",
-    "thecodingmachine/graphqlite-symfony-validator-bridge" : "^4.1",
+    "thecodingmachine/graphqlite" : "^5.0",
+    "thecodingmachine/graphqlite-symfony-validator-bridge" : "^5.0",
     "symfony/framework-bundle": "^4.2 || ^5",
     "symfony/validator": "^4.2 || ^5",
     "symfony/translation": "^4.2 || ^5",
@@ -63,7 +63,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "4.1.x-dev"
+      "dev-master": "5.0.x-dev"
     }
   },
   "prefer-stable": true

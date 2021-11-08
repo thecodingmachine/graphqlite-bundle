@@ -92,7 +92,7 @@
             <tag name="graphql.parameter_middleware"/>
         </service>
 
-        <service id="TheCodingMachine\Graphqlite\Validator\Mappers\Parameters\AssertParameterMiddleware">
+        <service id="TheCodingMachine\GraphQLite\Validator\Mappers\Parameters\AssertParameterMiddleware">
             <argument type="service" id="validator.validator_factory" />
             <tag name="graphql.parameter_middleware"/>
         </service>

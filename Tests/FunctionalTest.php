@@ -242,13 +242,16 @@ class FunctionalTest extends TestCase
         $container = $kernel->getContainer();
         $container->set('session', $session);
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        mutation login { 
-          login(userName: "foo", password: "bar") {
-            userName
-            roles
-          }
-        }']);
+        $parameters = ['query' => '
+            mutation login { 
+              login(userName: "foo", password: "bar") {
+                userName
+                roles
+              }
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -275,14 +278,16 @@ class FunctionalTest extends TestCase
         $container = $kernel->getContainer();
         $container->set('session', $session);
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        {
-          me {
-            userName
-            roles
-          }
-        }
-        ']);
+        $parameters = ['query' => '
+            {
+              me {
+                userName
+                roles
+              }
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -301,12 +306,15 @@ class FunctionalTest extends TestCase
         $kernel = new GraphqliteTestingKernel(false, 'off');
         $kernel->boot();
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        mutation login { 
-          login(userName: "foo", password: "bar") {
-            userName
-          }
-        }']);
+        $parameters = ['query' => '
+            mutation login { 
+              login(userName: "foo", password: "bar") {
+                userName
+              }
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -381,14 +389,16 @@ class FunctionalTest extends TestCase
         $container = $kernel->getContainer();
         $container->set('session', $session);
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        {
-          me {
-            userName
-            roles
-          }
-        }
-        ']);
+        $parameters = ['query' => '
+            {
+              me {
+                userName
+                roles
+              }
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -406,11 +416,13 @@ class FunctionalTest extends TestCase
         $container = $kernel->getContainer();
         $container->set('session', $session);
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        {
-          findByMail(email: "notvalid")
-        }
-        ']);
+        $parameters = ['query' => '
+            {
+              findByMail(email: "notvalid")
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -427,15 +439,17 @@ class FunctionalTest extends TestCase
         $kernel = new GraphqliteTestingKernel(true, null, true, null);
         $kernel->boot();
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        {
-          __schema {
-            queryType {
-              name
+        $parameters = ['query' => '
+            {
+              __schema {
+                queryType {
+                  name
+                }
+              }
             }
-          }
-        }
-        ']);
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -450,15 +464,17 @@ class FunctionalTest extends TestCase
         $kernel = new GraphqliteTestingKernel(true, null, true, null, false, 2, 2);
         $kernel->boot();
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        {
-          __schema {
-            queryType {
-              name
+        $parameters = ['query' => '
+            {
+              __schema {
+                queryType {
+                  name
+                }
+              }
             }
-          }
-        }
-        ']);
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -473,18 +489,20 @@ class FunctionalTest extends TestCase
         $kernel = new GraphqliteTestingKernel(true, null, true, null, false, 2, null);
         $kernel->boot();
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        { 
-          products 
-          { 
-            name,
-            price,
-            seller {
-              name
+        $parameters = ['query' => '
+            { 
+              products 
+              { 
+                name,
+                price,
+                seller {
+                  name
+                }
+              }
             }
-          }
-        }
-        ']);
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -499,24 +517,26 @@ class FunctionalTest extends TestCase
         $kernel = new GraphqliteTestingKernel(true, null, true, null, false, null, 1);
         $kernel->boot();
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        { 
-          products 
-          { 
-            name,
-            price,
-            seller {
-              name
-              manager {
-                name
-                manager {
+        $parameters = ['query' => '
+            { 
+              products 
+              { 
+                name,
+                price,
+                seller {
                   name
+                  manager {
+                    name
+                    manager {
+                      name
+                    }
+                  }
                 }
               }
             }
-          }
-        }
-        ']);
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
