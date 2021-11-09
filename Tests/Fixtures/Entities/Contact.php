@@ -1,13 +1,13 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities;
+namespace TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Entities;
 
 
 use stdClass;
 use TheCodingMachine\GraphQLite\Annotations\Field;
 use TheCodingMachine\GraphQLite\Annotations\Type;
-use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Controller\TestGraphqlController;
+use TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Controller\TestGraphqlController;
 use TheCodingMachine\GraphQLite\Annotations\Autowire;
 
 /**

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Controller;
+namespace TheCodingMachine\GraphQLite\Bundle\Controller;
 
 
 use Laminas\Diactoros\ResponseFactory;
@@ -11,9 +11,7 @@ use Laminas\Diactoros\UploadedFileFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
 use function array_map;
-use GraphQL\Error\Debug;
 use GraphQL\Executor\ExecutionResult;
-use GraphQL\Executor\Promise\Promise;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Server\StandardServer;
 use GraphQL\Upload\UploadMiddleware;
@@ -27,18 +25,18 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use TheCodingMachine\Graphqlite\Bundle\Context\SymfonyGraphQLContext;
+use TheCodingMachine\GraphQLite\Bundle\Context\SymfonyGraphQLContext;
 
 /**
  * Listens to every single request and forward Graphql requests to Graphql Webonix standardServer.
  */
-class GraphqliteController
+class GraphQLiteController
 {
     /**
      * @var HttpMessageFactoryInterface
      */
     private $httpMessageFactory;
-    /** @var bool|int */
+    /** @var int */
     private $debug;
     /**
      * @var ServerConfig
@@ -49,7 +47,7 @@ class GraphqliteController
     {
         $this->serverConfig = $serverConfig;
         $this->httpMessageFactory = $httpMessageFactory ?: new PsrHttpFactory(new ServerRequestFactory(), new StreamFactory(), new UploadedFileFactory(), new ResponseFactory());
-        $this->debug = $debug ?? $serverConfig->getDebug();
+        $this->debug = $debug ?? $serverConfig->getDebugFlag();
     }
 
     public function loadRoutes(): RouteCollection

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
+namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

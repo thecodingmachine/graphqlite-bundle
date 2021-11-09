@@ -13,11 +13,11 @@ services:
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
-    TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\:
+    TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\:
         resource: '../*'
         exclude: '../{Entities}'
 
-    TheCodingMachine\Graphqlite\Bundle\Tests\NoSecurityBundleFixtures\:
+    TheCodingMachine\GraphQLite\Bundle\Tests\NoSecurityBundleFixtures\:
         resource: '../../NoSecurityBundleFixtures/*'
 
     someService:

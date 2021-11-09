@@ -1,28 +1,24 @@
 <?php
 
-namespace TheCodingMachine\Graphqlite\Bundle\Tests;
+namespace TheCodingMachine\GraphQLite\Bundle\Tests;
 
 use function json_decode;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use function spl_object_hash;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\User\User;
-use TheCodingMachine\Graphqlite\Bundle\Controller\GraphqliteController;
-use TheCodingMachine\Graphqlite\Bundle\Security\AuthenticationService;
+use TheCodingMachine\GraphQLite\Bundle\Controller\GraphQLiteController;
 use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
 use TheCodingMachine\GraphQLite\Schema;
-use function var_dump;
 
 class FunctionalTest extends TestCase
 {
     public function testServiceWiring(): void
     {
-        $kernel = new GraphqliteTestingKernel();
+        $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
         $container = $kernel->getContainer();
 
@@ -73,7 +69,7 @@ class FunctionalTest extends TestCase
 
     public function testServiceAutowiring(): void
     {
-        $kernel = new GraphqliteTestingKernel();
+        $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
         $container = $kernel->getContainer();
 
@@ -105,7 +101,7 @@ class FunctionalTest extends TestCase
 
     public function testErrors(): void
     {
-        $kernel = new GraphqliteTestingKernel();
+        $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -141,7 +137,7 @@ class FunctionalTest extends TestCase
 
     public function testExceptionHandler(): void
     {
-        $kernel = new GraphqliteTestingKernel();
+        $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -163,7 +159,7 @@ class FunctionalTest extends TestCase
 
     public function testLoggedMiddleware(): void
     {
-        $kernel = new GraphqliteTestingKernel();
+        $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -184,7 +180,7 @@ class FunctionalTest extends TestCase
 
     public function testLoggedMiddleware2(): void
     {
-        $kernel = new GraphqliteTestingKernel();
+        $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -197,7 +193,7 @@ class FunctionalTest extends TestCase
         $this->logIn($kernel->getContainer());
 
         // Test again, bypassing the kernel (cause this triggers a reboot of the container that disconnects the user)
-        $response = $kernel->getContainer()->get(GraphqliteController::class)->handleRequest($request);
+        $response = $kernel->getContainer()->get(GraphQLiteController::class)->handleRequest($request);
 
 
         $result = json_decode($response->getContent(), true);
@@ -214,7 +210,7 @@ class FunctionalTest extends TestCase
 
     public function testInjectQuery(): void
     {
-        $kernel = new GraphqliteTestingKernel();
+        $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '
@@ -235,20 +231,23 @@ class FunctionalTest extends TestCase
 
     public function testLoginQuery(): void
     {
-        $kernel = new GraphqliteTestingKernel();
+        $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
 
         $session = new Session(new MockArraySessionStorage());
         $container = $kernel->getContainer();
         $container->set('session', $session);
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        mutation login { 
-          login(userName: "foo", password: "bar") {
-            userName
-            roles
-          }
-        }']);
+        $parameters = ['query' => '
+            mutation login { 
+              login(userName: "foo", password: "bar") {
+                userName
+                roles
+              }
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -268,21 +267,23 @@ class FunctionalTest extends TestCase
 
     public function testMeQuery(): void
     {
-        $kernel = new GraphqliteTestingKernel();
+        $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
 
         $session = new Session(new MockArraySessionStorage());
         $container = $kernel->getContainer();
         $container->set('session', $session);
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        {
-          me {
-            userName
-            roles
-          }
-        }
-        ']);
+        $parameters = ['query' => '
+            {
+              me {
+                userName
+                roles
+              }
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -298,15 +299,18 @@ class FunctionalTest extends TestCase
 
     public function testNoLoginNoSessionQuery(): void
     {
-        $kernel = new GraphqliteTestingKernel(false, 'off');
+        $kernel = new GraphQLiteTestingKernel(false, 'off');
         $kernel->boot();
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        mutation login { 
-          login(userName: "foo", password: "bar") {
-            userName
-          }
-        }']);
+        $parameters = ['query' => '
+            mutation login { 
+              login(userName: "foo", password: "bar") {
+                userName
+              }
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -318,7 +322,7 @@ class FunctionalTest extends TestCase
 
     public function testForceLoginNoSession(): void
     {
-        $kernel = new GraphqliteTestingKernel(false, 'on');
+        $kernel = new GraphQLiteTestingKernel(false, 'on');
         $this->expectException(GraphQLException::class);
         $this->expectExceptionMessage('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to enable session support (via the "framework.session.enabled" config parameter)');
         $kernel->boot();
@@ -326,7 +330,7 @@ class FunctionalTest extends TestCase
 
     public function testForceMeNoSecurity(): void
     {
-        $kernel = new GraphqliteTestingKernel(false, 'off', false, 'on');
+        $kernel = new GraphQLiteTestingKernel(false, 'off', false, 'on');
         $this->expectException(GraphQLException::class);
         $this->expectExceptionMessage('In order to enable the "me" query (via the graphqlite.security.enable_me parameter), you need to install the security bundle.');
         $kernel->boot();
@@ -334,7 +338,7 @@ class FunctionalTest extends TestCase
 
     public function testForceLoginNoSecurity(): void
     {
-        $kernel = new GraphqliteTestingKernel(true, 'on', false);
+        $kernel = new GraphQLiteTestingKernel(true, 'on', false);
         $this->expectException(GraphQLException::class);
         $this->expectExceptionMessage('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to install the security bundle. Please be sure to correctly configure the user provider (in the security.providers configuration settings)');
         $kernel->boot();
@@ -374,21 +378,23 @@ class FunctionalTest extends TestCase
 
     public function testAllOff(): void
     {
-        $kernel = new GraphqliteTestingKernel(true, 'off', true, 'off');
+        $kernel = new GraphQLiteTestingKernel(true, 'off', true, 'off');
         $kernel->boot();
 
         $session = new Session(new MockArraySessionStorage());
         $container = $kernel->getContainer();
         $container->set('session', $session);
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        {
-          me {
-            userName
-            roles
-          }
-        }
-        ']);
+        $parameters = ['query' => '
+            {
+              me {
+                userName
+                roles
+              }
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -399,18 +405,20 @@ class FunctionalTest extends TestCase
 
     public function testValidation(): void
     {
-        $kernel = new GraphqliteTestingKernel(true, 'off', true, 'off');
+        $kernel = new GraphQLiteTestingKernel(true, 'off', true, 'off');
         $kernel->boot();
 
         $session = new Session(new MockArraySessionStorage());
         $container = $kernel->getContainer();
         $container->set('session', $session);
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        {
-          findByMail(email: "notvalid")
-        }
-        ']);
+        $parameters = ['query' => '
+            {
+              findByMail(email: "notvalid")
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -424,18 +432,20 @@ class FunctionalTest extends TestCase
 
     public function testWithIntrospection(): void
     {
-        $kernel = new GraphqliteTestingKernel(true, null, true, null);
+        $kernel = new GraphQLiteTestingKernel(true, null, true, null);
         $kernel->boot();
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        {
-          __schema {
-            queryType {
-              name
+        $parameters = ['query' => '
+            {
+              __schema {
+                queryType {
+                  name
+                }
+              }
             }
-          }
-        }
-        ']);
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -447,18 +457,20 @@ class FunctionalTest extends TestCase
 
     public function testDisableIntrospection(): void
     {
-        $kernel = new GraphqliteTestingKernel(true, null, true, null, false, 2, 2);
+        $kernel = new GraphQLiteTestingKernel(true, null, true, null, false, 2, 2);
         $kernel->boot();
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        {
-          __schema {
-            queryType {
-              name
+        $parameters = ['query' => '
+            {
+              __schema {
+                queryType {
+                  name
+                }
+              }
             }
-          }
-        }
-        ']);
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -470,21 +482,23 @@ class FunctionalTest extends TestCase
 
     public function testMaxQueryComplexity(): void
     {
-        $kernel = new GraphqliteTestingKernel(true, null, true, null, false, 2, null);
+        $kernel = new GraphQLiteTestingKernel(true, null, true, null, false, 2, null);
         $kernel->boot();
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        { 
-          products 
-          { 
-            name,
-            price,
-            seller {
-              name
+        $parameters = ['query' => '
+            { 
+              products 
+              { 
+                name,
+                price,
+                seller {
+                  name
+                }
+              }
             }
-          }
-        }
-        ']);
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -496,27 +510,29 @@ class FunctionalTest extends TestCase
 
     public function testMaxQueryDepth(): void
     {
-        $kernel = new GraphqliteTestingKernel(true, null, true, null, false, null, 1);
+        $kernel = new GraphQLiteTestingKernel(true, null, true, null, false, null, 1);
         $kernel->boot();
 
-        $request = Request::create('/graphql', 'POST', ['query' => '
-        { 
-          products 
-          { 
-            name,
-            price,
-            seller {
-              name
-              manager {
-                name
-                manager {
+        $parameters = ['query' => '
+            { 
+              products 
+              { 
+                name,
+                price,
+                seller {
                   name
+                  manager {
+                    name
+                    manager {
+                      name
+                    }
+                  }
                 }
               }
             }
-          }
-        }
-        ']);
+        '];
+
+        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $kernel->handle($request);
 
@@ -539,7 +555,7 @@ class FunctionalTest extends TestCase
      */
     public function testPhp8Attributes(): void
     {
-        $kernel = new GraphqliteTestingKernel();
+        $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
 
         $request = Request::create('/graphql', 'GET', ['query' => '

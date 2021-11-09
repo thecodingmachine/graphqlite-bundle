@@ -1,10 +1,10 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Types;
+namespace TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Types;
 
 use TheCodingMachine\GraphQLite\Annotations\Factory;
-use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Product;
+use TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Entities\Product;
 
 
 class ProductFactory

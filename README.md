@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/thecodingmachine/graphqlite-bundle/badge.svg?branch=master&service=github)](https://coveralls.io/github/thecodingmachine/graphqlite-bundle?branch=master)
 
 
-# Graphqlite bundle
+# GraphQLite bundle
 
 Symfony 4 bundle for the thecodingmachine/graphqlite package.
 

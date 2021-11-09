@@ -1,17 +1,13 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Server;
+namespace TheCodingMachine\GraphQLite\Bundle\Server;
 
-use GraphQL\Error\InvariantViolation;
-use GraphQL\GraphQL;
 use GraphQL\Language\AST\DocumentNode;
 use GraphQL\Server\OperationParams;
-use GraphQL\Utils\Utils;
 use GraphQL\Validator\DocumentValidator;
 use GraphQL\Validator\Rules\ValidationRule;
 use function array_merge;
-use function is_array;
 use function is_callable;
 
 /**

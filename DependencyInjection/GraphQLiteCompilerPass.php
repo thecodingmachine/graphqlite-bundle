@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
+namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
 use Doctrine\Common\Annotations\PsrCachedReader;
 use GraphQL\Server\ServerConfig;
@@ -47,17 +47,17 @@ use TheCodingMachine\GraphQLite\Annotations\Autowire;
 use TheCodingMachine\GraphQLite\Annotations\Field;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Query;
-use TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController;
-use TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\MeController;
+use TheCodingMachine\GraphQLite\Bundle\Controller\GraphQL\LoginController;
+use TheCodingMachine\GraphQLite\Bundle\Controller\GraphQL\MeController;
 use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
 use TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper;
 use TheCodingMachine\GraphQLite\SchemaFactory;
-use TheCodingMachine\Graphqlite\Bundle\Types\SymfonyUserInterfaceType;
+use TheCodingMachine\GraphQLite\Bundle\Types\SymfonyUserInterfaceType;
 
 /**
  * Detects controllers and types automatically and tag them.
  */
-class GraphqliteCompilerPass implements CompilerPassInterface
+class GraphQLiteCompilerPass implements CompilerPassInterface
 {
     /**
      * @var AnnotationReader

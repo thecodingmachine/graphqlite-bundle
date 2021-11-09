@@ -1,28 +1,27 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
+namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
 
+use GraphQL\Error\DebugFlag;
 use TheCodingMachine\GraphQLite\Mappers\Root\RootTypeMapperFactoryInterface;
 use function array_map;
-use GraphQL\Error\Debug;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Type\Definition\ObjectType;
-use function implode;
-use function is_dir;
-use Mouf\Composer\ClassNameMapper;
 use function rtrim;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
-use function var_dump;
 
-class GraphqliteExtension extends Extension
+class GraphQLiteExtension extends Extension
 {
+
+    public function getAlias()
+    {
+        return 'graphqlite';
+    }
 
     /**
      * Loads a specific configuration.
@@ -84,9 +83,9 @@ class GraphqliteExtension extends Extension
         if (isset($config['debug'])) {
             $debugCode = $this->toDebugCode($config['debug']);
         } else {
-            $debugCode = Debug::RETHROW_UNSAFE_EXCEPTIONS;
+            $debugCode = DebugFlag::RETHROW_UNSAFE_EXCEPTIONS;
         }
-        $definition->addMethodCall('setDebug', [$debugCode]);
+        $definition->addMethodCall('setDebugFlag', [$debugCode]);
 
         $container->registerForAutoconfiguration(ObjectType::class)
             ->addTag('graphql.output_type');
@@ -101,10 +100,10 @@ class GraphqliteExtension extends Extension
     private function toDebugCode(array $debug): int
     {
         $code = 0;
-        $code |= ($debug['INCLUDE_DEBUG_MESSAGE'] ?? 0)*Debug::INCLUDE_DEBUG_MESSAGE;
-        $code |= ($debug['INCLUDE_TRACE'] ?? 0)*Debug::INCLUDE_TRACE;
-        $code |= ($debug['RETHROW_INTERNAL_EXCEPTIONS'] ?? 0)*Debug::RETHROW_INTERNAL_EXCEPTIONS;
-        $code |= ($debug['RETHROW_UNSAFE_EXCEPTIONS'] ?? 0)*Debug::RETHROW_UNSAFE_EXCEPTIONS;
+        $code |= ($debug['INCLUDE_DEBUG_MESSAGE'] ?? 0)*DebugFlag::INCLUDE_DEBUG_MESSAGE;
+        $code |= ($debug['INCLUDE_TRACE'] ?? 0)*DebugFlag::INCLUDE_TRACE;
+        $code |= ($debug['RETHROW_INTERNAL_EXCEPTIONS'] ?? 0)*DebugFlag::RETHROW_INTERNAL_EXCEPTIONS;
+        $code |= ($debug['RETHROW_UNSAFE_EXCEPTIONS'] ?? 0)*DebugFlag::RETHROW_UNSAFE_EXCEPTIONS;
         return $code;
     }
 }

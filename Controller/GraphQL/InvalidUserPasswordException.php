@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL;
+namespace TheCodingMachine\GraphQLite\Bundle\Controller\GraphQL;
 
 use Exception;
 use TheCodingMachine\GraphQLite\Exceptions\GraphQLException;

@@ -1,6 +1,6 @@
 <?php
 
-namespace TheCodingMachine\Graphqlite\Bundle\GraphiQL;
+namespace TheCodingMachine\GraphQLite\Bundle\GraphiQL;
 
 use Overblog\GraphiQLBundle\Config\GraphiQLControllerEndpoint;
 use Overblog\GraphiQLBundle\Config\GraphQLEndpoint\GraphQLEndpointInvalidSchemaException;
