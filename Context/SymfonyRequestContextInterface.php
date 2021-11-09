@@ -1,6 +1,6 @@
 <?php
 
-namespace TheCodingMachine\Graphqlite\Bundle\Context;
+namespace TheCodingMachine\GraphQLite\Bundle\Context;
 
 use Symfony\Component\HttpFoundation\Request;
 

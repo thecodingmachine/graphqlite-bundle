@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Tests;
+namespace TheCodingMachine\GraphQLite\Bundle\Tests;
 
 
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -10,16 +10,13 @@ use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
-use Symfony\Component\Routing\RouteCollectionBuilder;
-use TheCodingMachine\Graphqlite\Bundle\GraphqliteBundle;
+use TheCodingMachine\GraphQLite\Bundle\GraphQLiteBundle;
 use Symfony\Component\Security\Core\User\User;
 use function class_exists;
 use function serialize;
 
-class GraphqliteTestingKernel extends Kernel
+class GraphQLiteTestingKernel extends Kernel
 {
     use MicroKernelTrait;
 
@@ -72,8 +69,8 @@ class GraphqliteTestingKernel extends Kernel
                                 bool $introspection = true,
                                 ?int $maximumQueryComplexity = null,
                                 ?int $maximumQueryDepth = null,
-                                array $controllersNamespace = ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Controller\\'],
-                                array $typesNamespace = ['TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\Graphqlite\\Bundle\\Tests\\Fixtures\\Entities\\'])
+                                array $controllersNamespace = ['TheCodingMachine\\GraphQLite\\Bundle\\Tests\\Fixtures\\Controller\\'],
+                                array $typesNamespace = ['TheCodingMachine\\GraphQLite\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\GraphQLite\\Bundle\\Tests\\Fixtures\\Entities\\'])
     {
         parent::__construct('test', true);
         $this->enableSession = $enableSession;
@@ -93,7 +90,7 @@ class GraphqliteTestingKernel extends Kernel
         if (class_exists(SecurityBundle::class)) {
             $bundles[] = new SecurityBundle();
         }
-        $bundles[] = new GraphqliteBundle();
+        $bundles[] = new GraphQLiteBundle();
         return $bundles;
     }
 

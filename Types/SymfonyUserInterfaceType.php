@@ -1,11 +1,10 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Types;
+namespace TheCodingMachine\GraphQLite\Bundle\Types;
 
 use Symfony\Component\Security\Core\Role\Role;
 use TheCodingMachine\GraphQLite\Annotations\Field;
-use TheCodingMachine\GraphQLite\Annotations\SourceField;
 use TheCodingMachine\GraphQLite\Annotations\Type;
 use Symfony\Component\Security\Core\User\UserInterface;
 use TheCodingMachine\GraphQLite\FieldNotFoundException;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TheCodingMachine\Graphqlite\Bundle\Command;
+namespace TheCodingMachine\GraphQLite\Bundle\Command;
 
 use GraphQL\Type\Definition\TypeWithFields;
 use GraphQL\Utils\SchemaPrinter;

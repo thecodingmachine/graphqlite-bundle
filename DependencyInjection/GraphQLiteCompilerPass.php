@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
+namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
 use GraphQL\Server\ServerConfig;
 use GraphQL\Validator\Rules\DisableIntrospection;
@@ -11,43 +11,31 @@ use ReflectionNamedType;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Psr16Cache;
-use TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapper;
 use TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory;
 use Webmozart\Assert\Assert;
 use function class_exists;
-use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Cache\ApcuCache;
-use function error_log;
 use Mouf\Composer\ClassNameMapper;
 use Psr\SimpleCache\CacheInterface;
 use ReflectionParameter;
-use Symfony\Component\Cache\Simple\ApcuCache as SymfonyApcuCache;
-use Symfony\Component\Cache\Simple\PhpFilesCache as SymfonyPhpFilesCache;
 use function filter_var;
 use function function_exists;
-use GraphQL\Type\Definition\InputObjectType;
-use GraphQL\Type\Definition\ObjectType;
-use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionMethod;
 use function ini_get;
 use function interface_exists;
-use function php_sapi_name;
-use function str_replace;
 use function strpos;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 use TheCodingMachine\CacheUtils\ClassBoundCache;
 use TheCodingMachine\CacheUtils\ClassBoundCacheContract;
 use TheCodingMachine\CacheUtils\ClassBoundCacheContractInterface;
@@ -56,36 +44,21 @@ use TheCodingMachine\CacheUtils\FileBoundCache;
 use TheCodingMachine\ClassExplorer\Glob\GlobClassExplorer;
 use TheCodingMachine\GraphQLite\AggregateControllerQueryProviderFactory;
 use TheCodingMachine\GraphQLite\AnnotationReader;
-use TheCodingMachine\GraphQLite\Annotations\AbstractRequest;
 use TheCodingMachine\GraphQLite\Annotations\Autowire;
 use TheCodingMachine\GraphQLite\Annotations\Field;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
-use TheCodingMachine\GraphQLite\Annotations\Parameter;
 use TheCodingMachine\GraphQLite\Annotations\Query;
-use TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\LoginController;
-use TheCodingMachine\Graphqlite\Bundle\Controller\GraphQL\MeController;
-use TheCodingMachine\GraphQLite\FieldsBuilder;
-use TheCodingMachine\GraphQLite\FieldsBuilderFactory;
+use TheCodingMachine\GraphQLite\Bundle\Controller\GraphQL\LoginController;
+use TheCodingMachine\GraphQLite\Bundle\Controller\GraphQL\MeController;
 use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
-use TheCodingMachine\GraphQLite\InputTypeGenerator;
-use TheCodingMachine\GraphQLite\InputTypeUtils;
-use TheCodingMachine\GraphQLite\Mappers\CompositeTypeMapper;
-use TheCodingMachine\GraphQLite\Mappers\GlobTypeMapper;
-use TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapperInterface;
-use TheCodingMachine\GraphQLite\Mappers\Root\CompositeRootTypeMapper;
 use TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper;
-use TheCodingMachine\GraphQLite\NamingStrategy;
 use TheCodingMachine\GraphQLite\SchemaFactory;
-use TheCodingMachine\GraphQLite\TypeGenerator;
-use TheCodingMachine\GraphQLite\Types\MutableObjectType;
-use TheCodingMachine\GraphQLite\Types\ResolvableInputObjectType;
-use function var_dump;
-use TheCodingMachine\Graphqlite\Bundle\Types\SymfonyUserInterfaceType;
+use TheCodingMachine\GraphQLite\Bundle\Types\SymfonyUserInterfaceType;
 
 /**
  * Detects controllers and types automatically and tag them.
  */
-class GraphqliteCompilerPass implements CompilerPassInterface
+class GraphQLiteCompilerPass implements CompilerPassInterface
 {
     /**
      * @var AnnotationReader

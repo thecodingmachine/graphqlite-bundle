@@ -1,12 +1,12 @@
 <?php
 
-namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
+namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use TheCodingMachine\Graphqlite\Bundle\GraphiQL\EndpointResolver;
+use TheCodingMachine\GraphQLite\Bundle\GraphiQL\EndpointResolver;
 
 final class OverblogGraphiQLEndpointWiringPass implements CompilerPassInterface
 {

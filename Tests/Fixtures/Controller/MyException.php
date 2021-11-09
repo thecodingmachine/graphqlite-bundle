@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Controller;
+namespace TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Controller;
 
 
 use GraphQL\Error\ClientAware;

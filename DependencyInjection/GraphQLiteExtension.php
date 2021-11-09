@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\DependencyInjection;
+namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
 
 use GraphQL\Error\DebugFlag;
@@ -15,8 +15,13 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
-class GraphqliteExtension extends Extension
+class GraphQLiteExtension extends Extension
 {
+
+    public function getAlias()
+    {
+        return 'graphqlite';
+    }
 
     /**
      * Loads a specific configuration.

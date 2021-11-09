@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Controller;
+namespace TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Controller;
 
 
 use Porpaginas\Arrays\ArrayResult;
@@ -10,8 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use TheCodingMachine\GraphQLite\Annotations\FailWith;
 use TheCodingMachine\GraphQLite\Annotations\Logged;
 use TheCodingMachine\GraphQLite\Annotations\Right;
-use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Contact;
-use TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities\Product;
+use TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Entities\Contact;
+use TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Entities\Product;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Query;
 use TheCodingMachine\GraphQLite\Exceptions\GraphQLAggregateException;

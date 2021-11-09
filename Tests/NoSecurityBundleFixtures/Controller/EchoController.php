@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Tests\NoSecurityBundleFixtures\Controller;
+namespace TheCodingMachine\GraphQLite\Bundle\Tests\NoSecurityBundleFixtures\Controller;
 
 
 use TheCodingMachine\GraphQLite\Annotations\Query;

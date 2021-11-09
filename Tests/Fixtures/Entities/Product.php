@@ -1,10 +1,8 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Entities;
+namespace TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Entities;
 
-
-use TheCodingMachine\GraphQLite\Annotations\Field;
 
 class Product
 {

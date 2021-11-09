@@ -1,11 +1,11 @@
 <?php
 
 
-namespace TheCodingMachine\Graphqlite\Bundle\Mappers;
+namespace TheCodingMachine\GraphQLite\Bundle\Mappers;
 
 
 use GraphQL\Type\Definition\ResolveInfo;
-use TheCodingMachine\Graphqlite\Bundle\Context\SymfonyRequestContextInterface;
+use TheCodingMachine\GraphQLite\Bundle\Context\SymfonyRequestContextInterface;
 use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
 use TheCodingMachine\GraphQLite\Parameters\ParameterInterface;
 
