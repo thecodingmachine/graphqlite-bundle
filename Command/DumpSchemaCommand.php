@@ -66,12 +66,16 @@ class DumpSchemaCommand extends Command
         $refl = new \ReflectionProperty(TypeWithFields::class, 'fields');
         $refl->setAccessible(true);
 
-        $fields = $config->query->getFields();
-        ksort($fields);
-        $refl->setValue($config->query, $fields);
+        if ($config->query) {
+            $fields = $config->query->getFields();
+            ksort($fields);
+            $refl->setValue($config->query, $fields);
+        }
 
-        $fields = $config->mutation->getFields();
-        ksort($fields);
-        $refl->setValue($config->mutation, $fields);
+        if ($config->mutation) {
+            $fields = $config->mutation->getFields();
+            ksort($fields);
+            $refl->setValue($config->mutation, $fields);
+        }
     }
 }
