@@ -3,6 +3,7 @@
 
 namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
+use Doctrine\Common\Annotations\PsrCachedReader;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Validator\Rules\DisableIntrospection;
 use GraphQL\Validator\Rules\QueryComplexity;
@@ -16,8 +17,6 @@ use Webmozart\Assert\Assert;
 use function class_exists;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Cache\ApcuCache;
 use Mouf\Composer\ClassNameMapper;
 use Psr\SimpleCache\CacheInterface;
 use ReflectionParameter;
@@ -414,10 +413,11 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     {
         if ($this->annotationReader === null) {
             AnnotationRegistry::registerLoader('class_exists');
+
             $doctrineAnnotationReader = new DoctrineAnnotationReader();
 
             if (function_exists('apcu_fetch')) {
-                $doctrineAnnotationReader = new CachedReader($doctrineAnnotationReader, new ApcuCache(), true);
+                $doctrineAnnotationReader = new PsrCachedReader($doctrineAnnotationReader, new ApcuAdapter('graphqlite'), true);
             }
 
             $this->annotationReader = new AnnotationReader($doctrineAnnotationReader, AnnotationReader::LAX_MODE);
