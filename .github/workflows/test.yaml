@@ -35,7 +35,7 @@ jobs:
                   echo "::set-output name=dir::$(composer config cache-files-dir)"
 
             - name: composer-cache
-              uses: actions/cache@v2.1.6
+              uses: actions/cache@v2.1.7
               with:
                   path: ${{ steps.composercache.outputs.dir }}
                   key: composer-${{ hashFiles('**/composer.json') }}-${{ matrix.install-args }}
@@ -53,7 +53,7 @@ jobs:
                   vendor/bin/simple-phpunit --no-coverage
 
             - name: phpstan-cache
-              uses: actions/cache@v2.1.6
+              uses: actions/cache@v2.1.7
               with:
                   key: phpstan-${{ matrix.php-version }}-${{ matrix.install-args }}-${{ github.ref }}-${{ github.sha }}
                   path: .phpstan-cache
