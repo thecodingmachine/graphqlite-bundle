@@ -37,7 +37,7 @@
     "phpstan/phpstan": "^0.12.90",
     "beberlei/porpaginas": "^1.2",
     "php-coveralls/php-coveralls": "^2.1.0",
-    "symfony/phpunit-bridge": "^5.3",
+    "symfony/phpunit-bridge": "^5.3 || ^6.0",
     "thecodingmachine/phpstan-strict-rules": "^v0.12.1",
     "composer/package-versions-deprecated": "^1.8",
     "phpstan/phpstan-webmozart-assert": "^0.12.12"
