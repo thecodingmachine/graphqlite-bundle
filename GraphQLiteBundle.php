@@ -3,6 +3,7 @@
 
 namespace TheCodingMachine\GraphQLite\Bundle;
 
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use TheCodingMachine\GraphQLite\Bundle\DependencyInjection\GraphQLiteExtension;
 use TheCodingMachine\GraphQLite\Bundle\DependencyInjection\OverblogGraphiQLEndpointWiringPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
@@ -20,7 +21,7 @@ class GraphQLiteBundle extends Bundle
         $container->addCompilerPass(new OverblogGraphiQLEndpointWiringPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1);
     }
 
-    public function getContainerExtension()
+    public function getContainerExtension(): ?ExtensionInterface
     {
         if (null === $this->extension) {
             $this->extension = new GraphQLiteExtension();

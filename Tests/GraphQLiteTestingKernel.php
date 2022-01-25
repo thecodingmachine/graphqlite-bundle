@@ -8,15 +8,15 @@ use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 use Symfony\Component\HttpKernel\Kernel;
 use TheCodingMachine\GraphQLite\Bundle\GraphQLiteBundle;
-use Symfony\Component\Security\Core\User\User;
+use Symfony\Component\Security\Core\User\InMemoryUser;
 use function class_exists;
 use function serialize;
 
-class GraphQLiteTestingKernel extends Kernel
+class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
 {
     use MicroKernelTrait;
 
@@ -84,7 +84,7 @@ class GraphQLiteTestingKernel extends Kernel
         $this->typesNamespace = $typesNamespace;
     }
 
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         $bundles = [ new FrameworkBundle() ];
         if (class_exists(SecurityBundle::class)) {
@@ -112,7 +112,7 @@ class GraphQLiteTestingKernel extends Kernel
             if ($this->enableSession) {
                 $frameworkConf['session'] =[
                     'enabled' => true,
-                    'handler_id' => NullSessionHandler::class
+                    'storage_factory_id' => 'session.storage.factory.mock_file',
                 ];
             }
 
@@ -143,12 +143,11 @@ class GraphQLiteTestingKernel extends Kernel
                     ],
                     'firewalls' => [
                         'main' => [
-                            'anonymous' => true,
                             'provider' => 'in_memory'
                         ]
                     ],
-                    'encoders' => [
-                        User::class => 'plaintext',
+                    'password_hashers' => [
+                        InMemoryUser::class => 'plaintext',
                     ],
                 ));
             }
@@ -196,8 +195,15 @@ class GraphQLiteTestingKernel extends Kernel
         $routes->import(__DIR__.'/../Resources/config/routes.xml');
     }
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         return __DIR__.'/../cache/'.($this->enableSession?'withSession':'withoutSession').$this->enableLogin.($this->enableSecurity?'withSecurity':'withoutSecurity').$this->enableMe.'_'.($this->introspection?'withIntrospection':'withoutIntrospection').'_'.$this->maximumQueryComplexity.'_'.$this->maximumQueryDepth.'_'.md5(serialize($this->controllersNamespace).'_'.md5(serialize($this->typesNamespace)));
+    }
+
+    public function process(ContainerBuilder $container): void
+    {
+        if ($container->hasDefinition('security.untracked_token_storage')) {
+            $container->getDefinition('security.untracked_token_storage')->setPublic(true);
+        }
     }
 }
