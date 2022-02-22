@@ -27,7 +27,7 @@
     "symfony/psr-http-message-bridge": "^2.0",
     "nyholm/psr7": "^1.1",
     "laminas/laminas-diactoros": "^2.2.2",
-    "overblog/graphiql-bundle": "^0.1.2 | ^0.2",
+    "overblog/graphiql-bundle": "^0.2 || ^0.3",
     "thecodingmachine/cache-utils": "^1",
     "symfony/console": "^5.4 || ^6"
   },
