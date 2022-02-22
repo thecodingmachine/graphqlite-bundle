@@ -13,25 +13,21 @@ env:
 matrix:
   fast_finish: true
   include:
-      # Test the latest stable release
-    - php: 7.2
-      env: PHPSTAN=true COMPOSER1=true
-    - php: 7.4
-      env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text" TESTNOSECURITYBUNDLE=true
+      # Test latest stable features
+    - php: 8.1
+      env: PHPSTAN=true COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text"
 
-      # Test LTS versions.
-    - php: 7.4
-      env: DEPENDENCIES="symfony/lts:^4"
+    - php: 8.0
 
-      # Latest commit to master
+      # Test the oldest possible release - SF 5.4, PHP 7.4, without security-bundle
     - php: 7.4
-      env: STABILITY="dev"
+      env: PHPSTAN=true COMPOSER1=true TESTNOSECURITYBUNDLE=true COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
 
   allow_failures:
     # Minimum supported dependencies with the latest and oldest PHP version
-    - php: 7.4
+    - php: 8.1
       env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
-    - php: 7.2
+    - php: 7.4
       env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
     # Dev-master is allowed to fail.
     - env: STABILITY="dev"
@@ -52,11 +48,11 @@ script:
   - composer validate --strict --no-check-lock
   # simple-phpunit is the PHPUnit wrapper provided by the PHPUnit Bridge component and
   # it helps with testing legacy code and deprecations (composer require symfony/phpunit-bridge)
-  #- ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS
+  - ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS
   - if [[ $PHPSTAN == true ]]; then composer phpstan; fi
-  - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+  #- ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
   # Let's test without the security bundle
-  - if [[ $TESTNOSECURITYBUNDLE == true ]]; then composer remove --dev symfony/security-bundle && phpunit Tests/NoSecurityBundleTest.php; fi
+  - if [[ $TESTNOSECURITYBUNDLE == true ]]; then composer remove --dev symfony/security-bundle && ./vendor/bin/simple-phpunit Tests/NoSecurityBundleTest.php; fi
 
 after_script:
   - ./vendor/bin/php-coveralls -v
