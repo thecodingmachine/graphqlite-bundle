@@ -2,7 +2,6 @@
 
 namespace TheCodingMachine\GraphQLite\Bundle\Tests;
 
-use Symfony\Component\Security\Core\User\InMemoryUser;
 use function json_decode;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -10,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\User\User;
 use TheCodingMachine\GraphQLite\Bundle\Controller\GraphQLiteController;
 use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
 use TheCodingMachine\GraphQLite\Schema;
@@ -545,9 +545,9 @@ class FunctionalTest extends TestCase
     private function logIn(ContainerInterface $container)
     {
         // put a token into the storage so the final calls can function
-        $user = new InMemoryUser('foo', 'pass');
-        $token = new UsernamePasswordToken($user, 'provider', ['ROLE_USER']);
-        $container->get('security.untracked_token_storage')->setToken($token);
+        $user = new User('foo', 'pass');
+        $token = new UsernamePasswordToken($user, '', 'provider', ['ROLE_USER']);
+        $container->get('security.token_storage')->setToken($token);
     }
 
     /**

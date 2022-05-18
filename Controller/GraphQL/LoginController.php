@@ -2,16 +2,13 @@
 namespace TheCodingMachine\GraphQLite\Bundle\Controller\GraphQL;
 
 
-use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\Security\Core\Exception\UserNotFoundException;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
@@ -25,7 +22,7 @@ class LoginController
      */
     private $userProvider;
     /**
-     * @var UserPasswordHasherInterface
+     * @var UserPasswordEncoderInterface
      */
     private $passwordEncoder;
     /**
@@ -45,7 +42,7 @@ class LoginController
      */
     private $eventDispatcher;
 
-    public function __construct(UserProviderInterface $userProvider, UserPasswordHasherInterface $passwordEncoder, TokenStorageInterface $tokenStorage, SessionInterface $session, EventDispatcherInterface $eventDispatcher, string $firewallName)
+    public function __construct(UserProviderInterface $userProvider, UserPasswordEncoderInterface $passwordEncoder, TokenStorageInterface $tokenStorage, SessionInterface $session, EventDispatcherInterface $eventDispatcher, string $firewallName)
     {
         $this->userProvider = $userProvider;
         $this->passwordEncoder = $passwordEncoder;
@@ -61,14 +58,10 @@ class LoginController
     public function login(string $userName, string $password, Request $request): UserInterface
     {
         try {
-            $user = $this->userProvider->loadUserByIdentifier($userName);
-        } catch (UserNotFoundException $e) {
+            $user = $this->userProvider->loadUserByUsername($userName);
+        } catch (UsernameNotFoundException $e) {
             // FIXME: should we return null instead???
             throw InvalidUserPasswordException::create($e);
-        }
-
-        if (!$user instanceof PasswordAuthenticatedUserInterface) {
-            throw new RuntimeException('$user has to implements ' . PasswordAuthenticatedUserInterface::class);
         }
 
         if (!$this->passwordEncoder->isPasswordValid($user, $password)) {
@@ -79,7 +72,7 @@ class LoginController
 
         // Handle getting or creating the user entity likely with a posted form
         // The third parameter "main" can change according to the name of your firewall in security.yml
-        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
+        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
         $this->tokenStorage->setToken($token);
 
         // If the firewall name is not main, then the set value would be instead:

@@ -8,15 +8,15 @@ use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 use Symfony\Component\HttpKernel\Kernel;
 use TheCodingMachine\GraphQLite\Bundle\GraphQLiteBundle;
-use Symfony\Component\Security\Core\User\InMemoryUser;
+use Symfony\Component\Security\Core\User\User;
 use function class_exists;
 use function serialize;
 
-class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
+class GraphQLiteTestingKernel extends Kernel
 {
     use MicroKernelTrait;
 
@@ -84,7 +84,7 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
         $this->typesNamespace = $typesNamespace;
     }
 
-    public function registerBundles(): iterable
+    public function registerBundles()
     {
         $bundles = [ new FrameworkBundle() ];
         if (class_exists(SecurityBundle::class)) {
@@ -112,14 +112,13 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
             if ($this->enableSession) {
                 $frameworkConf['session'] =[
                     'enabled' => true,
-                    'storage_factory_id' => 'session.storage.factory.mock_file',
+                    'handler_id' => NullSessionHandler::class
                 ];
             }
 
             $container->loadFromExtension('framework', $frameworkConf);
             if ($this->enableSecurity) {
                 $container->loadFromExtension('security', array(
-                    'enable_authenticator_manager' => true,
                     'providers' => [
                         'in_memory' => [
                             'memory' => [
@@ -144,11 +143,12 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
                     ],
                     'firewalls' => [
                         'main' => [
+                            'anonymous' => true,
                             'provider' => 'in_memory'
                         ]
                     ],
-                    'password_hashers' => [
-                        InMemoryUser::class => 'plaintext',
+                    'encoders' => [
+                        User::class => 'plaintext',
                     ],
                 ));
             }
@@ -196,15 +196,8 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
         $routes->import(__DIR__.'/../Resources/config/routes.xml');
     }
 
-    public function getCacheDir(): string
+    public function getCacheDir()
     {
         return __DIR__.'/../cache/'.($this->enableSession?'withSession':'withoutSession').$this->enableLogin.($this->enableSecurity?'withSecurity':'withoutSecurity').$this->enableMe.'_'.($this->introspection?'withIntrospection':'withoutIntrospection').'_'.$this->maximumQueryComplexity.'_'.$this->maximumQueryDepth.'_'.md5(serialize($this->controllersNamespace).'_'.md5(serialize($this->typesNamespace)));
-    }
-
-    public function process(ContainerBuilder $container): void
-    {
-        if ($container->hasDefinition('security.untracked_token_storage')) {
-            $container->getDefinition('security.untracked_token_storage')->setPublic(true);
-        }
     }
 }
