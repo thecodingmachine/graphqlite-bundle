@@ -5,11 +5,9 @@ namespace TheCodingMachine\GraphQLite\Bundle\Controller\GraphQL;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -37,21 +35,16 @@ class LoginController
      */
     private $firewallName;
     /**
-     * @var SessionInterface
-     */
-    private $session;
-    /**
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
 
-    public function __construct(UserProviderInterface $userProvider, UserPasswordHasherInterface $passwordEncoder, TokenStorageInterface $tokenStorage, SessionInterface $session, EventDispatcherInterface $eventDispatcher, string $firewallName)
+    public function __construct(UserProviderInterface $userProvider, UserPasswordHasherInterface $passwordEncoder, TokenStorageInterface $tokenStorage, EventDispatcherInterface $eventDispatcher, string $firewallName)
     {
         $this->userProvider = $userProvider;
         $this->passwordEncoder = $passwordEncoder;
         $this->tokenStorage = $tokenStorage;
         $this->firewallName = $firewallName;
-        $this->session = $session;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -83,8 +76,8 @@ class LoginController
         $this->tokenStorage->setToken($token);
 
         // If the firewall name is not main, then the set value would be instead:
-        // $this->get('session')->set('_security_XXXFIREWALLNAMEXXX', serialize($token));
-        $this->session->set('_security_'.$this->firewallName, serialize($token));
+        // $request->getSession()->set('_security_XXXFIREWALLNAMEXXX', serialize($token));
+        $request->getSession()->set('_security_'.$this->firewallName, serialize($token));
 
         // Fire the login event manually
         $event = new InteractiveLoginEvent($request, $token);
@@ -97,11 +90,11 @@ class LoginController
     /**
      * @Mutation()
      */
-    public function logout(): bool
+    public function logout(Request $request): bool
     {
         $this->tokenStorage->setToken(null);
 
-        $this->session->remove('_security_'.$this->firewallName);
+        $request->getSession()->remove('_security_'.$this->firewallName);
 
         return true;
     }

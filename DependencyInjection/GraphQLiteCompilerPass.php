@@ -32,7 +32,6 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use TheCodingMachine\CacheUtils\ClassBoundCache;
@@ -106,7 +105,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
          && (!$container->has($firewallConfigServiceName) ||
                 !$container->has(UserPasswordHasherInterface::class) ||
                 !$container->has(TokenStorageInterface::class) ||
-                !$container->has(SessionInterface::class)
+                !$container->has('session.factory')
             )) {
             $disableLogin = true;
         }
@@ -119,7 +118,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
         }
 
         if ($container->getParameter('graphqlite.security.enable_login') === 'on') {
-            if (!$container->has(SessionInterface::class)) {
+            if (!$container->has('session.factory')) {
                 throw new GraphQLException('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to enable session support (via the "framework.session.enabled" config parameter).');
             }
             if (!$container->has(UserPasswordHasherInterface::class) || !$container->has(TokenStorageInterface::class) || !$container->has($firewallConfigServiceName)) {
