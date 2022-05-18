@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 class GraphQLiteExtension extends Extension
 {
 
-    public function getAlias()
+    public function getAlias(): string
     {
         return 'graphqlite';
     }

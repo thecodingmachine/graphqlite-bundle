@@ -12,6 +12,7 @@ use ReflectionNamedType;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory;
 use Webmozart\Assert\Assert;
 use function class_exists;
@@ -33,7 +34,6 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use TheCodingMachine\CacheUtils\ClassBoundCache;
 use TheCodingMachine\CacheUtils\ClassBoundCacheContract;
@@ -104,7 +104,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
         $disableLogin = false;
         if ($container->getParameter('graphqlite.security.enable_login') === 'auto'
          && (!$container->has($firewallConfigServiceName) ||
-                !$container->has(UserPasswordEncoderInterface::class) ||
+                !$container->has(UserPasswordHasherInterface::class) ||
                 !$container->has(TokenStorageInterface::class) ||
                 !$container->has(SessionInterface::class)
             )) {
@@ -122,7 +122,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
             if (!$container->has(SessionInterface::class)) {
                 throw new GraphQLException('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to enable session support (via the "framework.session.enabled" config parameter).');
             }
-            if (!$container->has(UserPasswordEncoderInterface::class) || !$container->has(TokenStorageInterface::class) || !$container->has($firewallConfigServiceName)) {
+            if (!$container->has(UserPasswordHasherInterface::class) || !$container->has(TokenStorageInterface::class) || !$container->has($firewallConfigServiceName)) {
                 throw new GraphQLException('In order to enable the login/logout mutations (via the graphqlite.security.enable_login parameter), you need to install the security bundle. Please be sure to correctly configure the user provider (in the security.providers configuration settings)');
             }
         }
