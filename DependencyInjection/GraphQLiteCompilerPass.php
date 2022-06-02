@@ -415,7 +415,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
 
             $doctrineAnnotationReader = new DoctrineAnnotationReader();
 
-            if (function_exists('apcu_fetch')) {
+            if (ApcuAdapter::isSupported()) {
                 $doctrineAnnotationReader = new PsrCachedReader($doctrineAnnotationReader, new ApcuAdapter('graphqlite'), true);
             }
 
@@ -432,7 +432,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     private function getPsr16Cache(): CacheInterface
     {
         if ($this->cache === null) {
-            if (function_exists('apcu_fetch')) {
+            if (ApcuAdapter::isSupported()) {
                 $this->cache = new Psr16Cache(new ApcuAdapter('graphqlite_bundle'));
             } else {
                 $this->cache = new Psr16Cache(new PhpFilesAdapter('graphqlite_bundle', 0, $this->cacheDir));
