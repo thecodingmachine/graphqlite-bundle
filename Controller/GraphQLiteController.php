@@ -10,6 +10,7 @@ use Laminas\Diactoros\StreamFactory;
 use Laminas\Diactoros\UploadedFileFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
 use function array_map;
 use GraphQL\Executor\ExecutionResult;
 use GraphQL\Server\ServerConfig;
@@ -42,12 +43,17 @@ class GraphQLiteController
      * @var ServerConfig
      */
     private $serverConfig;
+    /**
+     * @var HttpCodeDeciderInterface
+     */
+    private $httpCodeDecider;
 
-    public function __construct(ServerConfig $serverConfig, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = null)
+    public function __construct(ServerConfig $serverConfig, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = null, ?HttpCodeDeciderInterface $httpCodeDecider = null)
     {
         $this->serverConfig = $serverConfig;
         $this->httpMessageFactory = $httpMessageFactory ?: new PsrHttpFactory(new ServerRequestFactory(), new StreamFactory(), new UploadedFileFactory(), new ResponseFactory());
         $this->debug = $debug ?? $serverConfig->getDebugFlag();
+        $this->httpCodeDecider = $httpCodeDecider ?? new HttpCodeDecider();
     }
 
     public function loadRoutes(): RouteCollection
@@ -99,16 +105,15 @@ class GraphQLiteController
         $standardService = new StandardServer($serverConfig);
         $result = $standardService->executePsrRequest($request);
 
-        $httpCodeDecider = new HttpCodeDecider();
         if ($result instanceof ExecutionResult) {
-            return new JsonResponse($result->toArray($this->debug), $httpCodeDecider->decideHttpStatusCode($result));
+            return new JsonResponse($result->toArray($this->debug), $this->httpCodeDecider->decideHttpStatusCode($result));
         }
         if (is_array($result)) {
             $finalResult = array_map(function (ExecutionResult $executionResult): array {
                 return $executionResult->toArray($this->debug);
             }, $result);
             // Let's return the highest result.
-            $statuses = array_map([$httpCodeDecider, 'decideHttpStatusCode'], $result);
+            $statuses = array_map([$this->httpCodeDecider, 'decideHttpStatusCode'], $result);
             $status = empty($statuses) ? 500 : max($statuses);
 
             return new JsonResponse($finalResult, $status);
