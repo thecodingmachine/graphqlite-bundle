@@ -79,7 +79,7 @@ class GraphQLiteController
                 throw new \RuntimeException('Invalid JSON received in POST body: '.json_last_error_msg());
             }
             if (!is_array($parsedBody)){
-                throw new \RuntimeException('Expecting associative array from request, got ' . gettype($content));
+                throw new \RuntimeException('Expecting associative array from request, got ' . gettype($parsedBody));
             }
             $psr7Request = $psr7Request->withParsedBody($parsedBody);
         }
