@@ -15,6 +15,7 @@ use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory;
 use Webmozart\Assert\Assert;
+use function assert;
 use function class_exists;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -75,18 +76,18 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     {
         $reader = $this->getAnnotationReader();
         $cacheDir = $container->getParameter('kernel.cache_dir');
-        Assert::string($cacheDir);
+        assert(is_string($cacheDir));
         $this->cacheDir = $cacheDir;
         //$inputTypeUtils = new InputTypeUtils($reader, $namingStrategy);
 
         // Let's scan the whole container and tag the services that belong to the namespace we want to inspect.
         $controllersNamespaces = $container->getParameter('graphqlite.namespace.controllers');
-        Assert::isIterable($controllersNamespaces);
         $typesNamespaces = $container->getParameter('graphqlite.namespace.types');
-        Assert::isIterable($typesNamespaces);
+        assert(is_iterable($controllersNamespaces));
+        assert(is_iterable($typesNamespaces));
 
         $firewallName = $container->getParameter('graphqlite.security.firewall_name');
-        Assert::string($firewallName);
+        assert(is_string($firewallName));
         $firewallConfigServiceName = 'security.firewall.map.config.'.$firewallName;
 
         // 2 seconds of TTL in environment mode. Otherwise, let's cache forever!

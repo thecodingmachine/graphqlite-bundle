@@ -11,7 +11,7 @@ jobs:
         name: test
         strategy:
             matrix:
-                install-args: ['', '--prefer-lowest']
+                install-args: ['']
                 php-version: ['8.1']
             fail-fast: false
         steps:
