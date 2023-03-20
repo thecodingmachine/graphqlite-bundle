@@ -128,7 +128,11 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
 
         if ($disableLogin === false) {
             // Let's do some dark magic. We need the user provider. We need its name. It is stored in the "config" object.
-            $provider = $container->findDefinition('security.firewall.map.config.'.$firewallName)->getArgument(5);
+            $providerConfigKey = 'security.firewall.map.config.'.$firewallName;
+            $provider = $container->findDefinition($providerConfigKey)->getArgument(5);
+            if (!is_string($provider)){
+                throw new GraphQLException('Expecting to find user provider name from ' . $providerConfigKey);
+            }
 
             $container->findDefinition(LoginController::class)->setArgument(0, new Reference($provider));
 
@@ -191,6 +195,9 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
         // Let's register the mapping with UserInterface if UserInterface is available.
         if (interface_exists(UserInterface::class)) {
             $staticTypes = $container->getDefinition(StaticClassListTypeMapperFactory::class)->getArgument(0);
+            if (!is_array($staticTypes)){
+                throw new GraphQLException(sprintf('Expecting array in %s, arg #1', StaticClassListTypeMapperFactory::class));
+            }
             $staticTypes[] = SymfonyUserInterfaceType::class;
             $container->getDefinition(StaticClassListTypeMapperFactory::class)->setArgument(0, $staticTypes);
         }
@@ -294,6 +301,9 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     {
         $aggregateQueryProvider = $container->findDefinition(AggregateControllerQueryProviderFactory::class);
         $controllersList = $aggregateQueryProvider->getArgument(0);
+        if (!is_array($controllersList)){
+            throw new GraphQLException(sprintf('Expecting array in %s, arg #1', AggregateControllerQueryProviderFactory::class));
+        }
         $controllersList[] = $controllerClassName;
         $aggregateQueryProvider->setArgument(0, $controllersList);
     }
@@ -336,7 +346,14 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
             return $services;
         });
 
+        if (!is_array($services)){
+            throw new GraphQLException('An error occurred in compiler pass');
+        }
+
         foreach ($services as $service) {
+            if (!is_string($service)){
+                throw new GraphQLException('expecting string as service');
+            }
             if ($container->hasAlias($service)) {
                 $container->getAlias($service)->setPublic(true);
             } else {
