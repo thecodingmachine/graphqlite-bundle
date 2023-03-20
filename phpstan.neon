@@ -1,7 +1,5 @@
 includes:
 	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
-	- vendor/phpstan/phpstan-webmozart-assert/extension.neon
-	- vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
 parameters:
     tmpDir: .phpstan-cache
     paths:
@@ -20,7 +18,6 @@ parameters:
     checkExplicitMixedMissingReturn: true
     checkFunctionNameCase: true
     checkInternalClassCaseSensitivity: true
-    checkMissingClosureNativeReturnTypehintRule: true
     checkTooWideReturnTypesInProtectedAndPublicMethods: true
     treatPhpDocTypesAsCertain: false
     reportUnmatchedIgnoredErrors: false
