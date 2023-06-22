@@ -6,6 +6,7 @@ namespace TheCodingMachine\GraphQLite\Bundle\Command;
 
 use GraphQL\Type\Definition\TypeWithFields;
 use GraphQL\Utils\SchemaPrinter;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -16,10 +17,9 @@ use TheCodingMachine\GraphQLite\Schema;
 /**
  * Shamelessly stolen from Api Platform
  */
+#[AsCommand('graphqlite:dump-schema')]
 class DumpSchemaCommand extends Command
 {
-    protected static $defaultName = 'graphqlite:dump-schema';
-
     /**
      * @var Schema
      */

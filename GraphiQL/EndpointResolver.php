@@ -19,6 +19,9 @@ final class EndpointResolver implements GraphiQLControllerEndpoint
         $this->requestStack = $requestStack;
     }
 
+    /**
+     * @return string
+     */
     public function getBySchema($name)
     {
         if ('default' === $name) {
@@ -31,6 +34,9 @@ final class EndpointResolver implements GraphiQLControllerEndpoint
         throw GraphQLEndpointInvalidSchemaException::forSchemaAndResolver($name, self::class);
     }
 
+    /**
+     * @return string
+     */
     public function getDefault()
     {
         return $this->getBySchema('default');
