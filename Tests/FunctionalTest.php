@@ -457,7 +457,7 @@ class FunctionalTest extends TestCase
 
     public function testDisableIntrospection(): void
     {
-        $kernel = new GraphQLiteTestingKernel(true, null, true, null, false, 2, 2);
+        $kernel = new GraphQLiteTestingKernel(true, null, true, null, false, 3, 2);
         $kernel->boot();
 
         $parameters = ['query' => '
