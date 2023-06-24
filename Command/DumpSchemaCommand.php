@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TheCodingMachine\GraphQLite\Bundle\Command;
 
-use GraphQL\Type\Definition\TypeWithFields;
+use GraphQL\Type\Schema as TypeSchema;
 use GraphQL\Utils\SchemaPrinter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -43,10 +43,7 @@ class DumpSchemaCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        // Trying to guarantee deterministic order
-        $this->sortSchema();
-
-        $schemaExport = SchemaPrinter::doPrint($this->schema);
+        $schemaExport = SchemaPrinterForGraphQLite::doPrint($this->schema, ['sortTypes' => true]);
 
         $filename = $input->getOption('output');
         if (\is_string($filename)) {
@@ -58,24 +55,16 @@ class DumpSchemaCommand extends Command
 
         return 0;
     }
+}
 
-    private function sortSchema(): void
+class SchemaPrinterForGraphQLite extends SchemaPrinter {
+
+    protected static function hasDefaultRootOperationTypes(TypeSchema $schema): bool
     {
-        $config = $this->schema->getConfig();
-
-        $refl = new \ReflectionProperty(TypeWithFields::class, 'fields');
-        $refl->setAccessible(true);
-
-        if ($config->query) {
-            $fields = $config->query->getFields();
-            ksort($fields);
-            $refl->setValue($config->query, $fields);
-        }
-
-        if ($config->mutation) {
-            $fields = $config->mutation->getFields();
-            ksort($fields);
-            $refl->setValue($config->mutation, $fields);
-        }
+        return $schema->getQueryType() === $schema->getType('Query')
+            && $schema->getMutationType() === $schema->getType('Mutation')
+            // Commenting this out because graphqlite cannot map Subscription type 
+            // && $schema->getSubscriptionType() === $schema->getType('Subscription');
+        ;
     }
 }
