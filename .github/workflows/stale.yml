@@ -1,0 +1,50 @@
+name: Close and Mark Stale Issues
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  close-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Close and Mark Stale Issues
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const daysBeforeClosing = 180;
+            const staleLabel = 'stale';
+            const token = process.env.GITHUB_TOKEN;
+            const octokit = new Octokit({ auth: token });
+
+            async function closeAndMarkStaleIssues() {
+              const { data: issues } = await octokit.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open'
+              });
+
+              const cutoffDate = new Date();
+              cutoffDate.setDate(cutoffDate.getDate() - daysBeforeClosing);
+
+              for (const issue of issues) {
+                const issueDate = new Date(issue.updated_at);
+                if (issueDate < cutoffDate) {
+                  await octokit.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    state: 'closed'
+                  });
+
+                  await octokit.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    labels: [staleLabel]
+                  });
+                }
+              }
+            }
+
+            closeAndMarkStaleIssues();
