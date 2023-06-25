@@ -11,8 +11,8 @@ jobs:
         name: test
         strategy:
             matrix:
-                install-args: ['', '--prefer-lowest']
-                php-version: ['7.4', '8.0']
+                install-args: ['']
+                php-version: ['8.1']
             fail-fast: false
         steps:
             # Cancel previous runs of the same branch

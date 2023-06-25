@@ -17,17 +17,9 @@ matrix:
     - php: 8.1
       env: PHPSTAN=true COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text"
 
-    - php: 8.0
-
-      # Test the oldest possible release - SF 5.4, PHP 7.4, without security-bundle
-    - php: 7.4
-      env: PHPSTAN=true COMPOSER1=true TESTNOSECURITYBUNDLE=true COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
-
   allow_failures:
     # Minimum supported dependencies with the latest and oldest PHP version
     - php: 8.1
-      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
-    - php: 7.4
       env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" SYMFONY_DEPRECATIONS_HELPER="weak_vendors"
     # Dev-master is allowed to fail.
     - env: STABILITY="dev"
@@ -39,10 +31,7 @@ before_install:
   - if ! [ -v "$DEPENDENCIES" ]; then composer require --no-update ${DEPENDENCIES}; fi;
 
 install:
-  # To be removed when this issue will be resolved: https://github.com/composer/composer/issues/5355
-  - if [[ "$COMPOSER_FLAGS" == *"--prefer-lowest"* ]]; then composer update --prefer-dist --no-interaction --prefer-stable --quiet; fi
   - composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
-  #- ./vendor/bin/simple-phpunit install
 
 script:
   - composer validate --strict --no-check-lock

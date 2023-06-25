@@ -5,7 +5,7 @@ namespace TheCodingMachine\GraphQLite\Bundle\GraphiQL;
 use Overblog\GraphiQLBundle\Config\GraphiQLControllerEndpoint;
 use Overblog\GraphiQLBundle\Config\GraphQLEndpoint\GraphQLEndpointInvalidSchemaException;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Webmozart\Assert\Assert;
+use function assert;
 
 final class EndpointResolver implements GraphiQLControllerEndpoint
 {
@@ -19,11 +19,14 @@ final class EndpointResolver implements GraphiQLControllerEndpoint
         $this->requestStack = $requestStack;
     }
 
+    /**
+     * @return string
+     */
     public function getBySchema($name)
     {
         if ('default' === $name) {
             $request = $this->requestStack->getCurrentRequest();
-            Assert::notNull($request);
+            assert(!is_null($request));
 
             return $request->getBaseUrl().'/graphql';
         }
@@ -31,6 +34,9 @@ final class EndpointResolver implements GraphiQLControllerEndpoint
         throw GraphQLEndpointInvalidSchemaException::forSchemaAndResolver($name, self::class);
     }
 
+    /**
+     * @return string
+     */
     public function getDefault()
     {
         return $this->getBySchema('default');
