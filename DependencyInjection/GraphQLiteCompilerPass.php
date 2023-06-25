@@ -162,7 +162,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
         // ServerConfig rules
         $serverConfigDefinition = $container->findDefinition(ServerConfig::class);
         $rulesDefinition = [];
-        if ($container->getParameter('graphqlite.security.introspection') === false) {
+        if ($container->getParameter('graphqlite.security.disableIntrospection')) {
             $rulesDefinition[] =  $container->findDefinition(DisableIntrospection::class);
         }
 
