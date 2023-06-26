@@ -26,7 +26,7 @@
     "doctrine/annotations": "^1.13",
     "symfony/psr-http-message-bridge": "^2.0",
     "nyholm/psr7": "^1.1",
-    "laminas/laminas-diactoros": "^2.2.2",
+    "laminas/laminas-diactoros": "^2.2.2 || ^3.0.0",
     "overblog/graphiql-bundle": "^0.2 || ^0.3",
     "thecodingmachine/cache-utils": "^1",
     "symfony/console": "^6"
