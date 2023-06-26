@@ -10,7 +10,7 @@ jobs:
     steps:
       - run: npm install @octokit/rest
       - name: Close and Mark Stale Issues
-        uses: actions/github-script@v4
+        uses: actions/github-script@v6
         with:
           script: |
             const daysBeforeClosing = 180;
