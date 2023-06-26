@@ -74,7 +74,9 @@
             </call>
         </service>
 
-        <service id="GraphQL\Validator\Rules\DisableIntrospection" />
+        <service id="GraphQL\Validator\Rules\DisableIntrospection">
+            <argument key="$enabled">%graphqlite.security.disableIntrospection%</argument>
+        </service>
 
         <service id="GraphQL\Validator\Rules\QueryComplexity" />
 
