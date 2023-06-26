@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - run: npm install @octokit/rest
       - name: Close and Mark Stale Issues
         uses: actions/github-script@v4
         with:
