@@ -16,7 +16,7 @@ jobs:
             const { Octokit } = require("@octokit/rest");
             const daysBeforeClosing = 180;
             const staleLabel = 'stale';
-            const token = process.env.GITHUB_TOKEN;
+            const token = '${{ secrets.GITHUB_TOKEN }}';
             const octokit = new Octokit({ auth: token });
 
             async function closeAndMarkStaleIssues() {
