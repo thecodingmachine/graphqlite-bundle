@@ -1,52 +1,15 @@
-name: Close and Mark Stale Issues
+name: 'Close stale issues and PRs'
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '30 1 * * *'
 
 jobs:
-  close-issues:
+  stale:
     runs-on: ubuntu-latest
-
     steps:
-      - run: npm install @octokit/rest
-      - name: Close and Mark Stale Issues
-        uses: actions/github-script@v6
+      - uses: actions/stale@v8
         with:
-          script: |
-            const { Octokit } = require("@octokit/rest");
-            const daysBeforeClosing = 180;
-            const staleLabel = 'stale';
-            const token = '${{ secrets.GITHUB_TOKEN }}';
-            const octokit = new Octokit({ auth: token });
-
-            async function closeAndMarkStaleIssues() {
-              const { data: issues } = await octokit.rest.issues.listForRepo({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: 'open'
-              });
-
-              const cutoffDate = new Date();
-              cutoffDate.setDate(cutoffDate.getDate() - daysBeforeClosing);
-
-              for (const issue of issues) {
-                const issueDate = new Date(issue.updated_at);
-                if (issueDate < cutoffDate) {
-                  await octokit.rest.issues.update({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: issue.number,
-                    state: 'closed'
-                  });
-
-                  await octokit.rest.issues.addLabels({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: issue.number,
-                    labels: [staleLabel]
-                  });
-                }
-              }
-            }
-
-            closeAndMarkStaleIssues();
+          stale-issue-message: 'This issue is stale because it has been open 6 months with no activity. Remove stale label or comment or this will be closed in 5 days.'
+          close-issue-message: 'This issue was closed because it has been stalled for 5 days with no activity.'
+          days-before-stale: 180
+          days-before-close: 5
