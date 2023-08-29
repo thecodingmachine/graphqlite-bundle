@@ -429,6 +429,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     private function getAnnotationReader(): AnnotationReader
     {
         if ($this->annotationReader === null) {
+            // @phpstan-ignore-next-line "registerLoader exists in doctrine/annotations:v1.x"
             if (method_exists(AnnotationRegistry::class, 'registerLoader')) {
                 AnnotationRegistry::registerLoader('class_exists');
             }
