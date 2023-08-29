@@ -229,7 +229,7 @@ class FunctionalTest extends TestCase
         ], $result);
     }
 
-    public function testLoginQuery(): void
+    public function testLoginQueryWithRequestParams(): void
     {
         $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
@@ -247,7 +247,43 @@ class FunctionalTest extends TestCase
             }
         '];
 
-        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
+        $request = Request::create('/graphql', 'POST', $parameters);
+
+        $response = $kernel->handle($request);
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame([
+            'data' => [
+                'login' => [
+                    'userName' => 'foo',
+                    'roles' => [
+                        'ROLE_USER'
+                    ]
+                ]
+            ]
+        ], $result);
+    }
+
+    public function testLoginQueryWithRequestBody(): void
+    {
+        $kernel = new GraphQLiteTestingKernel();
+        $kernel->boot();
+
+        $session = new Session(new MockArraySessionStorage());
+        $container = $kernel->getContainer();
+        $container->set('session', $session);
+
+        $body = ['query' => '
+            mutation login { 
+              login(userName: "foo", password: "bar") {
+                userName
+                roles
+              }
+            }
+        '];
+
+        $request = Request::create('/graphql', 'POST', [], [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($body));
 
         $response = $kernel->handle($request);
 
@@ -283,7 +319,7 @@ class FunctionalTest extends TestCase
             }
         '];
 
-        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
+        $request = Request::create('/graphql', 'POST', $parameters);
 
         $response = $kernel->handle($request);
 
@@ -310,7 +346,7 @@ class FunctionalTest extends TestCase
             }
         '];
 
-        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
+        $request = Request::create('/graphql', 'POST', $parameters);
 
         $response = $kernel->handle($request);
 
@@ -394,7 +430,7 @@ class FunctionalTest extends TestCase
             }
         '];
 
-        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
+        $request = Request::create('/graphql', 'POST', $parameters);
 
         $response = $kernel->handle($request);
 
@@ -418,7 +454,7 @@ class FunctionalTest extends TestCase
             }
         '];
 
-        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
+        $request = Request::create('/graphql', 'POST', $parameters);
 
         $response = $kernel->handle($request);
 
@@ -445,7 +481,7 @@ class FunctionalTest extends TestCase
             }
         '];
 
-        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
+        $request = Request::create('/graphql', 'POST', $parameters);
 
         $response = $kernel->handle($request);
 
@@ -470,7 +506,7 @@ class FunctionalTest extends TestCase
             }
         '];
 
-        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
+        $request = Request::create('/graphql', 'POST', $parameters);
 
         $response = $kernel->handle($request);
 
@@ -498,7 +534,7 @@ class FunctionalTest extends TestCase
             }
         '];
 
-        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
+        $request = Request::create('/graphql', 'POST', $parameters);
 
         $response = $kernel->handle($request);
 
@@ -532,7 +568,7 @@ class FunctionalTest extends TestCase
             }
         '];
 
-        $request = Request::create('/graphql', 'POST', $parameters, [], [], ['CONTENT_TYPE' => 'application/json']);
+        $request = Request::create('/graphql', 'POST', $parameters);
 
         $response = $kernel->handle($request);
 
