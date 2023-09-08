@@ -115,6 +115,8 @@
 
         <service id="graphqlite.phpfilescache" class="Symfony\Component\Cache\Adapter\PhpFilesAdapter">
             <argument>graphqlite</argument>
+            <argument>0</argument>
+            <argument>%kernel.cache_dir%</argument>
         </service>
 
         <service id="graphqlite.apcucache" class="Symfony\Component\Cache\Adapter\ApcuAdapter">
