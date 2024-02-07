@@ -15,11 +15,14 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use TheCodingMachine\GraphQLite\Annotations\Mutation;
 
+/**
+ * @template-covariant TUser of UserInterface
+ */
 class LoginController
 {
 
     /**
-     * @var UserProviderInterface
+     * @var UserProviderInterface<TUser>
      */
     private $userProvider;
     /**
@@ -39,6 +42,9 @@ class LoginController
      */
     private $eventDispatcher;
 
+    /**
+     * @param UserProviderInterface<TUser> $userProvider
+     */
     public function __construct(UserProviderInterface $userProvider, UserPasswordHasherInterface $passwordEncoder, TokenStorageInterface $tokenStorage, EventDispatcherInterface $eventDispatcher, string $firewallName)
     {
         $this->userProvider = $userProvider;
@@ -50,6 +56,8 @@ class LoginController
 
     /**
      * @Mutation()
+     *
+     * @phpstan-return TUser
      */
     public function login(string $userName, string $password, Request $request): UserInterface
     {
