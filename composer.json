@@ -18,7 +18,7 @@
   "require" : {
     "php" : ">=8.1",
     "ext-json": "*",
-    "thecodingmachine/graphqlite" : "^6.0",
+    "thecodingmachine/graphqlite" : "^7.0",
     "thecodingmachine/graphqlite-symfony-validator-bridge" : "^6.0",
     "symfony/config": "^6.4 || ^7",
     "symfony/console": "^6.4 || ^7",
@@ -28,7 +28,7 @@
     "doctrine/annotations": "^1.13 || ^2.0.1",
     "symfony/psr-http-message-bridge": "^2.0 || ^7.0",
     "nyholm/psr7": "^1.1",
-    "laminas/laminas-diactoros": "^2.2.2",
+    "laminas/laminas-diactoros": "^2.2.2 || ^3.0",
     "overblog/graphiql-bundle": "^0.2 || ^0.3 || ^1",
     "thecodingmachine/cache-utils": "^1"
   },
@@ -60,6 +60,12 @@
       "TheCodingMachine\\GraphQLite\\Bundle\\" : ""
     }
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/fogrye/graphqlite-symfony-validator-bridge.git"
+    }
+  ],
   "extra": {
     "branch-alias": {
       "dev-master": "6.0.x-dev"
