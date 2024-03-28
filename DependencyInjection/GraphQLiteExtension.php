@@ -43,7 +43,7 @@ class GraphQLiteExtension extends Extension
             }
             $namespaceController = array_map(
                 function($namespace): string {
-                    return rtrim($namespace, '\\') . '\\';
+                    return rtrim($namespace, '\\');
                 },
                 $controllers
             );
@@ -57,7 +57,7 @@ class GraphQLiteExtension extends Extension
             }
             $namespaceType = array_map(
                 function($namespace): string {
-                    return rtrim($namespace, '\\') . '\\';
+                    return rtrim($namespace, '\\');
                 },
                 $types
             );
