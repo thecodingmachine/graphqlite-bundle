@@ -58,12 +58,6 @@
       "TheCodingMachine\\GraphQLite\\Bundle\\" : ""
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/fogrye/graphqlite-symfony-validator-bridge.git"
-    }
-  ],
   "extra": {
     "branch-alias": {
       "dev-master": "6.0.x-dev"
