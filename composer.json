@@ -43,7 +43,6 @@
     "composer/semver": "^3.4"
   },
   "conflict": {
-    "mouf/classname-mapper": "<1.0.2",
     "symfony/event-dispatcher": "<4.3",
     "symfony/security-core": "<4.3",
     "symfony/routing": "<4.3",
