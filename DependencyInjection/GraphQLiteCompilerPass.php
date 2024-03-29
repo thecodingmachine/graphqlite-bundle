@@ -486,9 +486,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     {
         $finder = new ComposerFinder();
         foreach ($finder->inNamespace($namespace) as $class) {
-            if (!$class instanceof ReflectionClass){
-                continue;
-            }
+            assert($class instanceof ReflectionClass);
             yield $class->getName() => $class;
         }
     }
