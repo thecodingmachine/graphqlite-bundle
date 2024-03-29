@@ -41,7 +41,6 @@
     "composer/package-versions-deprecated": "^1.8"
   },
   "conflict": {
-    "thecodingmachine/graphqlite": "<7.0",
     "symfony/event-dispatcher": "<4.3",
     "symfony/security-core": "<4.3",
     "symfony/routing": "<4.3",
