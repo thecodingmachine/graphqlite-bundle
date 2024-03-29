@@ -480,9 +480,9 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
      * Only instantiable classes are returned.
      *
      * @param string $namespace
-     * @return array<class-string, ReflectionClass<object>>|Generator Key: fully qualified class name
+     * @return Generator<class-string, ReflectionClass<object>, void, void>
      */
-    private function getClassList(string $namespace): array|Generator
+    private function getClassList(string $namespace): Generator
     {
         $finder = new ComposerFinder();
         foreach ($finder->inNamespace($namespace) as $class) {
