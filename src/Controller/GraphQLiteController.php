@@ -27,6 +27,7 @@ use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
 use function array_map;
 use function class_exists;
 use function json_decode;
+use TheCodingMachine\GraphQLite\Bundle\Exceptions\JsonException;
 
 /**
  * Listens to every single request and forward Graphql requests to Graphql Webonix standardServer.
@@ -80,12 +81,25 @@ class GraphQLiteController
 
         if (strtoupper($request->getMethod()) === 'POST' && empty($psr7Request->getParsedBody())) {
             $content = $psr7Request->getBody()->getContents();
-            $parsedBody = json_decode($content, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \RuntimeException('Invalid JSON received in POST body: '.json_last_error_msg());
+            try {
+                $parsedBody = json_decode(
+                    json: $content,
+                    associative: true,
+                    flags: \JSON_THROW_ON_ERROR
+                );
+            } catch (\JsonException $e) {
+                throw JsonException::create(
+                    reason: $e->getMessage(),
+                    code: Response::HTTP_UNSUPPORTED_MEDIA_TYPE,
+                    previous:$e
+                );
             }
-            if (!is_array($parsedBody)){
-                throw new \RuntimeException('Expecting associative array from request, got ' . gettype($parsedBody));
+
+            if (!is_array($parsedBody)) {
+                throw JsonException::create(
+                    reason: 'Expecting associative array from request, got ' . gettype($parsedBody),
+                    code: Response::HTTP_UNPROCESSABLE_ENTITY
+                );
             }
             $psr7Request = $psr7Request->withParsedBody($parsedBody);
         }
