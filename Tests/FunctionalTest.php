@@ -104,6 +104,28 @@ class FunctionalTest extends TestCase
         $kernel = new GraphQLiteTestingKernel();
         $kernel->boot();
 
+        $request = Request::create('/graphql', 'POST', [], [], [], ['CONTENT_TYPE' => 'application/json'], '{"query":"{ invalidJsonSyntax }"');
+
+        $response = $kernel->handle($request);
+
+        $this->assertSame(415, $response->getStatusCode());
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame('Invalid JSON.', $result['errors'][0]['message']);
+        $this->assertSame('Syntax error', $result['errors'][0]['extensions']['reason']);
+
+        $request = Request::create('/graphql', 'POST', [], [], [], ['CONTENT_TYPE' => 'application/json'], '"Unexpected Json Content"');
+
+        $response = $kernel->handle($request);
+
+        $this->assertSame(422, $response->getStatusCode());
+
+        $result = json_decode($response->getContent(), true);
+
+        $this->assertSame('Invalid JSON.', $result['errors'][0]['message']);
+        $this->assertSame('Expecting associative array from request, got string', $result['errors'][0]['extensions']['reason']);
+
         $request = Request::create('/graphql', 'GET', ['query' => '
         { 
           notExists
