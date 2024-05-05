@@ -12,7 +12,7 @@ jobs:
         strategy:
             matrix:
                 install-args: ['']
-                php-version: ['8.1']
+                php-version: ['8.2']
             fail-fast: false
         steps:
             # Cancel previous runs of the same branch
