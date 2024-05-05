@@ -4,10 +4,12 @@
 namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
 use Doctrine\Common\Annotations\PsrCachedReader;
+use Generator;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Validator\Rules\DisableIntrospection;
 use GraphQL\Validator\Rules\QueryComplexity;
 use GraphQL\Validator\Rules\QueryDepth;
+use Kcs\ClassFinder\Finder\ComposerFinder;
 use ReflectionNamedType;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
@@ -19,7 +21,6 @@ use function assert;
 use function class_exists;
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Mouf\Composer\ClassNameMapper;
 use Psr\SimpleCache\CacheInterface;
 use ReflectionParameter;
 use function filter_var;
@@ -40,7 +41,6 @@ use TheCodingMachine\CacheUtils\ClassBoundCacheContract;
 use TheCodingMachine\CacheUtils\ClassBoundCacheContractInterface;
 use TheCodingMachine\CacheUtils\ClassBoundMemoryAdapter;
 use TheCodingMachine\CacheUtils\FileBoundCache;
-use TheCodingMachine\ClassExplorer\Glob\GlobClassExplorer;
 use TheCodingMachine\GraphQLite\AggregateControllerQueryProviderFactory;
 use TheCodingMachine\GraphQLite\AnnotationReader;
 use TheCodingMachine\GraphQLite\Annotations\Autowire;
@@ -479,34 +479,16 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
      * Returns the array of globbed classes.
      * Only instantiable classes are returned.
      *
-     * @return array<string,ReflectionClass<object>> Key: fully qualified class name
+     * @param string $namespace
+     * @return Generator<class-string, ReflectionClass<object>, void, void>
      */
-    private function getClassList(string $namespace, int $globTtl = 2, bool $recursive = true): array
+    private function getClassList(string $namespace): Generator
     {
-        $explorer = new GlobClassExplorer($namespace, $this->getPsr16Cache(), $globTtl, ClassNameMapper::createFromComposerFile(null, null, true), $recursive);
-        $allClasses = $explorer->getClassMap();
-        $classes = [];
-        foreach ($allClasses as $className => $phpFile) {
-            if (! class_exists($className, false)) {
-                // Let's try to load the file if it was not imported yet.
-                // We are importing the file manually to avoid triggering the autoloader.
-                // The autoloader might trigger errors if the file does not respect PSR-4 or if the
-                // Symfony DebugAutoLoader is installed. (see https://github.com/thecodingmachine/graphqlite/issues/216)
-                require_once $phpFile;
-                // @phpstan-ignore-next-line Does it exist now?
-                if (! class_exists($className, false)) {
-                    continue;
-                }
-            }
-
-            $refClass = new ReflectionClass($className);
-            if (! $refClass->isInstantiable()) {
-                continue;
-            }
-            $classes[$className] = $refClass;
+        $finder = new ComposerFinder();
+        foreach ($finder->inNamespace($namespace) as $class) {
+            assert($class instanceof ReflectionClass);
+            yield $class->getName() => $class;
         }
-
-        return $classes;
     }
 
 }
