@@ -81,7 +81,7 @@ class TestGraphqlController
     public function triggerAggregateException(): string
     {
         $exception1 = new GraphQLException('foo', 401);
-        $exception2 = new GraphQLException('bar', 404, null, 'MyCat', ['field' => 'baz', 'category' => 'MyCat']);
+        $exception2 = new GraphQLException('bar', 404, null, ['field' => 'baz']);
         throw new GraphQLAggregateException([$exception1, $exception2]);
     }
 
