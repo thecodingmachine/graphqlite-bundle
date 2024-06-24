@@ -22,7 +22,7 @@
     "thecodingmachine/graphqlite-symfony-validator-bridge" : "^6.0",
     "symfony/framework-bundle": "^6",
     "symfony/validator": "^6",
-    "symfony/translation": "^6",
+    "symfony/translation": "^6 || ^7",
     "doctrine/annotations": "^1.13 || ^2.0.1",
     "symfony/psr-http-message-bridge": "^2.0",
     "nyholm/psr7": "^1.1",
