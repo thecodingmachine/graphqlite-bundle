@@ -24,7 +24,7 @@
     "symfony/validator": "^6",
     "symfony/translation": "^6",
     "doctrine/annotations": "^1.13 || ^2.0.1",
-    "symfony/psr-http-message-bridge": "^2.0",
+    "symfony/psr-http-message-bridge": "^2.0 || ^7.0",
     "nyholm/psr7": "^1.1",
     "laminas/laminas-diactoros": "^2.2.2",
     "overblog/graphiql-bundle": "^0.2 || ^0.3",
