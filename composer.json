@@ -20,7 +20,7 @@
     "ext-json": "*",
     "thecodingmachine/graphqlite" : "^6.0",
     "thecodingmachine/graphqlite-symfony-validator-bridge" : "^6.0",
-    "symfony/framework-bundle": "^6",
+    "symfony/framework-bundle": "^6 || ^7",
     "symfony/validator": "^6",
     "symfony/translation": "^6",
     "doctrine/annotations": "^1.13 || ^2.0.1",
