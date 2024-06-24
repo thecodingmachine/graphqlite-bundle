@@ -29,7 +29,7 @@
     "laminas/laminas-diactoros": "^2.2.2",
     "overblog/graphiql-bundle": "^0.2 || ^0.3",
     "thecodingmachine/cache-utils": "^1",
-    "symfony/console": "^6"
+    "symfony/console": "^6 || ^7"
   },
   "require-dev": {
     "symfony/security-bundle": "^6",
