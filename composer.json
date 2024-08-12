@@ -33,7 +33,7 @@
   },
   "require-dev": {
     "symfony/security-bundle": "^6",
-    "symfony/yaml": "^6",
+    "symfony/yaml": "^6 || ^7",
     "beberlei/porpaginas": "^1.2 || ^2.0",
     "php-coveralls/php-coveralls": "^2.1.0",
     "symfony/phpunit-bridge": "^6 || ^7",
