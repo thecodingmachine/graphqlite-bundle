@@ -204,7 +204,14 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
 
     public function getCacheDir(): string
     {
-        return __DIR__.'/../cache/'.($this->enableSession?'withSession':'withoutSession').$this->enableLogin.($this->enableSecurity?'withSecurity':'withoutSecurity').$this->enableMe.'_'.($this->introspection?'withIntrospection':'withoutIntrospection').'_'.$this->maximumQueryComplexity.'_'.$this->maximumQueryDepth.'_'.md5(serialize($this->controllersNamespace).'_'.md5(serialize($this->typesNamespace)));
+        $prefix = ($this->enableSession?'withSession':'withoutSession')
+            .$this->enableLogin
+            .($this->enableSecurity?'withSecurity':'withoutSecurity')
+            .$this->enableMe
+            .'_'
+            .($this->introspection?'withIntrospection':'withoutIntrospection');
+
+        return __DIR__.'/../cache/'.$prefix.'_'.$this->maximumQueryComplexity.'_'.$this->maximumQueryDepth.'_'.md5(serialize($this->controllersNamespace).'_'.md5(serialize($this->typesNamespace)));
     }
 
     public function process(ContainerBuilder $container): void
