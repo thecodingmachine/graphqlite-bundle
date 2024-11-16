@@ -9,14 +9,10 @@ use TheCodingMachine\GraphQLite\Annotations\Type;
 use Symfony\Component\Security\Core\User\UserInterface;
 use TheCodingMachine\GraphQLite\FieldNotFoundException;
 
-/**
- * @Type(class=UserInterface::class)
- */
+#[Type(class: UserInterface::class)]
 class SymfonyUserInterfaceType
 {
-    /**
-     * @Field
-     */
+    #[Field]
     public function getUserName(UserInterface $user): string
     {
         // @phpstan-ignore-next-line Forward Compatibility for Symfony >=5.3
@@ -33,9 +29,9 @@ class SymfonyUserInterfaceType
     }
 
     /**
-     * @Field()
      * @return string[]
      */
+    #[Field]
     public function getRoles(UserInterface $user): array
     {
         $roles = [];

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Entities;
-
 
 class Product
 {
