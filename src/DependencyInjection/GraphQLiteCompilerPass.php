@@ -17,6 +17,7 @@ use ReflectionParameter;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -297,12 +298,21 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     private function registerController(string $controllerClassName, ContainerBuilder $container): void
     {
         $aggregateQueryProvider = $container->findDefinition(AggregateControllerQueryProviderFactory::class);
+
         $controllersList = $aggregateQueryProvider->getArgument(0);
         if (!is_array($controllersList)){
             throw new GraphQLException(sprintf('Expecting array in %s, arg #1', AggregateControllerQueryProviderFactory::class));
         }
+
         $controllersList[] = $controllerClassName;
         $aggregateQueryProvider->setArgument(0, $controllersList);
+
+        $serviceLocatorMap = [];
+        foreach ($controllersList as $controller) {
+            $serviceLocatorMap[$controller] = new Reference($controller);
+        }
+
+        $aggregateQueryProvider->setArgument(1, new ServiceLocatorArgument($serviceLocatorMap));
     }
 
     /**
