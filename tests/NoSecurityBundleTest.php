@@ -18,7 +18,6 @@ class NoSecurityBundleTest extends TestCase
         $kernel = new GraphQLiteTestingKernel(true, null, false, null, true, null, null, ['TheCodingMachine\\GraphQLite\\Bundle\\Tests\\NoSecurityBundleFixtures\\Controller\\']);
         $kernel->boot();
         $container = $kernel->getContainer();
-        self::assertNotNull($container);
 
         $schema = $container->get(Schema::class);
         $this->assertInstanceOf(Schema::class, $schema);
