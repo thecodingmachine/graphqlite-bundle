@@ -129,8 +129,8 @@ class TestGraphqlController
 
     /**
      * @Query
-     * @Assertion(for="email", constraint=@Assert\Email())
      */
+    #[Assertion(for: 'email', constraint: new Assert\Email())]
     public function findByMail(string $email = 'a@a.com'): string
     {
         return $email;
