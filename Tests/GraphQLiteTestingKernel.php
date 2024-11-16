@@ -87,7 +87,7 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
     public function registerBundles(): iterable
     {
         $bundles = [ new FrameworkBundle() ];
-        if (class_exists(SecurityBundle::class)) {
+        if ($this->enableSecurity && class_exists(SecurityBundle::class)) {
             $bundles[] = new SecurityBundle();
         }
         $bundles[] = new GraphQLiteBundle();
