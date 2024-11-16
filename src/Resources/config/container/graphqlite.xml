@@ -5,10 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services
                                http://symfony.com/schema/dic/services/services-1.0.xsd"
 >
-    <parameters>
-        <parameter key="graphqlite.annotations.error_mode">LAX_MODE</parameter>
-    </parameters>
-
     <services>
         <defaults autowire="true" autoconfigure="true" public="false" />
 
@@ -40,9 +36,7 @@
         <service id="GraphQL\Type\Schema" alias="TheCodingMachine\GraphQLite\Schema" />
 
 
-        <service id="TheCodingMachine\GraphQLite\AnnotationReader" >
-            <argument key="$mode">%graphqlite.annotations.error_mode%</argument>
-        </service>
+        <service id="TheCodingMachine\GraphQLite\AnnotationReader" />
 
         <service id="TheCodingMachine\GraphQLite\Bundle\Security\AuthenticationService">
             <argument type="service" id="security.token_storage" on-invalid="null" />

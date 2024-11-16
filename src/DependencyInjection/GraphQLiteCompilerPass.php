@@ -3,9 +3,6 @@
 
 namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
-use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\PsrCachedReader;
 use Generator;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Validator\Rules\DisableIntrospection;
@@ -59,7 +56,7 @@ use function strpos;
 class GraphQLiteCompilerPass implements CompilerPassInterface
 {
     /**
-     * @var AnnotationReader
+     * @var AnnotationReader|null
      */
     private $annotationReader;
 
@@ -422,26 +419,12 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * Returns a cached Doctrine annotation reader.
+     * Returns a GraphQLite annotation reader.
      * Note: we cannot get the annotation reader service in the container as we are in a compiler pass.
      */
     private function getAnnotationReader(): AnnotationReader
     {
-        if ($this->annotationReader === null) {
-            // @phpstan-ignore-next-line "registerLoader exists in doctrine/annotations:v1.x"
-            if (method_exists(AnnotationRegistry::class, 'registerLoader')) {
-                AnnotationRegistry::registerLoader('class_exists');
-            }
-
-            $doctrineAnnotationReader = new DoctrineAnnotationReader();
-
-            if (ApcuAdapter::isSupported()) {
-                $doctrineAnnotationReader = new PsrCachedReader($doctrineAnnotationReader, new ApcuAdapter('graphqlite'), true);
-            }
-
-            $this->annotationReader = new AnnotationReader(/*$doctrineAnnotationReader, AnnotationReader::LAX_MODE*/);
-        }
-        return $this->annotationReader;
+        return $this->annotationReader ??= new AnnotationReader();
     }
 
     /**
