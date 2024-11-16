@@ -236,14 +236,14 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
         }
 
         foreach ($controllersNamespaces as $controllersNamespace) {
-            $schemaFactory->addMethodCall('addControllerNamespace', [ $controllersNamespace ]);
+            $schemaFactory->addMethodCall('addNamespace', [ $controllersNamespace ]);
             foreach ($this->getClassList($controllersNamespace) as $className => $refClass) {
                 $this->makePublicInjectedServices($refClass, $reader, $container, true);
             }
         }
 
         foreach ($typesNamespaces as $typeNamespace) {
-            $schemaFactory->addMethodCall('addTypeNamespace', [ $typeNamespace ]);
+            $schemaFactory->addMethodCall('addNamespace', [ $typeNamespace ]);
             foreach ($this->getClassList($typeNamespace) as $className => $refClass) {
                 $this->makePublicInjectedServices($refClass, $reader, $container, false);
             }
