@@ -57,7 +57,7 @@ class LoginController
     /**
      * @Mutation()
      *
-     * @phpstan-return TUser
+     * @phpstan-return UserInterface
      */
     public function login(string $userName, string $password, Request $request): UserInterface
     {

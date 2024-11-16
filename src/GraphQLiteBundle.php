@@ -3,13 +3,13 @@
 
 namespace TheCodingMachine\GraphQLite\Bundle;
 
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
-use TheCodingMachine\GraphQLite\Bundle\DependencyInjection\GraphQLiteExtension;
-use TheCodingMachine\GraphQLite\Bundle\DependencyInjection\OverblogGraphiQLEndpointWiringPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use TheCodingMachine\GraphQLite\Bundle\DependencyInjection\GraphQLiteCompilerPass;
+use TheCodingMachine\GraphQLite\Bundle\DependencyInjection\GraphQLiteExtension;
+use TheCodingMachine\GraphQLite\Bundle\DependencyInjection\OverblogGraphiQLEndpointWiringPass;
 
 class GraphQLiteBundle extends Bundle
 {

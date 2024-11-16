@@ -2,17 +2,17 @@
 
 namespace TheCodingMachine\GraphQLite\Bundle\Tests;
 
-use Symfony\Component\Security\Core\User\InMemoryUser;
-use function json_decode;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\User\InMemoryUser;
 use TheCodingMachine\GraphQLite\Bundle\Controller\GraphQLiteController;
 use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
 use TheCodingMachine\GraphQLite\Schema;
+use function json_decode;
 
 class FunctionalTest extends TestCase
 {

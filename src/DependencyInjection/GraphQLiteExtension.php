@@ -5,15 +5,15 @@ namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
 
 use GraphQL\Error\DebugFlag;
-use TheCodingMachine\GraphQLite\Mappers\Root\RootTypeMapperFactoryInterface;
-use function array_map;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Type\Definition\ObjectType;
-use function rtrim;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use TheCodingMachine\GraphQLite\Mappers\Root\RootTypeMapperFactoryInterface;
+use function array_map;
+use function rtrim;
 
 class GraphQLiteExtension extends Extension
 {

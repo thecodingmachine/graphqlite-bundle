@@ -3,6 +3,8 @@
 
 namespace TheCodingMachine\GraphQLite\Bundle\DependencyInjection;
 
+use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\PsrCachedReader;
 use Generator;
 use GraphQL\Server\ServerConfig;
@@ -10,30 +12,19 @@ use GraphQL\Validator\Rules\DisableIntrospection;
 use GraphQL\Validator\Rules\QueryComplexity;
 use GraphQL\Validator\Rules\QueryDepth;
 use Kcs\ClassFinder\Finder\ComposerFinder;
+use Psr\SimpleCache\CacheInterface;
+use ReflectionClass;
+use ReflectionMethod;
 use ReflectionNamedType;
+use ReflectionParameter;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Psr16Cache;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory;
-use Webmozart\Assert\Assert;
-use function assert;
-use function class_exists;
-use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Psr\SimpleCache\CacheInterface;
-use ReflectionParameter;
-use function filter_var;
-use function function_exists;
-use ReflectionClass;
-use ReflectionMethod;
-use function ini_get;
-use function interface_exists;
-use function strpos;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use TheCodingMachine\CacheUtils\ClassBoundCache;
@@ -49,10 +40,18 @@ use TheCodingMachine\GraphQLite\Annotations\Mutation;
 use TheCodingMachine\GraphQLite\Annotations\Query;
 use TheCodingMachine\GraphQLite\Bundle\Controller\GraphQL\LoginController;
 use TheCodingMachine\GraphQLite\Bundle\Controller\GraphQL\MeController;
+use TheCodingMachine\GraphQLite\Bundle\Types\SymfonyUserInterfaceType;
 use TheCodingMachine\GraphQLite\GraphQLRuntimeException as GraphQLException;
+use TheCodingMachine\GraphQLite\Mappers\StaticClassListTypeMapperFactory;
 use TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper;
 use TheCodingMachine\GraphQLite\SchemaFactory;
-use TheCodingMachine\GraphQLite\Bundle\Types\SymfonyUserInterfaceType;
+use Webmozart\Assert\Assert;
+use function assert;
+use function class_exists;
+use function filter_var;
+use function ini_get;
+use function interface_exists;
+use function strpos;
 
 /**
  * Detects controllers and types automatically and tag them.
@@ -440,7 +439,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
                 $doctrineAnnotationReader = new PsrCachedReader($doctrineAnnotationReader, new ApcuAdapter('graphqlite'), true);
             }
 
-            $this->annotationReader = new AnnotationReader($doctrineAnnotationReader, AnnotationReader::LAX_MODE);
+            $this->annotationReader = new AnnotationReader(/*$doctrineAnnotationReader, AnnotationReader::LAX_MODE*/);
         }
         return $this->annotationReader;
     }

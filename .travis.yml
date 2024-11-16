@@ -41,7 +41,7 @@ script:
   - if [[ $PHPSTAN == true ]]; then composer phpstan; fi
   #- ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
   # Let's test without the security bundle
-  - if [[ $TESTNOSECURITYBUNDLE == true ]]; then composer remove --dev symfony/security-bundle && ./vendor/bin/simple-phpunit Tests/NoSecurityBundleTest.php; fi
+  - if [[ $TESTNOSECURITYBUNDLE == true ]]; then composer remove --dev symfony/security-bundle && ./vendor/bin/simple-phpunit tests/NoSecurityBundleTest.php; fi
 
 after_script:
   - ./vendor/bin/php-coveralls -v

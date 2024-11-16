@@ -4,22 +4,17 @@
 namespace TheCodingMachine\GraphQLite\Bundle\Controller;
 
 
-use Laminas\Diactoros\ResponseFactory;
-use Laminas\Diactoros\ServerRequestFactory;
-use Laminas\Diactoros\StreamFactory;
-use Laminas\Diactoros\UploadedFileFactory;
-use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
-use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
-use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
-use function array_map;
 use GraphQL\Executor\ExecutionResult;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Server\StandardServer;
 use GraphQL\Upload\UploadMiddleware;
-use function class_exists;
-use function json_decode;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\StreamFactory;
+use Laminas\Diactoros\UploadedFileFactory;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +22,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use TheCodingMachine\GraphQLite\Bundle\Context\SymfonyGraphQLContext;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
+use function array_map;
+use function class_exists;
+use function json_decode;
 
 /**
  * Listens to every single request and forward Graphql requests to Graphql Webonix standardServer.

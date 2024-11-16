@@ -8,7 +8,7 @@ parameters:
         - vendor
         - cache
         - .phpstan-cache
-        - Tests
+        - tests
     level: max
     polluteScopeWithLoopInitialAssignments: false
     polluteScopeWithAlwaysIterableForeach: false

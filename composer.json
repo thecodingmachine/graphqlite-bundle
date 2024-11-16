@@ -56,7 +56,12 @@
   },
   "autoload" : {
     "psr-4" : {
-      "TheCodingMachine\\GraphQLite\\Bundle\\" : ""
+      "TheCodingMachine\\GraphQLite\\Bundle\\" : "src"
+    }
+  },
+  "autoload-dev" : {
+    "psr-4" : {
+      "TheCodingMachine\\GraphQLite\\Bundle\\Tests\\" : "tests"
     }
   },
   "extra": {
