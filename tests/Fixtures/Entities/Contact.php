@@ -39,6 +39,7 @@ class Contact
         if (!$testService instanceof TestGraphqlController || $someService === null || $someAlias === null) {
             return 'KO';
         }
+
         return 'OK';
     }
 

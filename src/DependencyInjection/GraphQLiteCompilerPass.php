@@ -377,33 +377,29 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
      */
     private function getListOfInjectedServices(ReflectionMethod $method, ContainerBuilder $container): array
     {
+        /** @var array<string, string> $services */
         $services = [];
-
-        /**
-         * @var Autowire[] $autowireAnnotations
-         */
-        $autowireAnnotations = $this->getAnnotationReader()->getMethodAnnotations($method, Autowire::class);
 
         $parametersByName = null;
 
-        foreach ($autowireAnnotations as $autowire) {
-            $target = $autowire->getTarget();
+        $annotations = $this->getAnnotationReader()->getParameterAnnotationsPerParameter($method->getParameters());
+        foreach ($annotations as $parameterName => $parameterAnnotations) {
+            $parameterAutowireAnnotation = $parameterAnnotations->getAnnotationsByType(Autowire::class);
+            foreach ($parameterAutowireAnnotation as $autowire) {
+                $id = $autowire->getIdentifier();
+                if ($id !== null) {
+                    $services[$id] = $id;
+                    continue;
+                }
 
-            if ($parametersByName === null) {
-                $parametersByName = self::getParametersByName($method);
-            }
+                $parametersByName ??= self::getParametersByName($method);
+                if (!isset($parametersByName[$parameterName])) {
+                    throw new \LogicException('Should not happen');
+                }
 
-            if (!isset($parametersByName[$target])) {
-                throw new GraphQLException('In method '.$method->getDeclaringClass()->getName().'::'.$method->getName().', the @Autowire annotation refers to a non existing parameter named "'.$target.'"');
-            }
-
-            $id = $autowire->getIdentifier();
-            if ($id !== null) {
-                $services[$id] = $id;
-            } else {
-                $parameter = $parametersByName[$target];
+                $parameter = $parametersByName[$parameterName];
                 $type = $parameter->getType();
-                if ($type !== null && $type instanceof ReflectionNamedType) {
+                if ($type instanceof ReflectionNamedType) {
                     $fqcn = $type->getName();
                     if ($container->has($fqcn)) {
                         $services[$fqcn] = $fqcn;
