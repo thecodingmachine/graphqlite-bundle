@@ -2,6 +2,7 @@
 
 namespace TheCodingMachine\GraphQLite\Bundle\Tests;
 
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use function json_decode;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,13 @@ class NoSecurityBundleTest extends TestCase
 {
     public function testServiceWiring(): void
     {
+        // tech debt: for some reason when we're running full test suite
+        // - from APCu cache we're getting old controllers for available graphql and this fails test
+        if (ApcuAdapter::isSupported()) {
+            $apcu = new ApcuAdapter();
+            $apcu->clear();
+        }
+
         $kernel = new GraphQLiteTestingKernel(true, null, false, null, true, null, null, ['TheCodingMachine\\GraphQLite\\Bundle\\Tests\\NoSecurityBundleFixtures\\Controller\\']);
         $kernel->boot();
         $container = $kernel->getContainer();
