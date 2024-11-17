@@ -54,11 +54,7 @@ class LoginController
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @Mutation()
-     *
-     * @phpstan-return UserInterface
-     */
+    #[Mutation]
     public function login(string $userName, string $password, Request $request): UserInterface
     {
         try {
@@ -95,9 +91,7 @@ class LoginController
         return $user;
     }
 
-    /**
-     * @Mutation()
-     */
+    #[Mutation]
     public function logout(Request $request): bool
     {
         $this->tokenStorage->setToken(null);

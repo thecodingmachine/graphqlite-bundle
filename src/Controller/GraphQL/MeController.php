@@ -18,9 +18,7 @@ class MeController
         $this->tokenStorage = $tokenStorage;
     }
 
-    /**
-     * @Query()
-     */
+    #[Query]
     public function me(): ?UserInterface
     {
         $token = $this->tokenStorage->getToken();
