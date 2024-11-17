@@ -472,6 +472,9 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
      */
     private function getClassList(string $namespace): Generator
     {
+        // dev note: this code will be broken if there's a broken class (which has mismatch in real namespace
+        //  with PSR-4 configuration) in the configured namespace
+        // see also: https://github.com/alekitto/class-finder/issues/24#issuecomment-2480847327
         $finder = new ComposerFinder();
         foreach ($finder->inNamespace($namespace) as $class) {
             assert($class instanceof ReflectionClass);
