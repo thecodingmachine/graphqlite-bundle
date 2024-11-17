@@ -49,7 +49,7 @@
     "phpdocumentor/type-resolver": "<1.4"
   },
   "scripts": {
-    "phpstan": "phpstan analyse GraphQLiteBundle.php DependencyInjection/ Controller/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
+    "phpstan": "phpstan analyse -c phpstan.neon --level=7 --no-progress"
   },
   "suggest": {
     "symfony/security-bundle": "To use #[Logged] or #[Right] attributes"
