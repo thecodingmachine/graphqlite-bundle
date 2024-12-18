@@ -56,15 +56,14 @@ use function strpos;
  */
 class GraphQLiteCompilerPass implements CompilerPassInterface
 {
-    /**
-     * @var AnnotationReader|null
-     */
-    private $annotationReader;
+    private ?AnnotationReader $annotationReader = null;
 
-    /**
-     * @var string
-     */
-    private $cacheDir;
+    private string $cacheDir;
+
+    private ?CacheInterface $cache = null;
+
+    private ?ClassBoundCacheContractInterface $codeCache = null;
+
 
     /**
      * You can modify the container here before it is dumped to PHP code.
@@ -317,9 +316,6 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
 
     /**
      * Register a method call on SchemaFactory for each tagged service, passing the service in parameter.
-     *
-     * @param string $tag
-     * @param string $methodName
      */
     private function mapAdderToTag(string $tag, string $methodName, ContainerBuilder $container, Definition $schemaFactory): void
     {
@@ -371,8 +367,6 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * @param ReflectionMethod $method
-     * @param ContainerBuilder $container
      * @return array<string, string> key = value = service name
      */
     private function getListOfInjectedServices(ReflectionMethod $method, ContainerBuilder $container): array
@@ -412,7 +406,6 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * @param ReflectionMethod $method
      * @return array<string, ReflectionParameter>
      */
     private static function getParametersByName(ReflectionMethod $method): array
@@ -433,11 +426,6 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
         return $this->annotationReader ??= new AnnotationReader();
     }
 
-    /**
-     * @var CacheInterface
-     */
-    private $cache;
-
     private function getPsr16Cache(): CacheInterface
     {
         if ($this->cache === null) {
@@ -447,27 +435,21 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
                 $this->cache = new Psr16Cache(new PhpFilesAdapter('graphqlite_bundle', 0, $this->cacheDir));
             }
         }
+
         return $this->cache;
     }
 
-    /**
-     * @var ClassBoundCacheContractInterface
-     */
-    private $codeCache;
-
     private function getCodeCache(): ClassBoundCacheContractInterface
     {
-        if ($this->codeCache === null) {
-            $this->codeCache = new ClassBoundCacheContract(new ClassBoundMemoryAdapter(new ClassBoundCache(new FileBoundCache($this->getPsr16Cache()))));
-        }
-        return $this->codeCache;
+        return $this->codeCache ??= new ClassBoundCacheContract(
+            new ClassBoundMemoryAdapter(new ClassBoundCache(new FileBoundCache($this->getPsr16Cache())))
+        );
     }
 
     /**
      * Returns the array of globbed classes.
      * Only instantiable classes are returned.
      *
-     * @param string $namespace
      * @return Generator<class-string, ReflectionClass<object>, void, void>
      */
     private function getClassList(string $namespace): Generator
