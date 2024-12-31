@@ -21,9 +21,9 @@ class GraphQLiteBundle extends Bundle
         $container->addCompilerPass(new OverblogGraphiQLEndpointWiringPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1);
     }
 
-    public function getContainerExtension(): ?ExtensionInterface
+    public function getContainerExtension(): ExtensionInterface
     {
-        if (null === $this->extension) {
+        if (null === $this->extension || false === $this->extension) {
             $this->extension = new GraphQLiteExtension();
         }
 

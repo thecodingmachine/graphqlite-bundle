@@ -4,6 +4,8 @@
 namespace TheCodingMachine\GraphQLite\Bundle\Tests;
 
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -87,7 +89,7 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
     public function registerBundles(): iterable
     {
         $bundles = [ new FrameworkBundle() ];
-        if (class_exists(SecurityBundle::class)) {
+        if ($this->enableSecurity && class_exists(SecurityBundle::class)) {
             $bundles[] = new SecurityBundle();
         }
         $bundles[] = new GraphQLiteBundle();
@@ -118,8 +120,12 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
 
             $container->loadFromExtension('framework', $frameworkConf);
             if ($this->enableSecurity) {
-                $container->loadFromExtension('security', array(
-                    'enable_authenticator_manager' => true,
+                $extraConfig = [];
+                if (InstalledVersions::satisfies(new VersionParser(), 'symfony/security-bundle', '< 7.0.0')) {
+                    $extraConfig['enable_authenticator_manager'] = true;
+                }
+
+                $container->loadFromExtension('security', array_merge(array(
                     'providers' => [
                         'in_memory' => [
                             'memory' => [
@@ -150,7 +156,7 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
                     'password_hashers' => [
                         InMemoryUser::class => 'plaintext',
                     ],
-                ));
+                ), $extraConfig));
             }
 
             $graphqliteConf = array(
