@@ -36,7 +36,6 @@
     "symfony/security-bundle": "^6.4 || ^7",
     "symfony/yaml": "^6.4 || ^7",
     "beberlei/porpaginas": "^1.2 || ^2.0",
-    "php-coveralls/php-coveralls": "^2.1.0",
     "symfony/phpunit-bridge": "^6.4 || ^7",
     "phpstan/phpstan": "^1.8",
     "composer/package-versions-deprecated": "^1.8",
