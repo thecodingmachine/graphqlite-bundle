@@ -43,7 +43,7 @@ class DumpSchemaCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $schemaExport = SchemaPrinterForGraphQLite::doPrint($this->schema, ['sortTypes' => true]);
+        $schemaExport = SchemaPrinterForGraphQLite::doPrint($this->schema, ['sortTypes' => true, 'sortFields' => true]);
 
         $filename = $input->getOption('output');
         if (\is_string($filename)) {
