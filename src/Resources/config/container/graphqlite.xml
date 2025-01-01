@@ -87,10 +87,6 @@
             <tag name="routing.route_loader"/>
         </service>
 
-        <service id="TheCodingMachine\GraphQLite\Bundle\EventListener\ExceptionListener">
-            <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" />
-        </service>
-
         <service id="TheCodingMachine\GraphQLite\Bundle\Mappers\RequestParameterMiddleware">
             <tag name="graphql.parameter_middleware"/>
         </service>
