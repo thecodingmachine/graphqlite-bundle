@@ -94,6 +94,7 @@ class GraphQLiteController
         if (class_exists(UploadMiddleware::class)) {
             $uploadMiddleware = new UploadMiddleware();
             $psr7Request = $uploadMiddleware->processRequest($psr7Request);
+            \assert($psr7Request instanceof ServerRequestInterface);
         }
 
         return $this->handlePsr7Request($psr7Request, $request);

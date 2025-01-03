@@ -36,13 +36,17 @@ class GraphQLiteExtension extends Extension
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/container'));
 
+        \assert(\is_array($config['namespace']));
         if (isset($config['namespace']['controllers'])) {
             $controllers = $config['namespace']['controllers'];
             if (!is_array($controllers)) {
                 $controllers = [ $controllers ];
             }
+
             $namespaceController = array_map(
                 function($namespace): string {
+                    \assert(\is_string($namespace));
+
                     return rtrim($namespace, '\\');
                 },
                 $controllers
@@ -50,6 +54,8 @@ class GraphQLiteExtension extends Extension
         } else {
             $namespaceController = [];
         }
+
+        \assert(\is_array($config['namespace']));
         if (isset($config['namespace']['types'])) {
             $types = $config['namespace']['types'];
             if (!is_array($types)) {
@@ -57,6 +63,8 @@ class GraphQLiteExtension extends Extension
             }
             $namespaceType = array_map(
                 function($namespace): string {
+                    \assert(\is_string($namespace));
+
                     return rtrim($namespace, '\\');
                 },
                 $types
@@ -65,6 +73,7 @@ class GraphQLiteExtension extends Extension
             $namespaceType = [];
         }
 
+        \assert(\is_array($config['security']));
         $enableLogin = $config['security']['enable_login'] ?? 'auto';
         $enableMe = $config['security']['enable_me'] ?? 'auto';
 
@@ -80,11 +89,15 @@ class GraphQLiteExtension extends Extension
         $loader->load('graphqlite.xml');
 
         $definition = $container->getDefinition(ServerConfig::class);
-        if (isset($config['debug'])) {
-            $debugCode = $this->toDebugCode($config['debug']);
+        if (isset($config['debug']) && \is_array($config['debug'])) {
+            /** @var array<string, int> $configDebug */
+            $configDebug = $config['debug'];
+
+            $debugCode = $this->toDebugCode($configDebug);
         } else {
             $debugCode = DebugFlag::RETHROW_UNSAFE_EXCEPTIONS;
         }
+
         $definition->addMethodCall('setDebugFlag', [$debugCode]);
 
         $container->registerForAutoconfiguration(ObjectType::class)

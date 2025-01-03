@@ -1,20 +1,20 @@
 includes:
-	- vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/phpstan/phpstan-symfony/extension.neon
+
 parameters:
+    level: max
     tmpDir: .phpstan-cache
     paths:
-        - .
+        - src
     excludePaths:
         - vendor
         - cache
         - .phpstan-cache
         - tests
-    level: max
+
     polluteScopeWithLoopInitialAssignments: false
     polluteScopeWithAlwaysIterableForeach: false
-    checkAlwaysTrueCheckTypeFunctionCall: true
-    checkAlwaysTrueInstanceof: true
-    checkAlwaysTrueStrictComparison: true
     checkExplicitMixedMissingReturn: true
     checkFunctionNameCase: true
     checkInternalClassCaseSensitivity: true
@@ -24,3 +24,5 @@ parameters:
     ignoreErrors:
         # Wrong return type hint in Symfony's TreeBuilder
         - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::\w+\(\).#'
+        # PhpStan doesn't know bundle resolved config structure and it's pretty complex to describe it
+        - '#Parameter \#2 \$value of method Symfony\\Component\\DependencyInjection\\Container::setParameter\(\) expects array\|bool\|float\|int\|string\|UnitEnum\|null, mixed given\.#'
