@@ -78,7 +78,7 @@ class GraphQLiteController
     {
         $psr7Request = $this->httpMessageFactory->createRequest($request);
 
-        if (strtoupper($request->getMethod()) === "POST" && empty($psr7Request->getParsedBody())) {
+        if (strtoupper($request->getMethod()) === 'POST' && empty($psr7Request->getParsedBody())) {
             $content = $psr7Request->getBody()->getContents();
             $parsedBody = json_decode($content, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
