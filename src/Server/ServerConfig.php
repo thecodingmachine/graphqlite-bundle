@@ -12,13 +12,15 @@ use function is_callable;
 
 /**
  * A slightly modified version of the server config: default validators are added by default when setValidators is called.
+ *
+ * @phpstan-type ValidationRulesResolveFn = callable(OperationParams, DocumentNode, string): array<ValidationRule>
  */
 class ServerConfig extends \GraphQL\Server\ServerConfig
 {
     /**
      * Set validation rules for this server, AND adds by default all the "default" validation rules provided by Webonyx
      *
-     * @param ValidationRule[]|callable $validationRules
+     * @param ValidationRule[]|ValidationRulesResolveFn $validationRules
      *
      * @api
      */

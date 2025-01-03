@@ -19,25 +19,20 @@ final class EndpointResolver implements GraphiQLControllerEndpoint
         $this->requestStack = $requestStack;
     }
 
-    /**
-     * @return string
-     */
-    public function getBySchema($name)
+    public function getBySchema($name): string
     {
-        if ('default' === $name) {
-            $request = $this->requestStack->getCurrentRequest();
-            assert(!is_null($request));
-
-            return $request->getBaseUrl().'/graphql';
+        if ('default' !== $name) {
+            /** @phpstan-ignore throw.notThrowable (Missing return type in the library) */
+            throw GraphQLEndpointInvalidSchemaException::forSchemaAndResolver($name, self::class);
         }
 
-        throw GraphQLEndpointInvalidSchemaException::forSchemaAndResolver($name, self::class);
+        $request = $this->requestStack->getCurrentRequest();
+        assert(!is_null($request));
+
+        return $request->getBaseUrl().'/graphql';
     }
 
-    /**
-     * @return string
-     */
-    public function getDefault()
+    public function getDefault(): string
     {
         return $this->getBySchema('default');
     }

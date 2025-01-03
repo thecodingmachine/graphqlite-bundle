@@ -48,7 +48,7 @@ class GraphQLiteController
      */
     private $httpCodeDecider;
 
-    public function __construct(ServerConfig $serverConfig, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = null, ?HttpCodeDeciderInterface $httpCodeDecider = null)
+    public function __construct(ServerConfig $serverConfig, ?HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = null, ?HttpCodeDeciderInterface $httpCodeDecider = null)
     {
         $this->serverConfig = $serverConfig;
         $this->httpMessageFactory = $httpMessageFactory ?: new PsrHttpFactory(new ServerRequestFactory(), new StreamFactory(), new UploadedFileFactory(), new ResponseFactory());
@@ -78,7 +78,7 @@ class GraphQLiteController
     {
         $psr7Request = $this->httpMessageFactory->createRequest($request);
 
-        if (strtoupper($request->getMethod()) === "POST" && empty($psr7Request->getParsedBody())) {
+        if (strtoupper($request->getMethod()) === 'POST' && empty($psr7Request->getParsedBody())) {
             $content = $psr7Request->getBody()->getContents();
             $parsedBody = json_decode($content, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
@@ -94,6 +94,7 @@ class GraphQLiteController
         if (class_exists(UploadMiddleware::class)) {
             $uploadMiddleware = new UploadMiddleware();
             $psr7Request = $uploadMiddleware->processRequest($psr7Request);
+            \assert($psr7Request instanceof ServerRequestInterface);
         }
 
         return $this->handlePsr7Request($psr7Request, $request);

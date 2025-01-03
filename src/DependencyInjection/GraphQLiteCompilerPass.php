@@ -49,7 +49,6 @@ use function class_exists;
 use function filter_var;
 use function ini_get;
 use function interface_exists;
-use function strpos;
 
 /**
  * Detects controllers and types automatically and tag them.
@@ -199,52 +198,53 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
             $container->getDefinition(StaticClassListTypeMapperFactory::class)->setArgument(0, $staticTypes);
         }
 
-        foreach ($container->getDefinitions() as $id => $definition) {
+        foreach ($container->getDefinitions() as $definition) {
             if ($definition->isAbstract() || $definition->getClass() === null) {
                 continue;
             }
-            /**
-             * @var class-string $class
-             */
+
+            /** @var class-string $class */
             $class = $definition->getClass();
-/*            foreach ($controllersNamespaces as $controllersNamespace) {
-                if (strpos($class, $controllersNamespace) === 0) {
-                    $definition->addTag('graphql.annotated.controller');
-                }
-            }*/
 
             foreach ($typesNamespaces as $typesNamespace) {
-                if (strpos($class, $typesNamespace) === 0) {
-                    //$definition->addTag('graphql.annotated.type');
-                    // Set the types public
-                    $reflectionClass = new ReflectionClass($class);
-                    $typeAnnotation = $this->getAnnotationReader()->getTypeAnnotation($reflectionClass);
-                    if ($typeAnnotation !== null && $typeAnnotation->isSelfType()) {
-                        continue;
-                    }
-                    if ($typeAnnotation !== null || $this->getAnnotationReader()->getExtendTypeAnnotation($reflectionClass) !== null) {
+                \assert(\is_string($typesNamespace));
+
+                if (false === str_starts_with($class, $typesNamespace)) {
+                    continue;
+                }
+
+                // Set the types public
+                $reflectionClass = new ReflectionClass($class);
+                $typeAnnotation = $this->getAnnotationReader()->getTypeAnnotation($reflectionClass);
+                if ($typeAnnotation !== null && $typeAnnotation->isSelfType()) {
+                    continue;
+                }
+                if ($typeAnnotation !== null || $this->getAnnotationReader()->getExtendTypeAnnotation($reflectionClass) !== null) {
+                    $definition->setPublic(true);
+                }
+                foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+                    $factory = $reader->getFactoryAnnotation($method);
+                    if ($factory !== null) {
                         $definition->setPublic(true);
-                    }
-                    foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-                        $factory = $reader->getFactoryAnnotation($method);
-                        if ($factory !== null) {
-                            $definition->setPublic(true);
-                        }
                     }
                 }
             }
         }
 
         foreach ($controllersNamespaces as $controllersNamespace) {
+            \assert(\is_string($controllersNamespace));
+
             $schemaFactory->addMethodCall('addNamespace', [ $controllersNamespace ]);
-            foreach ($this->getClassList($controllersNamespace) as $className => $refClass) {
+            foreach ($this->getClassList($controllersNamespace) as $refClass) {
                 $this->makePublicInjectedServices($refClass, $reader, $container, true);
             }
         }
 
         foreach ($typesNamespaces as $typeNamespace) {
+            \assert(\is_string($typeNamespace));
+
             $schemaFactory->addMethodCall('addNamespace', [ $typeNamespace ]);
-            foreach ($this->getClassList($typeNamespace) as $className => $refClass) {
+            foreach ($this->getClassList($typeNamespace) as $refClass) {
                 $this->makePublicInjectedServices($refClass, $reader, $container, false);
             }
         }
@@ -256,11 +256,14 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
         $customNotMappedTypes = [];
         foreach ($taggedServices as $id => $tags) {
             foreach ($tags as $attributes) {
-                if (isset($attributes["class"])) {
-                    $phpClass = $attributes["class"];
-                    if (!class_exists($phpClass)) {
+                \assert(\is_array($attributes));
+
+                if (isset($attributes['class']) && is_string($attributes['class'])) {
+                    $phpClass = $attributes['class'];
+                    if (false === class_exists($phpClass)) {
                         throw new \RuntimeException(sprintf('The class attribute of the graphql.output_type annotation of the %s service must point to an existing PHP class. Value passed: %s', $id, $phpClass));
                     }
+
                     $customTypes[$phpClass] = new Reference($id);
                 } else {
                     $customNotMappedTypes[] = new Reference($id);
@@ -308,6 +311,8 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
 
         $serviceLocatorMap = [];
         foreach ($controllersList as $controller) {
+            \assert(\is_string($controller));
+
             $serviceLocatorMap[$controller] = new Reference($controller);
         }
 
