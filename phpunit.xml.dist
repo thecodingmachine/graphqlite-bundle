@@ -16,22 +16,17 @@
     </php>
 
     <testsuites>
-        <testsuite name="Graphql controllers bundle Test Suite">
-            <directory>./Tests/</directory>
+        <testsuite name="GraphQLite Bundle Test Suite">
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
 
 
     <filter>
         <whitelist>
-            <directory>./</directory>
+            <directory>./src/</directory>
             <exclude>
-                <directory>cache</directory>
-                <directory>build</directory>
-                <directory>./Resources</directory>
-                <directory>./Tests</directory>
-                <directory>./vendor</directory>
-                <directory>./var</directory>
+                <directory>./src/Resources</directory>
             </exclude>
         </whitelist>
     </filter>

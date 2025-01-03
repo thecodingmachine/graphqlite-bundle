@@ -18,14 +18,13 @@
   "require" : {
     "php" : ">=8.1",
     "ext-json": "*",
-    "thecodingmachine/graphqlite" : "^6.0",
-    "thecodingmachine/graphqlite-symfony-validator-bridge" : "^6.0",
+    "thecodingmachine/graphqlite" : "^8",
+    "thecodingmachine/graphqlite-symfony-validator-bridge": "^7.1.1",
     "symfony/config": "^6.4 || ^7",
     "symfony/console": "^6.4 || ^7",
     "symfony/framework-bundle": "^6.4 || ^7",
     "symfony/validator": "^6.4 || ^7",
     "symfony/translation": "^6.4 || ^7",
-    "doctrine/annotations": "^1.13 || ^2.0.1",
     "symfony/psr-http-message-bridge": "^2.0 || ^7.0",
     "nyholm/psr7": "^1.1",
     "laminas/laminas-diactoros": "^2.2.2 || ^3",
@@ -42,21 +41,25 @@
     "composer/semver": "^3.4"
   },
   "conflict": {
-    "mouf/classname-mapper": "<1.0.2",
     "symfony/event-dispatcher": "<4.3",
     "symfony/security-core": "<4.3",
     "symfony/routing": "<4.3",
     "phpdocumentor/type-resolver": "<1.4"
   },
   "scripts": {
-    "phpstan": "phpstan analyse GraphQLiteBundle.php DependencyInjection/ Controller/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
+    "phpstan": "phpstan analyse -c phpstan.neon --level=7 --no-progress"
   },
   "suggest": {
-    "symfony/security-bundle": "To use @Logged or @Right annotations"
+    "symfony/security-bundle": "To use #[Logged] or #[Right] attributes"
   },
   "autoload" : {
     "psr-4" : {
-      "TheCodingMachine\\GraphQLite\\Bundle\\" : ""
+      "TheCodingMachine\\GraphQLite\\Bundle\\" : "src"
+    }
+  },
+  "autoload-dev" : {
+    "psr-4" : {
+      "TheCodingMachine\\GraphQLite\\Bundle\\Tests\\" : "tests"
     }
   },
   "extra": {
