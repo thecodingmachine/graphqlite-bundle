@@ -7,7 +7,7 @@ use TheCodingMachine\GraphQLite\Exceptions\GraphQLException;
 
 class JsonException extends GraphQLException
 {
-    public static function create(?string $reason = null, int $code = 400, Exception $previous = null): self
+    public static function create(?string $reason = null, int $code = 400, ?Exception $previous = null): self
     {
         return new self(
             message: 'Invalid JSON.',
