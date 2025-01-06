@@ -1,20 +1,21 @@
 <?php
 
-
 namespace TheCodingMachine\GraphQLite\Bundle\Controller;
 
-
-use GraphQL\Executor\ExecutionResult;
-use GraphQL\Server\ServerConfig;
-use GraphQL\Server\StandardServer;
-use GraphQL\Upload\UploadMiddleware;
+use GraphQL\Error\Error;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\Diactoros\StreamFactory;
 use Laminas\Diactoros\UploadedFileFactory;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
+use GraphQL\Executor\ExecutionResult;
+use GraphQL\Server\ServerConfig;
+use GraphQL\Server\StandardServer;
+use GraphQL\Upload\UploadMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
-use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,8 +23,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use TheCodingMachine\GraphQLite\Bundle\Context\SymfonyGraphQLContext;
-use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
-use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
+use TheCodingMachine\GraphQLite\Bundle\Exceptions\JsonException;
+
 use function array_map;
 use function class_exists;
 use function json_decode;
@@ -80,13 +81,20 @@ class GraphQLiteController
 
         if (strtoupper($request->getMethod()) === 'POST' && empty($psr7Request->getParsedBody())) {
             $content = $psr7Request->getBody()->getContents();
-            $parsedBody = json_decode($content, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \RuntimeException('Invalid JSON received in POST body: '.json_last_error_msg());
+            try {
+                $parsedBody = json_decode(
+                    json: $content,
+                    associative: true,
+                    flags: \JSON_THROW_ON_ERROR
+                );
+            } catch (\JsonException $e) {
+                return $this->invalidJsonBodyResponse($e);
             }
-            if (!is_array($parsedBody)){
-                throw new \RuntimeException('Expecting associative array from request, got ' . gettype($parsedBody));
+
+            if (!is_array($parsedBody)) {
+                return $this->invalidRequestBodyExpectedAssociativeResponse($parsedBody);
             }
+
             $psr7Request = $psr7Request->withParsedBody($parsedBody);
         }
 
@@ -124,5 +132,52 @@ class GraphQLiteController
         }
 
         throw new RuntimeException('Only SyncPromiseAdapter is supported');
+    }
+
+    private function invalidJsonBodyResponse(\JsonException $e): JsonResponse
+    {
+        $jsonException = JsonException::create(
+            reason: $e->getMessage(),
+            code: Response::HTTP_UNSUPPORTED_MEDIA_TYPE,
+            previous: $e,
+        );
+        $result = new ExecutionResult(
+            null,
+            [
+                new Error(
+                    'Invalid JSON.',
+                    previous: $jsonException,
+                    extensions: $jsonException->getExtensions(),
+                ),
+            ]
+        );
+
+        return new JsonResponse(
+            $result->toArray($this->debug),
+            $this->httpCodeDecider->decideHttpStatusCode($result)
+        );
+    }
+
+    private function invalidRequestBodyExpectedAssociativeResponse(mixed $parsedBody): JsonResponse
+    {
+        $jsonException = JsonException::create(
+            reason: 'Expecting associative array from request, got ' . gettype($parsedBody),
+            code: Response::HTTP_UNPROCESSABLE_ENTITY,
+        );
+        $result = new ExecutionResult(
+            null,
+            [
+                new Error(
+                    'Invalid JSON.',
+                    previous: $jsonException,
+                    extensions: $jsonException->getExtensions(),
+                ),
+            ]
+        );
+
+        return new JsonResponse(
+            $result->toArray($this->debug),
+            $this->httpCodeDecider->decideHttpStatusCode($result)
+        );
     }
 }
