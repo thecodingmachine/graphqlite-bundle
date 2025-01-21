@@ -15,11 +15,16 @@
     "homepage" : "http://mouf-php.com"
   }
   ],
+  "repositories": [{
+    "type": "vcs",
+    "url": "https://github.com/enricobono/graphqlite-symfony-validator-bridge"
+  }
+  ],
   "require" : {
     "php" : ">=8.1",
     "ext-json": "*",
     "thecodingmachine/graphqlite" : "^8",
-    "thecodingmachine/graphqlite-symfony-validator-bridge": "^7.1.1",
+    "thecodingmachine/graphqlite-symfony-validator-bridge": "dev-support-symfony-6",
     "symfony/config": "^6.4 || ^7",
     "symfony/console": "^6.4 || ^7",
     "symfony/framework-bundle": "^6.4 || ^7",
