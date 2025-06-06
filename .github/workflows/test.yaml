@@ -28,6 +28,7 @@ jobs:
               uses: shivammathur/setup-php@2.30.4
               with:
                   php-version: ${{ matrix.php-version }}
+                  ini-values: zend.assertions=1
 
             - name: composer-cache-dir
               id: composercache
