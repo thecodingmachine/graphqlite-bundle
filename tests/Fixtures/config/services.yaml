@@ -20,6 +20,10 @@ services:
     TheCodingMachine\GraphQLite\Bundle\Tests\NoSecurityBundleFixtures\:
         resource: '../../NoSecurityBundleFixtures/*'
 
+    TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Types\CustomBookType:
+        tags:
+            - { name: 'graphql.output_type', class: 'TheCodingMachine\GraphQLite\Bundle\Tests\Fixtures\Entities\Book' }
+
     someService:
         class: stdClass
 

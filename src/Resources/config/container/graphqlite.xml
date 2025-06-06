@@ -79,10 +79,6 @@
 
         <service id="GraphQL\Validator\Rules\QueryDepth" />
 
-        <service id="TheCodingMachine\GraphQLite\Mappers\StaticTypeMapper">
-            <tag name="graphql.type_mapper"/>
-        </service>
-
         <service id="TheCodingMachine\GraphQLite\Bundle\Controller\GraphQLiteController" public="true">
             <tag name="routing.route_loader"/>
         </service>
