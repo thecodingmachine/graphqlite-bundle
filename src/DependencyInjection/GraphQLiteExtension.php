@@ -73,6 +73,9 @@ class GraphQLiteExtension extends Extension
             $namespaceType = [];
         }
 
+        if (!isset($config['security'])) {
+            $config['security'] = [];
+        }
         \assert(\is_array($config['security']));
         $enableLogin = $config['security']['enable_login'] ?? 'auto';
         $enableMe = $config['security']['enable_me'] ?? 'auto';
