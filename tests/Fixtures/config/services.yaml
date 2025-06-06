@@ -20,6 +20,10 @@ services:
     TheCodingMachine\GraphQLite\Bundle\Tests\NoSecurityBundleFixtures\:
         resource: '../../NoSecurityBundleFixtures/*'
 
+    TheCodingMachine\Graphqlite\Bundle\Tests\Fixtures\Types\CustomOutputType:
+        tags:
+            - { name: 'graphql.output_type' }
+
     someService:
         class: stdClass
 
