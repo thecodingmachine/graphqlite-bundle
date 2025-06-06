@@ -271,14 +271,11 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
             }
         }
 
-        if (!empty($customTypes)) {
-            $definition = $container->getDefinition(StaticTypeMapper::class);
-            $definition->addMethodCall('setTypes', [$customTypes]);
-        }
-        if (!empty($customNotMappedTypes)) {
-            $definition = $container->getDefinition(StaticTypeMapper::class);
-            $definition->addMethodCall('setNotMappedTypes', [$customNotMappedTypes]);
-        }
+        $staticMapperDefinition = new Definition(StaticTypeMapper::class, [
+            '$types' => $customTypes,
+            '$notMappedTypes' => $customNotMappedTypes
+        ]);
+        $container->setDefinition('graphql.type_mapper', $staticMapperDefinition);
 
         // Register graphql.queryprovider
         $this->mapAdderToTag('graphql.queryprovider', 'addQueryProvider', $container, $schemaFactory);
