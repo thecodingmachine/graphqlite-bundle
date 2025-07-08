@@ -36,6 +36,9 @@ class GraphQLiteExtension extends Extension
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/container'));
 
+        if (!isset($config['namespace'])) {
+            $config['namespace'] = [];
+        }
         \assert(\is_array($config['namespace']));
         if (isset($config['namespace']['controllers'])) {
             $controllers = $config['namespace']['controllers'];
