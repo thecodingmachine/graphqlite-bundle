@@ -43,7 +43,7 @@ class GraphQLiteController
      */
     private $serverConfig;
 
-    public function __construct(ServerConfig $serverConfig, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = null)
+    public function __construct(ServerConfig $serverConfig, ?HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = null)
     {
         $this->serverConfig = $serverConfig;
         $this->httpMessageFactory = $httpMessageFactory ?: new PsrHttpFactory(new ServerRequestFactory(), new StreamFactory(), new UploadedFileFactory(), new ResponseFactory());
