@@ -30,11 +30,11 @@ class Contact
     #[Field]
     public function injectService(
         #[Autowire]
-        TestGraphqlController $testService = null,
+        ?TestGraphqlController $testService = null,
         #[Autowire(identifier: 'someService')]
-        stdClass $someService = null,
+        ?stdClass $someService = null,
         #[Autowire(identifier: 'someAlias')]
-        stdClass $someAlias = null,
+        ?stdClass $someAlias = null,
     ): string {
         if (!$testService instanceof TestGraphqlController || $someService === null || $someAlias === null) {
             return 'KO';
@@ -52,7 +52,7 @@ class Contact
     public function prefetchData(
         iterable $iterable,
         #[Autowire(identifier: 'someOtherService')]
-        stdClass $someOtherService = null,
+        ?stdClass $someOtherService = null,
     ) {
         if ($someOtherService === null) {
             return 'KO';
