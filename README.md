@@ -6,4 +6,6 @@
 
 Symfony bundle for the `thecodingmachine/graphqlite` package.
 
+Bundle docs: https://graphqlite.thecodingmachine.io/docs/symfony-bundle
+
 See [thecodingmachine/graphqlite](https://github.com/thecodingmachine/graphqlite).
