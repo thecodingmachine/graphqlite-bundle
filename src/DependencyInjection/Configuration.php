@@ -8,8 +8,10 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
+    /** @return TreeBuilder<'array'> */
     public function getConfigTreeBuilder(): TreeBuilder
     {
+        /** @var TreeBuilder<'array'> $treeBuilder */
         $treeBuilder = new TreeBuilder('graphqlite');
         $rootNode = $treeBuilder->getRootNode();
 

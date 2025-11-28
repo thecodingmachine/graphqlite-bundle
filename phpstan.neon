@@ -23,6 +23,10 @@ parameters:
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         # Wrong return type hint in Symfony's TreeBuilder
-        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::\w+\(\).#'
+        - message: '#Call to method arrayNode\(\) on an unknown class#'
+          path: src/DependencyInjection/Configuration.php
+        - message: '#Cannot call method \w+\(\) on mixed#'
+          path: src/DependencyInjection/Configuration.php
         # PhpStan doesn't know bundle resolved config structure and it's pretty complex to describe it
-        - '#Parameter \#2 \$value of method Symfony\\Component\\DependencyInjection\\Container::setParameter\(\) expects array\|bool\|float\|int\|string\|UnitEnum\|null, mixed given\.#'
+        - message: '#Parameter \#2 \$value of method Symfony\\Component\\DependencyInjection\\Container::setParameter\(\) expects array\|bool\|float\|int\|string\|UnitEnum\|null, mixed given\.#'
+          path: src/DependencyInjection/GraphQLiteExtension.php
