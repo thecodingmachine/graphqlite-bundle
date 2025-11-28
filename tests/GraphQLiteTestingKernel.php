@@ -199,7 +199,7 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
     // Note: typing is disabled because using different classes in Symfony 4 and 5
     protected function configureRoutes(/*RoutingConfigurator*/ $routes)
     {
-        $routes->import(__DIR__.'/../src/Resources/config/routes.xml');
+        $routes->import(__DIR__.'/../src/Resources/config/routes.php');
     }
 
     public function getCacheDir(): string
