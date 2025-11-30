@@ -13,6 +13,7 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use TheCodingMachine\GraphQLite\Bundle\GraphQLiteBundle;
 use Symfony\Component\Security\Core\User\InMemoryUser;
 use function class_exists;
@@ -196,10 +197,9 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
         $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
     }
 
-    // Note: typing is disabled because using different classes in Symfony 4 and 5
-    protected function configureRoutes(/*RoutingConfigurator*/ $routes)
+    protected function configureRoutes(RoutingConfigurator $routes): void
     {
-        $routes->import(__DIR__.'/../src/Resources/config/routes.xml');
+        $routes->import(__DIR__.'/../src/Resources/config/routes.php');
     }
 
     public function getCacheDir(): string

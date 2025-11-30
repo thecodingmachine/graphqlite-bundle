@@ -374,6 +374,7 @@ class FunctionalTest extends TestCase
 
         $result = json_decode($response->getContent(), true);
 
+        $this->assertIsArray($result);
         $this->assertArrayHasKey('errors', $result);
         $this->assertSame('Cannot query field "login" on type "Mutation".', $result['errors'][0]['message']);
     }
@@ -508,8 +509,11 @@ class FunctionalTest extends TestCase
         $response = $kernel->handle($request);
 
         $result = json_decode($response->getContent(), true);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('data', $result);
         $data = $result['data'];
 
+        $this->assertIsArray($result);
         $this->assertArrayHasKey('__schema', $data);
     }
 
