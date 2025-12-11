@@ -8,16 +8,16 @@ use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\Diactoros\StreamFactory;
 use Laminas\Diactoros\UploadedFileFactory;
+use LogicException;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use TheCodingMachine\GraphQLite\Bundle\UploadMiddlewareUtils\DummyResponseWithRequest;
+use TheCodingMachine\GraphQLite\Bundle\UploadMiddlewareUtils\RequestExtractorMiddleware;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
-use function array_map;
 use GraphQL\Executor\ExecutionResult;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Server\StandardServer;
 use GraphQL\Upload\UploadMiddleware;
-use function class_exists;
-use function json_decode;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -28,25 +28,20 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use TheCodingMachine\GraphQLite\Bundle\Context\SymfonyGraphQLContext;
 
+use function array_map;
+use function class_exists;
+use function get_class;
+use function json_decode;
+
 /**
- * Listens to every single request and forward Graphql requests to Graphql Webonix standardServer.
+ * Listens to every single request and forwards GraphQL requests to Webonyx's {@see \GraphQL\Server\StandardServer}.
  */
 class GraphQLiteController
 {
-    /**
-     * @var HttpMessageFactoryInterface
-     */
-    private $httpMessageFactory;
-    /** @var int */
-    private $debug;
-    /**
-     * @var ServerConfig
-     */
-    private $serverConfig;
-    /**
-     * @var HttpCodeDeciderInterface
-     */
-    private $httpCodeDecider;
+    private HttpMessageFactoryInterface $httpMessageFactory;
+    private int $debug;
+    private ServerConfig $serverConfig;
+    private HttpCodeDeciderInterface $httpCodeDecider;
 
     public function __construct(ServerConfig $serverConfig, ?HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = null, ?HttpCodeDeciderInterface $httpCodeDecider = null)
     {
@@ -90,10 +85,14 @@ class GraphQLiteController
             $psr7Request = $psr7Request->withParsedBody($parsedBody);
         }
 
-        // Let's parse the request and adapt it for file uploads.
+        // Let's parse the request and adapt it for file uploads by extracting it from the middleware.
         if (class_exists(UploadMiddleware::class)) {
             $uploadMiddleware = new UploadMiddleware();
-            $psr7Request = $uploadMiddleware->processRequest($psr7Request);
+            $dummyResponseWithRequest = $uploadMiddleware->process($psr7Request, new RequestExtractorMiddleware());
+            if (! $dummyResponseWithRequest instanceof DummyResponseWithRequest) {
+                throw new LogicException(DummyResponseWithRequest::class . ' expect, got ' . get_class($dummyResponseWithRequest));
+            }
+            $psr7Request = $dummyResponseWithRequest->getRequest();
         }
 
         return $this->handlePsr7Request($psr7Request, $request);
