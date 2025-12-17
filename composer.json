@@ -52,6 +52,7 @@
     "phpstan": "phpstan analyse GraphQLiteBundle.php DependencyInjection/ Controller/ Resources/ Security/ -c phpstan.neon --level=7 --no-progress"
   },
   "suggest": {
+    "ecodev/graphql-upload": "If you want to support file upload inside GraphQL input types (v7/v8)",
     "symfony/security-bundle": "To use @Logged or @Right annotations"
   },
   "autoload" : {
