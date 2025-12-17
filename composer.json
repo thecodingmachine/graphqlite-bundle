@@ -51,6 +51,7 @@
     "phpstan": "phpstan analyse -c phpstan.neon --no-progress"
   },
   "suggest": {
+    "ecodev/graphql-upload": "If you want to support file upload inside GraphQL input types (v7/v8)",
     "symfony/security-bundle": "To use #[Logged] or #[Right] attributes"
   },
   "autoload" : {
