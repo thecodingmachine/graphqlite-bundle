@@ -28,7 +28,6 @@
     "symfony/psr-http-message-bridge": "^2.0 || ^7.0 || ^8.0",
     "nyholm/psr7": "^1.1",
     "laminas/laminas-diactoros": "^2.2.2 || ^3",
-    "overblog/graphiql-bundle": "^0.2 || ^0.3 || ^1",
     "thecodingmachine/cache-utils": "^1"
   },
   "require-dev": {
@@ -39,7 +38,8 @@
     "phpstan/phpstan": "^2",
     "phpstan/phpstan-symfony": "^2.0",
     "composer/package-versions-deprecated": "^1.8",
-    "composer/semver": "^3.4"
+    "composer/semver": "^3.4",
+    "overblog/graphiql-bundle": "^0.2 || ^0.3 || ^1"
   },
   "conflict": {
     "symfony/event-dispatcher": "<4.3",
@@ -51,7 +51,8 @@
     "phpstan": "phpstan analyse -c phpstan.neon --no-progress"
   },
   "suggest": {
-    "symfony/security-bundle": "To use #[Logged] or #[Right] attributes"
+    "symfony/security-bundle": "To use #[Logged] or #[Right] attributes",
+    "overblog/graphiql-bundle": "Install to enable the GraphiQL UI (e.g. /graphiql)."
   },
   "autoload" : {
     "psr-4" : {
