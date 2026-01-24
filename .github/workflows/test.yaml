@@ -5,6 +5,10 @@ on:
         branches:
             - master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
     test:
         runs-on: ubuntu-latest
@@ -15,12 +19,6 @@ jobs:
                 php-version: ['8.2', '8.3', '8.4']
             fail-fast: false
         steps:
-            # Cancel previous runs of the same branch
-            - name: cancel
-              uses: styfle/cancel-workflow-action@0.12.1
-              with:
-                  access_token: ${{ github.token }}
-
             - name: checkout
               uses: actions/checkout@v6
 
