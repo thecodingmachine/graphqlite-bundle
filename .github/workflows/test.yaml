@@ -39,7 +39,7 @@ jobs:
             fail-fast: false
         steps:
             - name: checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
 
             - name: php
               uses: shivammathur/setup-php@2.37.1
@@ -75,7 +75,7 @@ jobs:
         name: static-analysis
         steps:
             - name: checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
 
             - name: php
               uses: shivammathur/setup-php@2.37.1
