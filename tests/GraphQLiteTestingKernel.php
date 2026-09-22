@@ -15,9 +15,13 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use TheCodingMachine\GraphQLite\Bundle\GraphQLiteBundle;
+use TheCodingMachine\GraphQLite\SchemaFactory;
 use Symfony\Component\Security\Core\User\InMemoryUser;
+use function array_column;
 use function class_exists;
 use function serialize;
+use function sys_get_temp_dir;
+use function uniqid;
 
 class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
 {
@@ -62,6 +66,16 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
     private $typesNamespace;
 
     /**
+     * @var string
+     */
+    private $cacheBaseDir;
+
+    /**
+     * @var bool|null
+     */
+    private $schemaAutoReload;
+
+    /**
      * @param string[] $controllersNamespace
      * @param string[] $typesNamespace
      */
@@ -73,9 +87,16 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
                                 ?int $maximumQueryComplexity = null,
                                 ?int $maximumQueryDepth = null,
                                 array $controllersNamespace = ['TheCodingMachine\\GraphQLite\\Bundle\\Tests\\Fixtures\\Controller\\'],
-                                array $typesNamespace = ['TheCodingMachine\\GraphQLite\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\GraphQLite\\Bundle\\Tests\\Fixtures\\Entities\\'])
+                                array $typesNamespace = ['TheCodingMachine\\GraphQLite\\Bundle\\Tests\\Fixtures\\Types\\', 'TheCodingMachine\\GraphQLite\\Bundle\\Tests\\Fixtures\\Entities\\'],
+                                bool $debug = true,
+                                string $environment = 'test',
+                                ?bool $schemaAutoReload = null)
     {
-        parent::__construct('test', true);
+        parent::__construct($environment, $debug);
+        $this->schemaAutoReload = $schemaAutoReload;
+        // Without debug the kernel reuses a dumped container without checking whether its sources
+        // changed, which would hide an edit to the compiler pass from the tests.
+        $this->cacheBaseDir = $debug ? __DIR__.'/../cache/' : sys_get_temp_dir().'/graphqlite-bundle-'.uniqid().'/';
         $this->enableSession = $enableSession;
         $this->enableLogin = $enableLogin;
         $this->enableSecurity = $enableSecurity;
@@ -195,6 +216,10 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
                 $graphqliteConf['security']['maximum_query_depth'] = $this->maximumQueryDepth;
             }
 
+            if ($this->schemaAutoReload !== null) {
+                $graphqliteConf['schema']['auto_reload'] = $this->schemaAutoReload;
+            }
+
             $container->loadFromExtension('graphqlite', $graphqliteConf);
         });
         $confDir = $this->getProjectDir().'/tests/Fixtures/config';
@@ -219,7 +244,9 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
             .'_'
             .($this->introspection?'withIntrospection':'withoutIntrospection');
 
-        return __DIR__.'/../cache/'.$prefix.'_'.$this->maximumQueryComplexity.'_'.$this->maximumQueryDepth.'_'.md5(serialize($this->controllersNamespace).'_'.md5(serialize($this->typesNamespace)));
+        $schemaCaching = $this->schemaAutoReload === null ? 'defaultReload' : ($this->schemaAutoReload ? 'autoReload' : 'noAutoReload');
+
+        return $this->cacheBaseDir.$this->environment.'_'.$schemaCaching.'_'.$prefix.'_'.$this->maximumQueryComplexity.'_'.$this->maximumQueryDepth.'_'.md5(serialize($this->controllersNamespace).'_'.md5(serialize($this->typesNamespace)));
     }
 
     public function process(ContainerBuilder $container): void
@@ -227,5 +254,10 @@ class GraphQLiteTestingKernel extends Kernel implements CompilerPassInterface
         if ($container->hasDefinition('security.untracked_token_storage')) {
             $container->getDefinition('security.untracked_token_storage')->setPublic(true);
         }
+
+        $container->setParameter('graphqlite.tests.schema_factory_calls', array_column(
+            $container->getDefinition(SchemaFactory::class)->getMethodCalls(),
+            0
+        ));
     }
 }

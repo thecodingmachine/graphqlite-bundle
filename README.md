@@ -86,6 +86,29 @@ final class HelloController
 - Uses Symfony cache (APCu or PHP files) for schema caching
 - Includes a `graphqlite:dump-schema` console command to export GraphQL SDL
 
+## Schema caching
+
+Building the schema means reading every controller and type, so the result is cached. The
+`schema.auto_reload` option decides whether that cache is checked against your files on each request.
+It defaults to `'%kernel.debug%'`, so you see your changes while you work and deployed environments do
+not pay for the check.
+
+Set it yourself when an environment does not fit that rule, such as a staging server that runs with
+debug on but should still serve a cached schema:
+
+```yaml
+# config/packages/graphqlite.yaml
+graphqlite:
+    schema:
+        auto_reload: false
+```
+
+With `auto_reload: true` an edited controller or type shows up on the next request. With
+`auto_reload: false` the cached schema is trusted until the cache is cleared, so a deploy that changes
+a controller, a type or one of their attributes has to clear it. `cache:clear` does that. Note that
+with the APCu adapter the console and the web server each keep their own copy, so the PHP processes
+serving requests need restarting as well.
+
 ## GraphiQL (playground)
 
 The bundle wires Overblog’s GraphiQL bundle if it is installed. See https://github.com/overblog/GraphiQLBundle for

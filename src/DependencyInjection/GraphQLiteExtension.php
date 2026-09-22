@@ -76,6 +76,12 @@ class GraphQLiteExtension extends Extension
             $namespaceType = [];
         }
 
+        if (!isset($config['schema'])) {
+            $config['schema'] = [];
+        }
+        \assert(\is_array($config['schema']));
+        $autoReload = $container->getParameterBag()->resolveValue($config['schema']['auto_reload'] ?? '%kernel.debug%');
+
         if (!isset($config['security'])) {
             $config['security'] = [];
         }
@@ -85,6 +91,7 @@ class GraphQLiteExtension extends Extension
 
         $container->setParameter('graphqlite.namespace.controllers', $namespaceController);
         $container->setParameter('graphqlite.namespace.types', $namespaceType);
+        $container->setParameter('graphqlite.schema.auto_reload', (bool) $autoReload);
         $container->setParameter('graphqlite.security.enable_login', $enableLogin);
         $container->setParameter('graphqlite.security.enable_me', $enableMe);
         $container->setParameter('graphqlite.security.disableIntrospection', !($config['security']['introspection'] ?? true));
