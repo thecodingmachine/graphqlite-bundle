@@ -1,0 +1,23 @@
+name: docs
+on:
+    pull_request: ~
+    push:
+        branches:
+            - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+    doctor-rst:
+        runs-on: ubuntu-latest
+        name: Lint (DOCtor-RST)
+        steps:
+            - name: checkout
+              uses: actions/checkout@v7
+
+            - name: doctor-rst
+              uses: docker://oskarstark/doctor-rst:1.85.0
+              with:
+                  args: docs --short --error-format=github
