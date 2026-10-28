@@ -4,117 +4,61 @@
 
 # GraphQLite bundle
 
-Symfony bundle for the `thecodingmachine/graphqlite` package.
-It discovers your annotated controllers and types, builds the schema, exposes the `/graphql` endpoint through a PSR-7
-bridge (with optional upload handling), and keeps the Symfony request available as the GraphQL context.
+Symfony bundle for [GraphQLite](https://graphqlite.thecodingmachine.io): build a GraphQL API by adding PHP attributes
+(`#[Query]`, `#[Mutation]`, `#[Type]`, `#[Field]`...) to your classes. The bundle exposes the `/graphql` endpoint and
+integrates GraphQLite with Symfony services, Security, Validator, file uploads and cache.
 
-Part of the bundle docs: https://graphqlite.thecodingmachine.io/docs/symfony-bundle
-
-See [thecodingmachine/graphqlite](https://github.com/thecodingmachine/graphqlite).
+**Documentation: [docs/index.rst](docs/index.rst)**
 
 ## Requirements
 
 - PHP 8.1+
-- Supports:
-  - Symfony 6.4/7.0/8.0
-  - GraphQLite ^8
+- Symfony 6.4, 7.x or 8.x
+- GraphQLite ^8
 
-## Installation
+## Quick start
 
-```bash
-composer require thecodingmachine/graphqlite-bundle
-```
+1. Install the bundle (Symfony Flex enables it and creates its configuration):
 
-Ensure the bundle is enabled (Symfony Flex does this automatically via `config/bundles.php` after `composer require`).
+   ```bash
+   composer require thecodingmachine/graphqlite-bundle
+   ```
 
-### Configure routes
+2. Tell GraphQLite where your GraphQL classes live:
 
-Import the bundle routes to expose `/graphql`:
+   ```yaml
+   # config/packages/graphqlite.yaml
+   graphqlite:
+       namespace:
+           controllers: App\GraphQL\Controller\
+           types:
+               - App\Entity\
+               - App\GraphQL\Input\
+   ```
 
-```yaml
-# config/routes/graphqlite.yaml
-graphqlite_bundle:
-  resource: '@GraphQLiteBundle/Resources/config/routes.php'
-```
+3. Write your first query and call `/graphql`:
 
-### Configure namespaces
+   ```php
+   // src/GraphQL/Controller/HelloController.php
+   namespace App\GraphQL\Controller;
 
-Tell GraphQLite where to look for controllers and types:
+   use TheCodingMachine\GraphQLite\Annotations\Query;
 
-```yaml
-# config/packages/graphqlite.yaml
-graphqlite:
-  namespace:
-    controllers: App\\GraphQL\\Controller
-    types:
-      - App\\GraphQL\\Type
-      - App\\Entity
-```
+   class HelloController
+   {
+       #[Query]
+       public function hello(string $name = 'world'): string
+       {
+           return sprintf('Hello %s', $name);
+       }
+   }
+   ```
 
-## Quickstart
-
-Create a controller with GraphQLite attributes:
-
-```php
-<?php
-// src/GraphQL/Controller/HelloController.php
-namespace App\GraphQL\Controller;
-
-use TheCodingMachine\GraphQLite\Annotations\Query;
-
-final class HelloController
-{
-    #[Query]
-    public function hello(string $name = 'world'): string
-    {
-        return sprintf('Hello %s', $name);
-    }
-}
-```
-
-## Features
-
-- Auto-discovers controllers and types from configured namespaces and registers GraphQLite services, query providers,
-  type mappers, and middleware through Symfony autoconfiguration
-- Ships a `/graphql` route that converts Symfony requests to PSR-7 and keeps the Symfony request in the GraphQL context
-- Passes the Symfony request as context to allow using them in queries/mutations
-- Supports multipart uploads when `graphql-upload` is installed
-- Integrates with Symfony Security for `#[Logged]`/`#[Right]` checks
-- Expose `login`/`logout` mutations plus a `me` query (opt-out)
-- Symfony Validator-based user input validation
-- Lets you cap introspection, query depth, and query complexity via configuration
-- Uses Symfony cache (APCu or PHP files) for schema caching
-- Includes a `graphqlite:dump-schema` console command to export GraphQL SDL
-
-## Schema caching
-
-Building the schema means reading every controller and type, so the result is cached. The
-`schema.auto_reload` option decides whether that cache is checked against your files on each request.
-It defaults to `'%kernel.debug%'`, so you see your changes while you work and deployed environments do
-not pay for the check.
-
-Set it yourself when an environment does not fit that rule, such as a staging server that runs with
-debug on but should still serve a cached schema:
-
-```yaml
-# config/packages/graphqlite.yaml
-graphqlite:
-    schema:
-        auto_reload: false
-```
-
-With `auto_reload: true` an edited controller or type shows up on the next request. With
-`auto_reload: false` the cached schema is trusted until the cache is cleared, so a deploy that changes
-a controller, a type or one of their attributes has to clear it. `cache:clear` does that. Note that
-with the APCu adapter the console and the web server each keep their own copy, so the PHP processes
-serving requests need restarting as well.
-
-## GraphiQL (playground)
-
-The bundle wires Overblog’s GraphiQL bundle if it is installed. See https://github.com/overblog/GraphiQLBundle for
-enabling the UI alongside the `/graphql` endpoint.
+Continue with the [getting started tutorial](docs/getting-started.rst).
 
 ## Development
 
-- Tests: `vendor/bin/phpunit`
+- Tests: `vendor/bin/simple-phpunit`
 - Static analysis: `composer phpstan`
+- The code examples of `docs/` are tested: they must stay identical to the classes of `tests/DocsFixtures/`
+  (see `tests/DocsExamplesTest.php`).

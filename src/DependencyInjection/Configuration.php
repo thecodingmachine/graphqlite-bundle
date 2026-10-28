@@ -15,7 +15,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('graphqlite');
         $rootNode = $treeBuilder->getRootNode();
 
-        $rootNode->info('Read more about GraphQLite available options at: https://graphqlite.thecodingmachine.io/docs/symfony-bundle')
+        $rootNode->info('Read more about GraphQLite bundle options at: https://github.com/thecodingmachine/graphqlite-bundle/blob/master/docs/configuration.rst')
             ->children()
             ->arrayNode('namespace')
                 ->children()
