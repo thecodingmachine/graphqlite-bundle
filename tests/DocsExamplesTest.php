@@ -3,13 +3,17 @@
 namespace TheCodingMachine\GraphQLite\Bundle\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\User\InMemoryUser;
+use Symfony\Component\Yaml\Yaml;
 use TheCodingMachine\GraphQLite\Bundle\Controller\GraphQLiteController;
+use TheCodingMachine\GraphQLite\Bundle\DependencyInjection\Configuration;
 use function file_get_contents;
 use function glob;
 use function json_decode;
@@ -18,7 +22,8 @@ use function json_encode;
 /**
  * Keeps the examples of the docs/ folder honest:
  * - the GraphQL requests shown in the docs are executed against the classes of tests/DocsFixtures;
- * - every "code-block" preceded by a ".. fixture: <path>" comment must match that fixture file.
+ * - every "code-block" preceded by a ".. fixture: <path>" comment must match that fixture file;
+ * - every bundle configuration example must be valid.
  */
 class DocsExamplesTest extends TestCase
 {
@@ -175,18 +180,74 @@ class DocsExamplesTest extends TestCase
                     throw new \LogicException(sprintf('%s:%d: ".. fixture:" must be followed by a ".. code-block:: php".', $rstFile, $i + 1));
                 }
 
-                // Collect the indented content of the code-block.
-                $snippetLines = [];
-                for ($j++; $j < $count; $j++) {
-                    if (trim($lines[$j]) !== '' && !preg_match('/^\s/', $lines[$j])) {
-                        break;
-                    }
-                    $snippetLines[] = $lines[$j];
-                }
-
-                yield $rstFile.' -> '.$matches[1] => [$rstFile, $matches[1], self::dedent($snippetLines)];
+                yield $rstFile.' -> '.$matches[1] => [$rstFile, $matches[1], self::readCodeBlock($lines, $j)];
             }
         }
+    }
+
+    /**
+     * Every bundle configuration shown in the docs must be accepted by the configuration tree of the bundle.
+     *
+     * @dataProvider provideBundleConfigs
+     */
+    public function testBundleConfigIsValid(string $yaml): void
+    {
+        $config = (new ParameterBag(['kernel.debug' => true]))->resolveValue(Yaml::parse($yaml));
+
+        // Partial examples (only "security", only "debug"...) are merged with the required namespaces.
+        $configs = [['namespace' => ['controllers' => 'App\\GraphQL\\Controller\\', 'types' => 'App\\Entity\\']]];
+        foreach ($config as $key => $value) {
+            if ($key === 'graphqlite') {
+                $configs[] = $value;
+            } elseif (str_starts_with($key, 'when@') && isset($value['graphqlite'])) {
+                $configs[] = $value['graphqlite'];
+            }
+        }
+        $this->assertGreaterThan(1, count($configs), 'The example does not contain a "graphqlite" key.');
+
+        (new Processor())->processConfiguration(new Configuration(), $configs);
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideBundleConfigs(): iterable
+    {
+        foreach (glob(__DIR__.'/../docs/*.rst') as $rstPath) {
+            $rstFile = 'docs/'.basename($rstPath);
+            $lines = explode("\n", file_get_contents($rstPath));
+
+            foreach ($lines as $i => $line) {
+                if (!preg_match('/^\s*\.\. code-block:: yaml$/', $line)) {
+                    continue;
+                }
+
+                $yaml = self::readCodeBlock($lines, $i);
+                if (str_starts_with($yaml, '# config/packages/graphqlite.yaml')) {
+                    yield $rstFile.':'.($i + 1) => [$yaml];
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the dedented content of the code-block whose directive is on line $directive.
+     *
+     * @param list<string> $lines
+     */
+    private static function readCodeBlock(array $lines, int $directive): string
+    {
+        $directiveIndent = strlen($lines[$directive]) - strlen(ltrim($lines[$directive]));
+        $blockLines = [];
+        for ($j = $directive + 1, $count = count($lines); $j < $count; $j++) {
+            $lineIndent = strlen($lines[$j]) - strlen(ltrim($lines[$j]));
+            if (trim($lines[$j]) !== '' && $lineIndent <= $directiveIndent) {
+                break;
+            }
+            $blockLines[] = $lines[$j];
+        }
+
+        return trim(self::dedent($blockLines));
     }
 
     /**
