@@ -32,10 +32,12 @@ the default values:
             firewall_name: main
             # Allow clients to read the schema (__schema and __type queries).
             introspection: true
-            # Reject queries above this complexity (no limit by default).
-            maximum_query_complexity: ~
-            # Reject queries nested deeper than this (no limit by default).
-            maximum_query_depth: ~
+            # Reject queries above this complexity. No default: when the
+            # option is omitted, the complexity of queries is not limited.
+            # maximum_query_complexity: 314
+            # Reject queries nested deeper than this. No default: when the
+            # option is omitted, the depth of queries is not limited.
+            # maximum_query_depth: 42
 
         debug:
             # Add the exception message to the error sent to the client.

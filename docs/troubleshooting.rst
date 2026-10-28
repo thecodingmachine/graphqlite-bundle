@@ -34,9 +34,9 @@ The "login" Mutation or the "me" Query Is Missing
 
 In ``auto`` mode, these operations are silently skipped when one of their
 requirements is missing: the security bundle for ``me``; the security bundle,
-a firewall, a password hasher and sessions for ``login``. Set ``enable_login: on`` (or ``enable_me: on``) temporarily: the
-bundle then throws an exception that tells you what is missing. See
-:doc:`security`.
+a firewall, a password hasher and sessions for ``login``. Set
+``enable_login: on`` (or ``enable_me: on``) temporarily: the bundle then
+throws an exception that tells you what is missing. See :doc:`security`.
 
 The Logged-in User Is Always Null
 ---------------------------------
