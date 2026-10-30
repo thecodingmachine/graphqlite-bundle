@@ -1,0 +1,8 @@
+# Configuration used by symfony.com to publish the docs of this bundle.
+# See https://github.com/liip/LiipImagineBundle/blob/2.x/.symfony.bundle.yaml for the documented format.
+branches: ["master"]
+maintained_branches: ["master"]
+doc_dir: "docs/"
+current_branch: "master"
+dev_branch: "master"
+dev_branch_alias: "7.x"

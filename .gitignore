@@ -5,3 +5,4 @@
 /cache
 .phpunit.result.cache
 .phpstan-cache
+.doctor-rst.cache
