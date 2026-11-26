@@ -226,11 +226,13 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
             }
         }
 
+        $classes = $this->findClasses([...$controllersNamespaces, ...$typesNamespaces]);
+
         foreach ($controllersNamespaces as $controllersNamespace) {
             \assert(\is_string($controllersNamespace));
 
             $schemaFactory->addMethodCall('addNamespace', [ $controllersNamespace ]);
-            foreach ($this->getClassList($controllersNamespace) as $refClass) {
+            foreach ($this->getClassList($classes, $controllersNamespace) as $refClass) {
                 $this->makePublicInjectedServices($refClass, $reader, $container, true);
             }
         }
@@ -239,7 +241,7 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
             \assert(\is_string($typeNamespace));
 
             $schemaFactory->addMethodCall('addNamespace', [ $typeNamespace ]);
-            foreach ($this->getClassList($typeNamespace) as $refClass) {
+            foreach ($this->getClassList($classes, $typeNamespace) as $refClass) {
                 $this->makePublicInjectedServices($refClass, $reader, $container, false);
             }
         }
@@ -448,20 +450,47 @@ class GraphQLiteCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * Returns the array of globbed classes.
-     * Only instantiable classes are returned.
+     * One scan for all namespaces: a scan walks every PSR-4 directory of the root
+     * namespace, whichever sub-namespace it looks for.
      *
-     * @return Generator<class-string, ReflectionClass<object>, void, void>
+     * @param array<mixed> $namespaces
+     *
+     * @return array<class-string, ReflectionClass<object>>
      */
-    private function getClassList(string $namespace): Generator
+    private function findClasses(array $namespaces): array
     {
         // dev note: this code will be broken if there's a broken class (which has mismatch in real namespace
         //  with PSR-4 configuration) in the configured namespace
         // see also: https://github.com/alekitto/class-finder/issues/24#issuecomment-2480847327
         $finder = new ComposerFinder();
-        foreach ($finder->inNamespace($namespace) as $class) {
+        foreach ($namespaces as $namespace) {
+            \assert(\is_string($namespace));
+            $finder = $finder->inNamespace($namespace);
+        }
+
+        $classes = [];
+        foreach ($finder as $class) {
             assert($class instanceof ReflectionClass);
-            yield $class->getName() => $class;
+            $classes[$class->getName()] = $class;
+        }
+
+        return $classes;
+    }
+
+    /**
+     * Returns the classes of $classes in the namespace or its sub-namespaces.
+     *
+     * @param array<class-string, ReflectionClass<object>> $classes
+     *
+     * @return Generator<class-string, ReflectionClass<object>, void, void>
+     */
+    private function getClassList(array $classes, string $namespace): Generator
+    {
+        foreach ($classes as $name => $class) {
+            $classNamespace = $class->getNamespaceName();
+            if ($classNamespace === $namespace || str_starts_with($classNamespace, $namespace . '\\')) {
+                yield $name => $class;
+            }
         }
     }
 
